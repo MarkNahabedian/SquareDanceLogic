@@ -1,4 +1,4 @@
-// Package geometry implements the geometry of a square dance set or//
+// Package geometry implements the geometry of a square dance set or
 // floor.  This package defines the coordinate system and provides the
 // means for describing the position and direction of each dancer.
 //
@@ -27,7 +27,7 @@ import "math"
 // Direction 0.0 is the direction that the caller is facing and the
 // facing direction of couple number one in a squared set.
 // In a squared set, the facing direction of couple number two would be 0.25,
-// that of couple number 3 0.5, and that of couple number four 0.75.
+// that of couple number three: 0.5, and that of couple number four: 0.75.
 type Direction float64
 
 // FullCircle is a change in Direction of 1.0.
@@ -44,7 +44,15 @@ func (d Direction) Canonicalize() Direction {
 
 // Opposite returns the direction opposite to d.
 func (d Direction) Opposite() Direction {
-	return Direction(float64(d) + float64(FullCircle)/2).Canonicalize()
+	return d.Add(Direction(FullCircle / 2))
+}
+
+func (d Direction) QuarterRight() Direction {
+	return d.Subtract(Direction(FullCircle / 4))
+}
+
+func (d Direction) QuarterLeft() Direction {
+	return d.Add(Direction(FullCircle / 4))
 }
 
 // Inverse returns the arithmetic inverse dirrection to d.
@@ -92,8 +100,8 @@ const (
 	Left1 = Left(CoupleDistance)
 )
 
-// Equal returns true if the two Down coordinates are aithin
-// positionTomerance of each other.
+// Equal returns true if the two Down coordinates are within
+// positionTolerance of each other.
 func (d1 Down) Equal(d2 Down) bool {
 	return math.Abs(float64(d1)-float64(d2)) < positionTolerance
 }
@@ -108,7 +116,8 @@ func (d1 Down) Subtract(d2 Down) Down {
 	return Down(float64(d1) - float64(d2))
 }
 
-// Equal returns true if the two Left coordinates are aithin
+// Equal returns true if the two Left coordinates are within
+// positionTolerance of each other.
 func (d1 Left) Equal(d2 Left) bool {
 	return math.Abs(float64(d1)-float64(d2)) < positionTolerance
 }

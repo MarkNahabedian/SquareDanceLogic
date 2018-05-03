@@ -27,7 +27,7 @@ func (g Gender) String() string {
 	panic(fmt.Sprintf("Unsupported Gender #v", g))
 }
 
-// Opposite returns the Gender that is oooopposite to g.
+// Opposite returns the Gender that is opposite to g.
 func (g Gender) Opposite() Gender {
 	switch g {
 	case Unspecified:
