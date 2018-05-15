@@ -24,7 +24,7 @@ func (g Gender) String() string {
 	case Gal:
 		return "Gal"
 	}
-	panic(fmt.Sprintf("Unsupported Gender #v", g))
+	panic(fmt.Sprintf("Unsupported Gender %d", int(g)))
 }
 
 // Opposite returns the Gender that is opposite to g.
@@ -37,22 +37,63 @@ func (g Gender) Opposite() Gender {
 	case Gal:
 		return Guy
 	}
-	panic(fmt.Sprintf("Unsupported Gender #v", g))
+	panic(fmt.Sprintf("Unsupported Gender %v", g))
+}
+
+type Dancer interface{
+	IsDancer() bool
+	Set() Set
+	CoupleNumber() int
+	Gender() Gender
+	Ordinal() int
+	Position() geometry.Position
+	Direction() geometry.Direction
+	OriginalPartner() Dancer
+	SetOriginalPartner(Dancer)
 }
 
 type dancer struct {
 	// The set of dancers that this dancer is dancing with.
-	Set          Set
-	CoupleNumber int
-	Gender       Gender
+	set          Set
+	coupleNumber int
+	gender       Gender
 	// Each dancer in a set has a unique Ordinal.
-	Ordinal         int
-	Position        geometry.Position
-	Direction       geometry.Direction
-	OriginalPartner Dancer
+	ordinal         int
+	position        geometry.Position
+	direction       geometry.Direction
+	originalPartner Dancer
 }
 
-type Dancer *dancer
+
+func (d *dancer) String() string {
+	return fmt.Sprintf("%d%s", d.CoupleNumber(), d.Gender())
+}
+
+func (d *dancer) IsDancer() bool { return true }
+
+func (d *dancer) Set() Set { return d.set }
+
+func (d *dancer) CoupleNumber() int { return d.coupleNumber }
+
+func (d *dancer) Gender() Gender { return d.gender }
+
+func (d *dancer) Ordinal() int { return d.ordinal }
+
+func (d *dancer) Position() geometry.Position { return d.position }
+
+func (d *dancer) Direction() geometry.Direction { return d.direction }
+
+func (d *dancer) OriginalPartner() Dancer { return d.originalPartner }
+
+func (d *dancer) SetOriginalPartner(d2 Dancer) {
+	d.originalPartner = d2
+}
+
+func (d1 *dancer) GoshuaEqual(d2 interface{}) (bool, error) {
+	// If Dancers aren't EQ then they're not EQUAL.
+	return false, nil
+}
+
 
 type set struct {
 	FlagpoleCenter geometry.Position
@@ -83,22 +124,22 @@ func NewSquaredSet(couples int) Set {
 			}
 			index := 2*couple + ordinalAdjustment
 			s.Dancers[index] = &dancer{
-				Set:          &s,
-				Ordinal:      index,
-				Gender:       gender,
-				CoupleNumber: couple + 1,
-				Position: s.FlagpoleCenter.
+				set:          &s,
+				ordinal:      index,
+				gender:       gender,
+				coupleNumber: couple + 1,
+				position: s.FlagpoleCenter.
 					Add(geometry.NewPosition(
 						facing.Opposite(), 1.5*geometry.CoupleDistance)).
 					Add(geometry.NewPosition(
 						facing.Add(geometry.FullCircle.DivideBy(4.0)),
 						float64(side)*geometry.CoupleDistance/2.0)),
-				Direction: geometry.Direction(facing),
+				direction: geometry.Direction(facing),
 			}
 		}
 	}
 	for index, dancer := range s.Dancers {
-		dancer.OriginalPartner = s.Dancers[index^1]
+		dancer.SetOriginalPartner(s.Dancers[index^1])
 	}
 	return &s
 }
