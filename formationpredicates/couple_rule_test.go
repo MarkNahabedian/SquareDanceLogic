@@ -156,6 +156,8 @@ func Test1(t *testing.T) {
 	})
 */
 
+	Walk(root_node, Node.IsValid)
+
 	if g, err := rete.MakeGraph(root_node); err != nil {
 		t.Errorf("Can't graphviz: %s", err)
 	} else {
