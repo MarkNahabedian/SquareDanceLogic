@@ -66,7 +66,7 @@ type dancer struct {
 
 
 func (d *dancer) String() string {
-	return fmt.Sprintf("%d%s", d.CoupleNumber(), d.Gender())
+	return fmt.Sprintf("Dancer_%d%s", d.CoupleNumber(), d.Gender())
 }
 
 func (d *dancer) IsDancer() bool { return true }

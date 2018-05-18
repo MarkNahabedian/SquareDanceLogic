@@ -60,8 +60,6 @@ func TestDancerQuery(t *testing.T) {
 	set := dancer.NewSquaredSet(4)
 	var b1 goshua.Bindings
 	goshua.Unify(q, set.Dancers[0], goshua.EmptyBindings(), func(b goshua.Bindings) {
-		d, _ := b.Get(v("dancer1"))
-		t.Logf("dancers[0] query found %v", d)
 		b1 = b
 	})
 	if b1 == nil {
@@ -69,11 +67,9 @@ func TestDancerQuery(t *testing.T) {
 	}
 	var b2 goshua.Bindings
 	goshua.Unify(q, set.Dancers[1], goshua.EmptyBindings(), func(b goshua.Bindings) {
-		d, _ := b.Get(v("dancer1"))
-		t.Logf("dancers[1] query found %v", d)
 		b2 = b
 	})
-	if b1 != nil {
+	if b2 != nil {
 		t.Errorf("Found GAL")
 	}
 }
@@ -149,12 +145,10 @@ func Test1(t *testing.T) {
 	rete.Connect(near, sasheyed)
 
 	show := rete.MakeFunctionNode("show conclusions", func(n rete.Node, item interface{}) {
-		t.Logf("Concluded %v", item)
+		t.Logf("Concluded %s", item)
 	})
 	rete.Connect(normal, show)
 	rete.Connect(sasheyed, show)
-
-	rete.Initialize(root_node)
 
 /*
 	rete.Walk(root_node, func(n rete.Node) {

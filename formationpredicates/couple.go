@@ -1,6 +1,6 @@
 package formationpredicates
 
-
+import "fmt"
 import "squaredance/dancer"
 // import "squaredance/geometry"
 
@@ -19,8 +19,15 @@ type NormalCouple struct {
 	Belle dancer.Dancer
 }
 
+func (c *NormalCouple) String() string {
+	return fmt.Sprintf("NormalCouple(%s, %s)", c.Beau, c.Belle)
+}
+
 type SasheyedCouple struct {
 	Beau dancer.Dancer
 	Belle dancer.Dancer
 }
 
+func (c *SasheyedCouple) String() string {
+	return fmt.Sprintf("SasheyedCouple(%s, %s)", c.Beau, c.Belle)
+}
