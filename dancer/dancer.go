@@ -95,19 +95,31 @@ func (d1 *dancer) GoshuaEqual(d2 interface{}) (bool, error) {
 }
 
 
-type set struct {
-	FlagpoleCenter geometry.Position
-	Dancers        []Dancer
+type Set interface {
+	FlagpoleCenter() geometry.Position
+	Dancers()        []Dancer
+
 }
 
-type Set *set
+type set struct {
+	flagpoleCenter geometry.Position
+	dancers        []Dancer
+}
+
+func (s *set) FlagpoleCenter() geometry.Position {
+	return s.flagpoleCenter
+}
+
+func (s *set) Dancers() []Dancer {
+	return s.dancers
+}
 
 // SquaredSet returns a new squared set with the specified number of couples.
 func NewSquaredSet(couples int) Set {
 	circleFraction := geometry.FullCircle.DivideBy(float64(couples))
 	s := set{
-		FlagpoleCenter: geometry.NewPositionDownLeft(0, 0),
-		Dancers:        make([]Dancer, couples*2),
+		flagpoleCenter: geometry.NewPositionDownLeft(0, 0),
+		dancers:        make([]Dancer, couples*2),
 	}
 	for couple := 0; couple < couples; couple++ {
 		facing := circleFraction.MultiplyBy(float64(couple))
@@ -123,12 +135,12 @@ func NewSquaredSet(couples int) Set {
 				ordinalAdjustment = 1
 			}
 			index := 2*couple + ordinalAdjustment
-			s.Dancers[index] = &dancer{
+			s.dancers[index] = &dancer{
 				set:          &s,
 				ordinal:      index,
 				gender:       gender,
 				coupleNumber: couple + 1,
-				position: s.FlagpoleCenter.
+				position: s.flagpoleCenter.
 					Add(geometry.NewPosition(
 						facing.Opposite(), 1.5*geometry.CoupleDistance)).
 					Add(geometry.NewPosition(
@@ -138,8 +150,8 @@ func NewSquaredSet(couples int) Set {
 			}
 		}
 	}
-	for index, dancer := range s.Dancers {
-		dancer.SetOriginalPartner(s.Dancers[index^1])
+	for index, dancer := range s.dancers {
+		dancer.SetOriginalPartner(s.dancers[index^1])
 	}
 	return &s
 }
