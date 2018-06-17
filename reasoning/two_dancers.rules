@@ -1,0 +1,171 @@
+package reasoning
+
+import "fmt"
+import "squaredance/dancer"
+
+
+type Pair interface {
+	Pair()
+	Dancer1() dancer.Dancer
+	Dancer2() dancer.Dancer
+}
+
+func MakePair(dancer1, dancer2 dancer.Dancer) Pair {
+	return Pair(&pair{ dancer1: dancer1, dancer2: dancer2 })
+}
+
+type pair struct {
+	dancer1 dancer.Dancer
+	dancer2 dancer.Dancer
+}
+
+func (p *pair) Pair() {}
+
+func (p *pair) Dancer1() dancer.Dancer {
+	return p.dancer1
+}
+
+func (p *pair) Dancer2() dancer.Dancer {
+	return p.dancer2
+}
+
+func rule_PairOfDancers(dancer1, dancer2 dancer.Dancer) {
+	// Note that for each pair of dancers we will create two Pair
+	// objects: one each for the two possible orders of the dancers.
+	if dancer1 != dancer2 {
+		__node.Emit(Pair(&pair{dancer1: dancer1, dancer2: dancer2}))
+	}
+}
+
+// LeftOf returns true if dancer2 is to the left of Dancer1.
+// Dancer1's direction is relevant to this determination but
+// Dancer2's direction is not.
+func LeftOf(dancer1, dancer2 dancer.Dancer) bool {
+	return dancer1.Direction().QuarterLeft().Equal(
+    	dancer1.Position().Direction(dancer2.Position()))
+}
+
+// RightOf returns true if dancer2 is to the left of Dancer1.
+// Dancer1's direction is relevant to this determination but
+// Dancer2's direction is not.
+func RightOf(dancer1, dancer2 dancer.Dancer) bool {
+	return dancer1.Direction().QuarterRight().Equal(
+    	dancer1.Position().Direction(dancer2.Position()))
+}
+
+
+type Couple interface {
+	Couple()
+	Beau() dancer.Dancer
+	Belle() dancer.Dancer
+}
+
+func IsNormal(c Couple) bool {
+	if c.Beau().Gender() == dancer.Guy &&
+		c.Belle().Gender() == dancer.Gal {
+		return true
+	}
+	return false
+}
+
+func IsSasheyed(c Couple) bool {
+	if c.Beau().Gender() == dancer.Gal &&
+		c.Belle().Gender() == dancer.Guy {
+		return true
+	}
+	return false
+}
+
+func IsSameGender(c Couple) bool {
+	return c.Beau().Gender() == c.Belle().Gender()
+}
+
+
+type couple struct {
+	beau dancer.Dancer
+	belle dancer.Dancer
+}
+
+func (c *couple) Couple() {}
+func (c *couple) Beau() dancer.Dancer { return c.beau }
+func (c *couple) Belle() dancer.Dancer { return c.belle }
+
+func (mw *couple) String() string {
+	return fmt.Sprintf("Couple(%s, %s)", mw.beau, mw.belle)
+}
+
+// NumberOfDancers is part of the Formation interface.
+func (c *couple) NumberOfDancers() int { return 2 }
+
+// Dancers is part of the Formation interface.
+func (c *couple) Dancers() []dancer.Dancer {
+	return []dancer.Dancer{ c.Beau(), c.Belle() }
+}
+
+// HasDancer is  part of the Formation interface.
+func (c *couple) HasDancer(d dancer.Dancer) bool {
+	if d == c.Beau()  { return true }
+	if d == c.Belle()  { return true }
+	return false
+}
+
+func rule_GeneralizedCouple(p Pair) {
+	d1 := p.Dancer1()
+	d2 := p.Dancer2()
+	if RightOf(d1, d2) && LeftOf(d2, d1) {
+		__node.Emit(Couple(&couple{beau: d1, belle: d2}))
+	}
+}
+
+
+type MiniWave interface{
+	Miniwave()
+	Dancer1() dancer.Dancer
+	Dancer2() dancer.Dancer
+}
+
+type miniwave struct {
+	dancer1 dancer.Dancer
+	dancer2 dancer.Dancer
+}
+
+func (mw *miniwave) Miniwave() {}
+func (mw *miniwave) Dancer1() dancer.Dancer { return mw.dancer1 }
+func (mw *miniwave) Dancer2() dancer.Dancer { return mw.dancer2 }
+
+func (mw *miniwave) String() string {
+	return fmt.Sprintf("MiniWave(%s, %s)", mw.dancer1, mw.dancer2)
+}
+
+// func (mw *miniwave) Handedness() {}
+
+// NumberOfDancers is part of the Formation interface.
+func (mw *miniwave) NumberOfDancers() int { return 2 }
+
+// Dancers is part of the Formation interface.
+func (mw *miniwave) Dancers() []dancer.Dancer {
+	return []dancer.Dancer{ mw.Dancer1(), mw.Dancer2() }
+}
+
+// HasDancer is  part of the Formation interface.
+func (mw *miniwave) HasDancer(d dancer.Dancer) bool {
+	if d == mw.Dancer1()  { return true }
+	if d == mw.Dancer2()  { return true }
+	return false
+}
+
+func rule_MiniWave(p Pair) {
+	d1 := p.Dancer1()
+	d2 := p.Dancer2()
+	if RightOf(d1, d2) && RightOf(d2, d1) {
+		__node.Emit(MiniWave(&miniwave{dancer1: d1, dancer2: d2}))
+		return
+	}
+	if LeftOf(d1, d2) && LeftOf(d2, d1) {
+		__node.Emit(MiniWave(&miniwave{dancer1: d1, dancer2: d2}))
+	}
+}
+
+
+// FaceToFaceDancers
+// BackToBackDancers
