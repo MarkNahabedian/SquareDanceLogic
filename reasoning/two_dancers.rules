@@ -4,6 +4,14 @@ import "fmt"
 import "squaredance/dancer"
 
 
+// Pair represents two distinct Dancers.
+// Note that rule_PairOfDancers does not filter by Dancer canonical ordering
+// and the rete node that Joins one Dancer with another considers the those
+// Dancers in both possible orderings, so for every two Dancers, two Pairs
+// are made, one with one dancer as Dancer1, and the other with the other
+// Danceer as Dancer1.  This should simplify a number of the other two Dancer
+// rules, which dont need to consider which Dancer is which in a given Pair
+// because there will be another Pair with its Dancers in the other ordering.
 type Pair interface {
 	Pair()
 	Dancer1() dancer.Dancer
@@ -21,14 +29,20 @@ type pair struct {
 
 func (p *pair) Pair() {}
 
+// Dancer1 returns one dancer of a Pair.
 func (p *pair) Dancer1() dancer.Dancer {
 	return p.dancer1
 }
 
+// Dancer2 returns the Dancer of the Pair that is not returned by Dancer1.
 func (p *pair) Dancer2() dancer.Dancer {
 	return p.dancer2
 }
 
+// Should Pair be a Formation?
+
+
+// rule_PairOfDancers groups each two Dancers pairwise.
 func rule_PairOfDancers(dancer1, dancer2 dancer.Dancer) {
 	// Note that for each pair of dancers we will create two Pair
 	// objects: one each for the two possible orders of the dancers.
@@ -37,47 +51,13 @@ func rule_PairOfDancers(dancer1, dancer2 dancer.Dancer) {
 	}
 }
 
-// LeftOf returns true if dancer2 is to the left of Dancer1.
-// Dancer1's direction is relevant to this determination but
-// Dancer2's direction is not.
-func LeftOf(dancer1, dancer2 dancer.Dancer) bool {
-	return dancer1.Direction().QuarterLeft().Equal(
-    	dancer1.Position().Direction(dancer2.Position()))
-}
 
-// RightOf returns true if dancer2 is to the left of Dancer1.
-// Dancer1's direction is relevant to this determination but
-// Dancer2's direction is not.
-func RightOf(dancer1, dancer2 dancer.Dancer) bool {
-	return dancer1.Direction().QuarterRight().Equal(
-    	dancer1.Position().Direction(dancer2.Position()))
-}
-
-
+// A couple consists of two Dancers that are side by side and facing the
+// same direction.
 type Couple interface {
 	Couple()
 	Beau() dancer.Dancer
 	Belle() dancer.Dancer
-}
-
-func IsNormal(c Couple) bool {
-	if c.Beau().Gender() == dancer.Guy &&
-		c.Belle().Gender() == dancer.Gal {
-		return true
-	}
-	return false
-}
-
-func IsSasheyed(c Couple) bool {
-	if c.Beau().Gender() == dancer.Gal &&
-		c.Belle().Gender() == dancer.Guy {
-		return true
-	}
-	return false
-}
-
-func IsSameGender(c Couple) bool {
-	return c.Beau().Gender() == c.Belle().Gender()
 }
 
 
@@ -110,6 +90,7 @@ func (c *couple) HasDancer(d dancer.Dancer) bool {
 }
 
 func rule_GeneralizedCouple(p Pair) {
+	// Need to test nearness?
 	d1 := p.Dancer1()
 	d2 := p.Dancer2()
 	if RightOf(d1, d2) && LeftOf(d2, d1) {
@@ -155,6 +136,7 @@ func (mw *miniwave) HasDancer(d dancer.Dancer) bool {
 }
 
 func rule_MiniWave(p Pair) {
+	// Need to test nearness
 	d1 := p.Dancer1()
 	d2 := p.Dancer2()
 	if RightOf(d1, d2) && RightOf(d2, d1) {
@@ -168,4 +150,50 @@ func rule_MiniWave(p Pair) {
 
 
 // FaceToFaceDancers
+
+type FaceToFace interface {
+	FaceToFace()
+	Dancer1() dancer.Dancer
+	Dancer2() dancer.Dancer
+}
+
+type facetoface struct {
+	dancer1 dancer.Dancer
+	dancer2 dancer.Dancer
+}
+
+func (ff *facetoface) FaceToFace() {}
+func (ff *facetoface) Dancer1() dancer.Dancer {return ff.dancer1 }
+func (ff *facetoface) Dancer2() dancer.Dancer {return ff.dancer2 } 
+
+func (ff *facetoface) String() string {
+	return fmt.Sprintf("FaceToFace(%s, %s)",ff.dancer1, ff.dancer2)
+}
+
+// NumberOfDancers is part of the Formation interface.
+func (ff *facetoface) NumberOfDancers() int { return 2 }
+
+// Dancers is part of the Formation interface.
+func (ff *facetoface) Dancers() []dancer.Dancer {
+	return []dancer.Dancer{ ff.Dancer1(), ff.Dancer2() }
+}
+
+// HasDancer is  part of the Formation interface.
+func (ff *facetoface)  HasDancer(d dancer.Dancer) bool {
+	if d == ff.Dancer1()  { return true }
+	if d == ff.Dancer2()  { return true }
+	return false
+}
+
+func rule_FaceToFace(p Pair) {
+	d1 := p.Dancer1()
+	d2 := p.Dancer2()
+	// Need to test adjacency
+	if InFrontOf(d1, d2) && InFrontOf(d2, d1) {
+		__node.Emit(FaceToFace(&facetoface{dancer1: d1, dancer2: d2}))
+	}
+}
+
+
 // BackToBackDancers
+// Tandem
