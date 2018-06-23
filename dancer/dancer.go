@@ -27,6 +27,14 @@ func (g Gender) String() string {
 	panic(fmt.Sprintf("Unsupported Gender %d", int(g)))
 }
 
+// Equal returns true if the Genders are the same.
+// Two Unspecified Genders are never the same.
+func (g Gender) Equal(g2 Gender) bool {
+	if g == Unspecified { return false }
+	if g2 == Unspecified { return false }
+	return g == g2
+}
+
 // Opposite returns the Gender that is opposite to g.
 func (g Gender) Opposite() Gender {
 	switch g {
