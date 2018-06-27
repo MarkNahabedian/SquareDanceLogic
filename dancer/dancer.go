@@ -58,6 +58,10 @@ type Dancer interface{
 	Direction() geometry.Direction
 	OriginalPartner() Dancer
 	SetOriginalPartner(Dancer)
+	// A single dancer is still a formation so it implements the Formation interface
+	NumberOfDancers() int
+	Dancers() []Dancer
+	HasDancer(Dancer) bool
 }
 
 type dancer struct {
@@ -177,5 +181,8 @@ func (d *dancer) Dancers() []Dancer {
 
 // HasDancer is part of the reasoning.Formation interface.
 func (d *dancer) HasDancer(d2 Dancer) bool {
-	return d == d2
+	if d2, ok := d2.(*dancer); ok {
+		return d == d2
+	}
+	return false
 }
