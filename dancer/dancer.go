@@ -163,3 +163,19 @@ func NewSquaredSet(couples int) Set {
 	}
 	return &s
 }
+
+
+// Dancer should implement the easonong.Formation interface:
+
+// NumberOfDancers is part of the reasoning.Formation interface.
+func (d *dancer) NumberOfDancers() int { return 1 }
+
+// Dancers is part of the reasoning.Formation interface.
+func (d *dancer) Dancers() []Dancer {
+	return []Dancer { d }
+}
+
+// HasDancer is part of the reasoning.Formation interface.
+func (d *dancer) HasDancer(d2 Dancer) bool {
+	return d == d2
+}
