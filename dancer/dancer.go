@@ -58,6 +58,7 @@ type Dancer interface{
 	Direction() geometry.Direction
 	OriginalPartner() Dancer
 	SetOriginalPartner(Dancer)
+	Update(geometry.Position, geometry.Direction) Dancer
 	// A single dancer is still a formation so it implements the Formation interface
 	NumberOfDancers() int
 	Dancers() []Dancer
@@ -99,6 +100,13 @@ func (d *dancer) OriginalPartner() Dancer { return d.originalPartner }
 
 func (d *dancer) SetOriginalPartner(d2 Dancer) {
 	d.originalPartner = d2
+}
+
+// Modify the Dancer's position and direction.
+func (d *dancer) Update(newPosition geometry.Position, newDirection geometry.Direction) Dancer {
+	d.position = newPosition
+	d.direction = newDirection
+	return d
 }
 
 func (d1 *dancer) GoshuaEqual(d2 interface{}) (bool, error) {
