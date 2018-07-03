@@ -149,10 +149,7 @@ type Tandem interface {
 	Tandem()
 	Leader() dancer.Dancer
 	Trailer() dancer.Dancer
-}
-
-func (t *implTandem) Direction() geometry.Direction {
-	return t.Leader().Direction()
+	Direction() geometry.Direction  // no-slot
 }
 
 func rule_Tandem(p Pair) {
