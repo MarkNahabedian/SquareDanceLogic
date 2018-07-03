@@ -58,7 +58,7 @@ type Dancer interface{
 	Direction() geometry.Direction
 	OriginalPartner() Dancer
 	SetOriginalPartner(Dancer)
-	Update(geometry.Position, geometry.Direction) Dancer
+	Move(geometry.Position, geometry.Direction) Dancer
 	// A single dancer is still a formation so it implements the Formation interface
 	NumberOfDancers() int
 	Dancers() []Dancer
@@ -103,7 +103,7 @@ func (d *dancer) SetOriginalPartner(d2 Dancer) {
 }
 
 // Modify the Dancer's position and direction.
-func (d *dancer) Update(newPosition geometry.Position, newDirection geometry.Direction) Dancer {
+func (d *dancer) Move(newPosition geometry.Position, newDirection geometry.Direction) Dancer {
 	d.position = newPosition
 	d.direction = newDirection
 	return d
@@ -176,6 +176,16 @@ func NewSquaredSet(couples int) Set {
 	return &s
 }
 
+
+// Positions 
+func Positions(dancers ...Dancer) []geometry.Position {
+	length := len(dancers)
+	positions := make([]geometry.Position, length, length)
+	for i := 0; i < length; i++ {
+		positions[i] = dancers[i].Position()
+	}
+	return positions
+}
 
 // Dancer should implement the easonong.Formation interface:
 
