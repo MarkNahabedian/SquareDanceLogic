@@ -1,0 +1,237 @@
+// Definitions and rules about all four dancer square dance formations.
+package reasoning
+
+
+type FacingCouples interface {
+	Formation
+	FacingCouples()
+	Couple1() Couple
+	Couple2() Couple
+	Facing1() FacingDancers  //redundant
+	Facing2() FacingDancers  //redundant
+}
+
+func rule_FacingCouples(couple1, couple2 Couple, facing1, facing2 FacingDancers) {
+	if !OrderedDancers(couple1.Beau(), couple2.Beau()) {
+		return
+	}
+	// The same FacingDancers formation will come in as both facing1
+	// and facing2.  These will be de-duped based on their relationship to
+	// couple1 and couple2.
+	if !HasDancers(facing1, couple1.Beau(), couple2.Belle()) {
+		return
+	}
+	if !HasDancers(facing2, couple2.Beau(), couple1.Belle()) {
+		return
+	}
+	__node.Emit(FacingCouples(&implFacingCouples{
+		couple1: couple1,
+		couple2: couple2,
+		facing1: facing1,
+		facing2: facing2,
+	}))
+}
+
+
+type TandemCouples interface {
+	Formation
+	TandemCouples()
+	Couple1() Couple
+	Couple2() Couple
+	BeausTandem() Tandem   //redundant
+	BellesTandem() Tandem  //redundant
+}
+
+func rule_TandemCouples(couple1, couple2 Couple, tandem1, tandem2 Tandem) {
+	if !OrderedDancers(couple1.Beau(), couple2.Beau()) {
+		return
+	}
+	// The same Tandem formation will come in as both tandem1 and tandem2.
+	// These will be de-duped based on their relationship to
+	// couple1 and couple2.
+	if !HasDancers(tandem1, couple1.Beau(), couple2.Beau()) {
+		return
+	}
+	if !HasDancers(tandem2, couple1.Belle(), couple2.Belle()) {
+		return
+	}
+	__node.Emit(TandemCouples(&implTandemCouples{
+		couple1: couple1,
+		couple2: couple2,
+		beautandem: tandem1,
+		belletandem: tandem2,
+	}))
+}
+
+
+type BackToBackCouples interface {
+	Formation
+	BackToBackCouples()
+	Couple1() Couple
+	Couple2() Couple
+	BackToBack1() BackToBack  //redundant
+	BackToBack2() BackToBack  //redundant
+}
+
+func rule_BackToBackCouples(couple1, couple2 Couple, bb1, bb2 BackToBack) {
+	if !OrderedDancers(couple1.Beau(), couple2.Beau()) {
+		return
+	}
+	// The same BackToBack formation will come in as both bb1 and bb2.
+	// These will be de-duped based on their relationship to
+	// couple1 and couple2.
+	if !HasDancers(bb1, couple1.Beau(), couple2.Belle()) {
+		return
+	}
+	if !HasDancers(bb2, couple2.Beau(), couple1.Belle()) {
+		return
+	}
+	__node.Emit(BackToBackCouples(&implBackToBackCouples{
+		couple1: couple1,
+		couple2: couple2,
+		backtoback11: bb1,
+		backtoback12: bb2,
+	}))
+}
+
+
+type BoxOfFour interface {
+	Formation
+	BoxOfFour()
+	MiniWane1() MiniWave
+	MiniWane2() MiniWave
+	Tandem1() Tandem       //redundant
+	Tandem2() Tandem       //redundant
+}
+
+
+func rule_BoxOfFour(mw1, mw2 MiniWave, tandem1, tandem2 Tandem) {
+	if !tandem1.Direction().Opposite().Equal(t2.Direction()) {
+		return
+	}
+	if mw1.HasDancer(tandem1.Leader()) {
+		if !mw1.HasDancer(tandem2.Trailer()) {
+			return
+		}
+		if !mw2.HasDancer(tandem1.Trailer()) {
+			return
+		}
+		if !mw2.HasDancer(tandem2.Leader()) {
+			return
+		}
+	} else if mw1.HasDancer(tandem1.Trailer()) {
+		if !mw1.HasDancer(tandem2.Leader()) {
+			return
+		}
+		if !mw2.HasDancer(tandem1.Leader()) {
+			return
+		}
+		if !mw2.HasDancer(tandem2.Trailer()) {
+			return
+		}
+	} else {
+  		return
+	}
+	__node.Emit(BoxOfFour(&implBoxOfFour{
+		miniwave1: mw1,
+		miniwave2: mw2,
+		tandem1: tandem1,
+		tandem2: tandem2,
+	}))
+}
+
+
+type Star interface {
+	Formation
+	Star()
+	MiniWane1() MiniWave
+	MiniWane2() MiniWave
+}
+
+func rule_Star(mw1, mw2 MiniWave) {
+	if !geometry.Center(mw1.Dancers()...).Equal(geometry.Center(mw2.Dancers()...)) {
+		return
+	}
+	dir := mw1.Dancer1().Direction().QuarterLeft
+	if !(dir().Equal(mw2.Dancer1().Direction()) ||
+		dir.Equal(mw2.Dancer2().Direction())) {
+		return
+	}
+	__node.Emit(Star(&implStar{
+		miniwave1: mw1,
+		miniwave2: mw2,
+	}))
+}
+
+
+type LineOfFour interface {
+	Formation
+	LineOfFour()
+	LeftCouple()
+	CenterCouple()    // redudant
+	RightCouple()
+}
+
+func rule_LineOfFour(c1, c2, c3 Couple) {
+	if !(c1.Belle() == c2.Beau()) {
+		return
+	}
+	if !(c2.Belle() == c3.Beau()) {
+		return
+	}
+	__node.Emit(LineOfFour(&implLineOfFour{
+		leftcouple: c1,
+		centercouple: c2,
+		rightcouple: c3,
+	}))
+}
+
+
+type WaveOfFour interface {
+	Formation
+	WaveOfFour()
+	CenterMiniWave() MiniWave    // redundant
+	MiniWave1()
+	MiniWave2()
+}
+
+func rule_WaveOfFour(mw1, mw2, mw3 MiniWave) {
+	if mw1.HasDancer(mw2.Dancer1()) {
+		if !mw2.HasDancer(mw2.Dancer2()) {
+			return
+		}
+	} else if mw1.HasDancer(mw2.Dancer2()) {
+		if !mw2.HasDancer(mw2.Dancer1()) {
+			return
+		}
+	}
+	__node.Emit(WaveOfFour(&implWaveOfFour{
+		centerminiwave: mw2,
+		miniwave1:mw1,
+		miniwave2: mw3,
+	}))
+}
+
+
+type TwoFacedLine interface {
+	Formation
+	TwoFacedLine()
+	Couple1()
+	Couple2()
+	CenterMiniWave()   // redundant
+}
+
+func rule_TwoFacedLine(c1, c2 Couple, mw MiniWave) {
+	if !mw.HasDancer(c1.Beau()) {
+		return
+	}
+	if !mw.HasDancer(c2.Belle()) {
+		return
+	}
+	__node.Emit(TwoFacedLine(&implTwoFacedLine{
+		couple1: c1,
+		couple2: c2,
+		centerminiwave: mw,
+	}))
+}
+
