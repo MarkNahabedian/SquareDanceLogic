@@ -60,7 +60,7 @@ func (d Direction) Inverse() Direction {
 	return Direction(-float64(d)).Canonicalize()
 }
 
-// Add retirns to sum of the two Directions.
+// Add returns to sum of the two Directions.
 func (d1 Direction) Add(d2 Direction) Direction {
 	return Direction(float64(d1) + float64(d2)).Canonicalize()
 }
@@ -202,7 +202,7 @@ func (p1 Position) Subtract(p2 Position) Position {
 
 // Center returns a new Position that's at the center of the specified
 // Positions.
-func Center(positions []Position) Position {
+func Center(positions ...Position) Position {
 	down := 0.0
 	left := 0.0
 	count := 0
