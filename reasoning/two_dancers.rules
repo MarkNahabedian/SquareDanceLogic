@@ -1,6 +1,8 @@
+// Definitions and rules about all two dancer square dance formations.
 package reasoning
 
 import "squaredance/dancer"
+import "squaredance/geometry"
 
 
 // Pair represents two distinct Dancers.
@@ -49,8 +51,12 @@ func rule_PairOfDancers(dancer1, dancer2 dancer.Dancer) {
 }
 
 
-// A couple consists of two Dancers that are side by side and facing the
-// same direction.
+// TODO: Need to test for nearness or adjacency.
+
+
+// A Couple consists of two Dancers that are side by side and facing the
+// same direction.  Since one Dancer is to the right of the other Dancer
+// the same two Dancers can only be in a Couple one way.
 type Couple interface {
 	Formation
 	Couple()
@@ -59,7 +65,6 @@ type Couple interface {
 }
 
 func rule_GeneralizedCouple(p Pair) {
-	// Need to test nearness?
 	d1 := p.Dancer1()
 	d2 := p.Dancer2()
 	if RightOf(d1, d2) && LeftOf(d2, d1) {
@@ -68,6 +73,10 @@ func rule_GeneralizedCouple(p Pair) {
 }
 
 
+// A MiniWave consists of two Dancers facing in opposite directions.
+// There isn't anything inate to a MiniWave that would restrict which
+// of the same two Dancers is Dancer1 versus which is Dancer2 unless
+// we resort to Dancer.Ordinal.
 type MiniWave interface{
 	Formation
 	MiniWave()
@@ -78,9 +87,11 @@ type MiniWave interface{
 // func (mw *miniwave) Handedness() {}
 
 func rule_MiniWave(p Pair) {
-	// Need to test nearness
 	d1 := p.Dancer1()
 	d2 := p.Dancer2()
+	if d1.Ordinal() >= d2.Ordinal() {
+		return
+	}
 	if RightOf(d1, d2) && RightOf(d2, d1) {
 		__node.Emit(MiniWave(&implMiniWave{dancer1: d1, dancer2: d2}))
 		return
@@ -91,6 +102,7 @@ func rule_MiniWave(p Pair) {
 }
 
 
+// FaceToFace represents two dancewrs that are facing each other.
 type FaceToFace interface {
 	Formation
 	FaceToFace()
@@ -101,13 +113,16 @@ type FaceToFace interface {
 func rule_FaceToFace(p Pair) {
 	d1 := p.Dancer1()
 	d2 := p.Dancer2()
-	// Need to test adjacency
+	if d1.Ordinal() >= d2.Ordinal() {
+		return
+	}
 	if InFrontOf(d1, d2) && InFrontOf(d2, d1) {
 		__node.Emit(FaceToFace(&implFaceToFace{dancer1: d1, dancer2: d2}))
 	}
 }
 
 
+// BackToBack represents two dancers with their backs to each other.
 type BackToBack interface {
 	Formation
 	BackToBack()
@@ -118,13 +133,17 @@ type BackToBack interface {
 func rule_BackToBack(p Pair) {
 	d1 := p.Dancer1()
 	d2 := p.Dancer2()
-	// Need to test adjacency
+	if d1.Ordinal() >= d2.Ordinal() {
+		return
+	}
 	if Behind(d1, d2) && Behind(d2, d1) {
 		__node.Emit(BackToBack(&implBackToBack{dancer1: d1, dancer2: d2}))
 	}
 }
 
 
+// Tandem represents two dancers facing the same direction with the Leader
+// in front of the Trailer.
 type Tandem interface {
 	Formation
 	Tandem()
@@ -132,10 +151,16 @@ type Tandem interface {
 	Trailer() dancer.Dancer
 }
 
+func (t *implTandem) Direction() geometry.Direction {
+	return t.Leader().Direction()
+}
+
 func rule_Tandem(p Pair) {
 	d1 := p.Dancer1()
 	d2 := p.Dancer2()
-	// Need to test adjacency
+	if !d1.Direction().Equal(d2.Direction()) {
+		return
+	}
 	if Behind(d1, d2) && InFrontOf(d2, d1) {
 		__node.Emit(Tandem(&implTandem{leader: d1, trailer: d2}))
 	}
