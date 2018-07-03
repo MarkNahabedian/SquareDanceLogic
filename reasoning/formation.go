@@ -14,3 +14,24 @@ type Formation interface {
 	HasDancer(dancer.Dancer) bool
 }
 
+// HasDancers returns true if f contains all of the specified Dancers.
+func HasDancers(f Formation, dancers ...dancer.Dancer) bool {
+	for _, d := range dancers {
+		if !f.HasDancer(d) {
+			return false
+		}
+	}
+	return true
+}
+
+// OrderedDancers returns true if all of the Dancers are in
+// ascending order by Ordinal.
+func OrderedDancers(dancers ...dancer.Dancer) bool {
+	for i := 0; i < len(dancers) - 1; i++ {
+		if dancers[i].Ordinal() >= dancers[i+1].Ordinal() {
+			return false
+		}
+	}
+	return true
+}
+
