@@ -1,21 +1,23 @@
 // Definitions and rules about all four dancer square dance formations.
 package reasoning
 
+import "squaredance/dancer"
+import "squaredance/geometry"
 
 type FacingCouples interface {
 	Formation
 	FacingCouples()
 	Couple1() Couple
 	Couple2() Couple
-	Facing1() FacingDancers  //redundant
-	Facing2() FacingDancers  //redundant
+	Facing1() FaceToFace  //redundant
+	Facing2() FaceToFace  //redundant
 }
 
-func rule_FacingCouples(couple1, couple2 Couple, facing1, facing2 FacingDancers) {
+func rule_FacingCouples(couple1, couple2 Couple, facing1, facing2 FaceToFace) {
 	if !OrderedDancers(couple1.Beau(), couple2.Beau()) {
 		return
 	}
-	// The same FacingDancers formation will come in as both facing1
+	// The same FaceToFace formation will come in as both facing1
 	// and facing2.  These will be de-duped based on their relationship to
 	// couple1 and couple2.
 	if !HasDancers(facing1, couple1.Beau(), couple2.Belle()) {
@@ -58,8 +60,8 @@ func rule_TandemCouples(couple1, couple2 Couple, tandem1, tandem2 Tandem) {
 	__node.Emit(TandemCouples(&implTandemCouples{
 		couple1: couple1,
 		couple2: couple2,
-		beautandem: tandem1,
-		belletandem: tandem2,
+		beaustandem: tandem1,
+		bellestandem: tandem2,
 	}))
 }
 
@@ -89,8 +91,8 @@ func rule_BackToBackCouples(couple1, couple2 Couple, bb1, bb2 BackToBack) {
 	__node.Emit(BackToBackCouples(&implBackToBackCouples{
 		couple1: couple1,
 		couple2: couple2,
-		backtoback11: bb1,
-		backtoback12: bb2,
+		backtoback1: bb1,
+		backtoback2: bb2,
 	}))
 }
 
@@ -98,15 +100,15 @@ func rule_BackToBackCouples(couple1, couple2 Couple, bb1, bb2 BackToBack) {
 type BoxOfFour interface {
 	Formation
 	BoxOfFour()
-	MiniWane1() MiniWave
-	MiniWane2() MiniWave
+	MiniWave1() MiniWave
+	MiniWave2() MiniWave
 	Tandem1() Tandem       //redundant
 	Tandem2() Tandem       //redundant
 }
 
 
 func rule_BoxOfFour(mw1, mw2 MiniWave, tandem1, tandem2 Tandem) {
-	if !tandem1.Direction().Opposite().Equal(t2.Direction()) {
+	if !tandem1.Direction().Opposite().Equal(tandem2.Direction()) {
 		return
 	}
 	if mw1.HasDancer(tandem1.Leader()) {
@@ -144,16 +146,17 @@ func rule_BoxOfFour(mw1, mw2 MiniWave, tandem1, tandem2 Tandem) {
 type Star interface {
 	Formation
 	Star()
-	MiniWane1() MiniWave
-	MiniWane2() MiniWave
+	MiniWave1() MiniWave
+	MiniWave2() MiniWave
 }
 
 func rule_Star(mw1, mw2 MiniWave) {
-	if !geometry.Center(mw1.Dancers()...).Equal(geometry.Center(mw2.Dancers()...)) {
+	if !geometry.Center(dancer.Positions(mw1.Dancers()...)...).Equal(
+			geometry.Center(dancer.Positions(mw2.Dancers()...)...)) {
 		return
 	}
-	dir := mw1.Dancer1().Direction().QuarterLeft
-	if !(dir().Equal(mw2.Dancer1().Direction()) ||
+	dir := mw1.Dancer1().Direction().QuarterLeft()
+	if !(dir.Equal(mw2.Dancer1().Direction()) ||
 		dir.Equal(mw2.Dancer2().Direction())) {
 		return
 	}
@@ -167,9 +170,9 @@ func rule_Star(mw1, mw2 MiniWave) {
 type LineOfFour interface {
 	Formation
 	LineOfFour()
-	LeftCouple()
-	CenterCouple()    // redudant
-	RightCouple()
+	LeftCouple() Couple
+	CenterCouple() Couple    // redudant
+	RightCouple() Couple
 }
 
 func rule_LineOfFour(c1, c2, c3 Couple) {
@@ -191,8 +194,8 @@ type WaveOfFour interface {
 	Formation
 	WaveOfFour()
 	CenterMiniWave() MiniWave    // redundant
-	MiniWave1()
-	MiniWave2()
+	MiniWave1() MiniWave
+	MiniWave2() MiniWave
 }
 
 func rule_WaveOfFour(mw1, mw2, mw3 MiniWave) {
@@ -216,9 +219,9 @@ func rule_WaveOfFour(mw1, mw2, mw3 MiniWave) {
 type TwoFacedLine interface {
 	Formation
 	TwoFacedLine()
-	Couple1()
-	Couple2()
-	CenterMiniWave()   // redundant
+	Couple1() Couple
+	Couple2() Couple
+	CenterMiniWave() MiniWave  // redundant
 }
 
 func rule_TwoFacedLine(c1, c2 Couple, mw MiniWave) {
