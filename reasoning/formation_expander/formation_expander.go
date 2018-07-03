@@ -11,6 +11,7 @@ type TwoFacedLine interface {
 	Couple1() Couple
 	Couple2() Couple
 	MiniWave() MiniWave   // redundant
+	Handedness() ...      // no-slot
 }
 
 we would generate the definition of the implementing struct
@@ -51,6 +52,15 @@ import "go/token"
 import "go/format"
 import "goshua/go_tools"
 
+
+// Any method of a Formation interface definition that has a comment
+// containing this keyword is not used to compute the Dancers of a formation.
+const Redundant string = "redundant"
+
+// This keyword in a Formation interface method comment indicates that
+// the struct that implements the interface should not define a slot
+// corresponding to this method.
+const NoSlot string = "no-slot"
 
 var Usage = func() {
 	fmt.Fprintf(os.Stderr, "Usage of %s:\n", os.Args[0])
@@ -118,7 +128,7 @@ func processFile(input_fileset *token.FileSet, filepath string) {
 	}
 	format.Node(out, output_fileset, newAstFile)
 	out.Close()
-	fmt.Printf("  Wrote %s", output_file)
+	fmt.Printf("  Wrote %s\n", output_file)
 }
 
 
@@ -202,9 +212,13 @@ func (fdef *formationDef) generate(output_fileset *token.FileSet) (decls []ast.D
 		new_field := &ast.Field {
 			Type: field_type,
 		}
+		noslot := commentHasKeyword(field.Comment, NoSlot)
 		for _, name := range field.Names {
 			field_name := strings.ToLower(name.Name)
 			new_field.Names = append(new_field.Names, ast.NewIdent(field_name))
+			if noslot {
+				continue
+			}
 			reader := parseDefinition(reader_method_template)
 			v := go_tools.NewSubstitutingVisitor()
 			v.Substitutions["STRUCT_TYPE"] = implName
@@ -213,11 +227,13 @@ func (fdef *formationDef) generate(output_fileset *token.FileSet) (decls []ast.D
 			v.Substitutions["FIELD_NAME"] = field_name
 			ast.Walk(v, reader)
 			decls = append(decls, reader.Decls...)
-			if !isRedundant(field.Comment) {
+			if !commentHasKeyword(field.Comment, Redundant) {
 				nonRedundant = append(nonRedundant, name.Name)
 			}
 		}
-		struct_type.Fields.List = append(struct_type.Fields.List, new_field)
+		if !noslot {
+			struct_type.Fields.List = append(struct_type.Fields.List, new_field)
+		}
 	}
 	// Formation methods
 	{
@@ -236,18 +252,18 @@ func (fdef *formationDef) generate(output_fileset *token.FileSet) (decls []ast.D
 	return decls
 }
 
-func isRedundant(comment_group *ast.CommentGroup) bool {
+
+func commentHasKeyword(comment_group *ast.CommentGroup, keyword string) bool {
 	if comment_group == nil {
 		return false
 	}
 	for _, c := range comment_group.List {
-		if strings.Contains(c.Text, "redundant") {
+		if strings.Contains(c.Text, keyword) {
 			return true
 		}
 	}
 	return false
 }
-
 
 func IsFormationDefinition(fset *token.FileSet, decl ast.Decl) (bool, *formationDef) {
 	gd, ok := decl.(*ast.GenDecl)
