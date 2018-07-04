@@ -177,7 +177,7 @@ func NewSquaredSet(couples int) Set {
 }
 
 
-// Positions 
+// Positions returns the Position of each Dancer
 func Positions(dancers ...Dancer) []geometry.Position {
 	length := len(dancers)
 	positions := make([]geometry.Position, length, length)
@@ -186,6 +186,46 @@ func Positions(dancers ...Dancer) []geometry.Position {
 	}
 	return positions
 }
+
+
+// Union returns the dancers that are present in any of the slices.
+func Union(dancerSets ...[]Dancer) []Dancer {
+	got := map[Dancer]bool{}
+	for _, set := range dancerSets {
+		for _, d := range set {
+	    	got[d] = true
+		}
+	}
+	result := []Dancer{}
+	for d, keep := range got {
+		if keep {
+			result = append(result, d)
+		}
+	}
+	return result
+}
+
+
+// SetDifference returns a slice of those Dancers that are in universe
+// but not in minus.
+func SetDifference(universe []Dancer, minus []Dancer) []Dancer {
+	skip := func(d Dancer) bool {
+		for _, d2 := range minus {
+			if d == d2 {
+				return true
+			}
+		}
+		return false
+	}
+	result := []Dancer{}
+	for _, d := range universe {
+		if !skip(d) {
+			result = append(result, d)
+		}
+	}
+	return result
+}
+
 
 // Dancer should implement the easonong.Formation interface:
 
