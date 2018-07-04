@@ -9,8 +9,29 @@ type FacingCouples interface {
 	FacingCouples()
 	Couple1() Couple
 	Couple2() Couple
-	Facing1() FaceToFace  //redundant
-	Facing2() FaceToFace  //redundant
+	Facing1() FaceToFace  // redundant
+	Facing2() FaceToFace  // redundant
+	// Roles:
+	Beaus() []dancer.Dancer    // no-slot
+	Belles() []dancer.Dancer   // no-slot
+	Leaders() []dancer.Dancer    // no-slot
+	Trailers() []dancer.Dancer    // no-slot
+}
+
+func (f *implFacingCouples) Beaus() []dancer.Dancer {
+	return dancer.Union(f.Couple1().Beaus(), f.Couple2().Beaus())
+}
+
+func (f *implFacingCouples) Belles() []dancer.Dancer {
+	return dancer.Union(f.Couple1().Belles(), f.Couple2().Belles())
+}
+
+func (f *implFacingCouples) Leaders() []dancer.Dancer {
+	return dancer.Union(f.Facing1().Leaders(), f.Facing2().Leaders())
+}
+
+func (f *implFacingCouples) Trailers() []dancer.Dancer {
+	return dancer.Union(f.Facing1().Trailers(), f.Facing2().Trailers())
 }
 
 func rule_FacingCouples(couple1, couple2 Couple, facing1, facing2 FaceToFace) {
@@ -40,8 +61,29 @@ type TandemCouples interface {
 	TandemCouples()
 	Couple1() Couple
 	Couple2() Couple
-	BeausTandem() Tandem   //redundant
-	BellesTandem() Tandem  //redundant
+	BeausTandem() Tandem   // redundant
+	BellesTandem() Tandem  // redundant
+	// Roles
+	Beaus() []dancer.Dancer       // no-slot
+	Belles() []dancer.Dancer      // no-slot
+	Leaders() []dancer.Dancer     // no-slot
+	Trailers()  []dancer.Dancer   // no-slot
+}
+
+func (f *implTandemCouples) Beaus() []dancer.Dancer {
+	return f.BeausTandem().Dancers()
+}
+
+func (f *implTandemCouples) Belles() []dancer.Dancer {
+	return f.BellesTandem().Dancers()
+}
+
+func (f *implTandemCouples) Leaders() []dancer.Dancer {
+	return dancer.Union(f.BeausTandem().Leaders(), f.BellesTandem().Leaders())
+}
+
+func (f *implTandemCouples) Trailers() []dancer.Dancer {
+	return dancer.Union(f.BeausTandem().Trailers(), f.BellesTandem().Trailers())
 }
 
 func rule_TandemCouples(couple1, couple2 Couple, tandem1, tandem2 Tandem) {
@@ -71,9 +113,31 @@ type BackToBackCouples interface {
 	BackToBackCouples()
 	Couple1() Couple
 	Couple2() Couple
-	BackToBack1() BackToBack  //redundant
-	BackToBack2() BackToBack  //redundant
+	BackToBack1() BackToBack  // redundant
+	BackToBack2() BackToBack  // redundant
+	// Roles:
+	Beaus() []dancer.Dancer     // no-slot
+	Belles() []dancer.Dancer    // no-slot
+	Leaders()[]dancer.Dancer    // no-slot
+	Trailers() []dancer.Dancer  // no-slot 
 }
+
+func (f *implBackToBackCouples) Beaus() []dancer.Dancer {
+	return dancer.Union(f.Couple1().Beaus(), f.Couple2().Beaus())
+}
+
+func (f *implBackToBackCouples) Belles() []dancer.Dancer {
+	return dancer.Union(f.Couple1().Belles(), f.Couple2().Belles())
+}
+
+func (f *implBackToBackCouples) Leaders () []dancer.Dancer {
+	return f.Dancers()
+}
+
+func (f *implBackToBackCouples) Trailers() []dancer.Dancer {
+	return []dancer.Dancer{}
+}
+
 
 func rule_BackToBackCouples(couple1, couple2 Couple, bb1, bb2 BackToBack) {
 	if !OrderedDancers(couple1.Beau(), couple2.Beau()) {
@@ -102,10 +166,36 @@ type BoxOfFour interface {
 	BoxOfFour()
 	MiniWave1() MiniWave
 	MiniWave2() MiniWave
-	Tandem1() Tandem       //redundant
-	Tandem2() Tandem       //redundant
+	Tandem1() Tandem       // redundant
+	Tandem2() Tandem       // redundant
+	// Handedness:
+	Handedness() Handedness      // no-slot
+	// Roles:
+	Beaus() []dancer.Dancer      // no-slot
+	Belles() []dancer.Dancer     // no-slot
+	Leaders() []dancer.Dancer    // no-slot
+	Trailers() []dancer.Dancer   // no-slot
 }
 
+func (f *implBoxOfFour) Handedness() Handedness {
+	return f.MiniWave1().Handedness()
+}
+
+func (f *implBoxOfFour) Beaus() []dancer.Dancer {
+	return dancer.Union(f.MiniWave1().Beaus(), f.MiniWave2().Beaus())
+}
+
+func (f *implBoxOfFour) Belles() []dancer.Dancer {
+	return dancer.Union(f.MiniWave1().Belles(), f.MiniWave2().Belles())
+}
+
+func (f *implBoxOfFour) Leaders() []dancer.Dancer {
+	return dancer.Union(f.Tandem1().Leaders(), f.Tandem2().Leaders())
+}
+
+func (f *implBoxOfFour) Trailers() []dancer.Dancer {
+	return dancer.Union(f.Tandem1().Trailers(), f.Tandem2().Trailers())
+}
 
 func rule_BoxOfFour(mw1, mw2 MiniWave, tandem1, tandem2 Tandem) {
 	if !tandem1.Direction().Opposite().Equal(tandem2.Direction()) {
@@ -148,6 +238,23 @@ type Star interface {
 	Star()
 	MiniWave1() MiniWave
 	MiniWave2() MiniWave
+	// Handedness:
+	Handedness() Handedness    // no-slot
+	// Roles:
+	Beaus() []dancer.Dancer    // no-slot
+	Belles() []dancer.Dancer   // no-slot
+}
+
+func (f *implStar) Handedness() Handedness {
+	return f.MiniWave1().Handedness()
+}
+
+func (f *implStar) Beaus() []dancer.Dancer {
+	return dancer.Union(f.MiniWave1().Beaus(), f.MiniWave2().Beaus())
+}
+
+func (f *implStar) Belles() []dancer.Dancer {
+	return dancer.Union(f.MiniWave1().Belles(), f.MiniWave2().Belles())
 }
 
 func rule_Star(mw1, mw2 MiniWave) {
@@ -173,6 +280,27 @@ type LineOfFour interface {
 	LeftCouple() Couple
 	CenterCouple() Couple    // redudant
 	RightCouple() Couple
+	// Roles:
+	Beaus() []dancer.Dancer    // no-slot
+	Belles() []dancer.Dancer   // no-slot
+	Centers() []dancer.Dancer  // no-slot
+	Ends() []dancer.Dancer     // no-slot
+}
+
+func (f *implLineOfFour) Beaus() []dancer.Dancer {
+	return dancer.Union(f.LeftCouple().Beaus(), f.RightCouple().Beaus())
+}
+
+func (f *implLineOfFour) Belles() []dancer.Dancer {
+	return dancer.Union(f.LeftCouple().Belles(), f.RightCouple().Belles())
+}
+
+func (f *implLineOfFour) Centers() []dancer.Dancer {
+	return f.CenterCouple().Dancers()
+}
+
+func (f *implLineOfFour) Ends() []dancer.Dancer {
+	return dancer.SetDifference(f.Dancers(), f.Centers())
 }
 
 func rule_LineOfFour(c1, c2, c3 Couple) {
@@ -196,6 +324,33 @@ type WaveOfFour interface {
 	CenterMiniWave() MiniWave    // redundant
 	MiniWave1() MiniWave
 	MiniWave2() MiniWave
+	// Handedness:
+	Handedness() Handedness      // no-slot
+	// Roles:
+	Beaus() []dancer.Dancer      // no-slots
+	Belles() []dancer.Dancer     // no-slots
+	Centers() []dancer.Dancer    // no-slots
+	Ends() []dancer.Dancer       // no-slots
+}
+
+func (f *implWaveOfFour) Handedness() Handedness {
+	return f.MiniWave1().Handedness()
+}
+
+func (f *implWaveOfFour) Beaus() []dancer.Dancer {
+	return dancer.Union(f.MiniWave1().Beaus(), f.MiniWave2().Beaus())
+}
+
+func (f *implWaveOfFour) Belles() []dancer.Dancer {
+	return dancer.Union(f.MiniWave1().Belles(), f.MiniWave2().Belles())
+}
+
+func (f *implWaveOfFour) Centers() []dancer.Dancer {
+	return f.CenterMiniWave().Dancers()
+}
+
+func (f *implWaveOfFour) Ends() []dancer.Dancer {
+	return dancer.SetDifference(f.Dancers(), f.Centers())
 }
 
 func rule_WaveOfFour(mw1, mw2, mw3 MiniWave) {
@@ -222,6 +377,33 @@ type TwoFacedLine interface {
 	Couple1() Couple
 	Couple2() Couple
 	CenterMiniWave() MiniWave  // redundant
+	// Handedness:
+	Handedness() Handedness    // no-slot
+	// Roles:
+	Beaus() []dancer.Dancer    // no-slots
+	Belles() []dancer.Dancer   // no-slots
+	Centers() []dancer.Dancer  // no-slots
+	Ends() []dancer.Dancer     // no-slots
+}
+
+func (f *implTwoFacedLine) Handedness() Handedness {
+	return f.CenterMiniWave().Handedness()
+}
+
+func (f *implTwoFacedLine) Beaus() []dancer.Dancer {
+	return dancer.Union(f.Couple1().Beaus(), f.Couple2().Beaus())
+}
+
+func (f *implTwoFacedLine) Belles() []dancer.Dancer {
+	return dancer.Union(f.Couple1().Belles(), f.Couple2().Belles())
+}
+
+func (f *implTwoFacedLine) Centers() []dancer.Dancer {
+	return f.CenterMiniWave().Dancers()
+}
+
+func (f *implTwoFacedLine) Ends() []dancer.Dancer {
+	return dancer.SetDifference(f.Dancers(), f.Centers())
 }
 
 func rule_TwoFacedLine(c1, c2 Couple, mw MiniWave) {
