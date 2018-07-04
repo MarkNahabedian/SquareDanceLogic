@@ -45,15 +45,15 @@ func (pr *protoRole) InterfaceName() string { return "Has" + pr.Name() }
 func (pr *protoRole) ImplementationTypeName() string { return pr.Name() }
 
 var roles []*protoRole = [] *protoRole {
-	&protoRole{name: "Beau"},
-	&protoRole{name: "Belle"},
-	&protoRole{name: "Center"},
-	&protoRole{name: "End"},
-	&protoRole{name: "Point"},
-	&protoRole{name: "Leader"},
-	&protoRole{name: "Trailer"},
-	&protoRole{name: "VeryCenter"},
-	&protoRole{name: "Outside"},
+	&protoRole{name: "Beaus"},
+	&protoRole{name: "Belles"},
+	&protoRole{name: "Centers"},
+	&protoRole{name: "Ends"},
+	&protoRole{name: "Points"},
+	&protoRole{name: "Leaders"},
+	&protoRole{name: "Trailers"},
+	&protoRole{name: "VeryCenters"},
+	&protoRole{name: "Outsides"},
 }
 
 const output_file string = "generated_roles.go"
