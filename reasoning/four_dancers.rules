@@ -1,6 +1,7 @@
 // Definitions and rules about all four dancer square dance formations.
 package reasoning
 
+import "fmt"
 import "squaredance/dancer"
 import "squaredance/geometry"
 
@@ -16,6 +17,10 @@ type FacingCouples interface {
 	Belles() dancer.Dancers   // no-slot
 	Leaders() dancer.Dancers    // no-slot
 	Trailers() dancer.Dancers    // no-slot
+}
+
+func (f *implFacingCouples) String() string {
+	return fmt.Sprintf("FacingCouples(%s, %s)", f.Couple1(), f.Couple2())
 }
 
 func (f *implFacingCouples) Beaus() dancer.Dancers {
@@ -70,6 +75,10 @@ type TandemCouples interface {
 	Trailers()  dancer.Dancers   // no-slot
 }
 
+func (f *implTandemCouples) String() string {
+	return fmt.Sprintf("TandemCouples(%s, %s)", f.Couple1(), f.Couple2())
+}
+
 func (f *implTandemCouples) Beaus() dancer.Dancers {
 	return f.BeausTandem().Dancers()
 }
@@ -120,6 +129,10 @@ type BackToBackCouples interface {
 	Belles() dancer.Dancers    // no-slot
 	Leaders()dancer.Dancers    // no-slot
 	Trailers() dancer.Dancers  // no-slot 
+}
+
+func (f *implBackToBackCouples) String() string {
+	return fmt.Sprintf("BackToBackCouples(%s, %s)", f.Couple1(), f.Couple2())
 }
 
 func (f *implBackToBackCouples) Beaus() dancer.Dancers {
@@ -175,6 +188,13 @@ type BoxOfFour interface {
 	Belles() dancer.Dancers     // no-slot
 	Leaders() dancer.Dancers    // no-slot
 	Trailers() dancer.Dancers   // no-slot
+}
+
+func (f *implBoxOfFour) String() string {
+	return fmt.Sprintf("BoxOfFour(%s, %s, %s, %s, %s)",
+		f.Handedness(),
+		f.Tandem1().Leader(), f.Tandem1().Trailer(),
+		f.Tandem2().Leader(), f.Tandem2().Trailer())
 }
 
 func (f *implBoxOfFour) Handedness() Handedness {
@@ -245,6 +265,15 @@ type Star interface {
 	Belles() dancer.Dancers   // no-slot
 }
 
+func (f *implStar) String() string {
+	return fmt.Sprintf("Star(%s, %s, %s, %s, %s)",
+		f.Handedness,
+		f.MiniWave1(),Dancer1(),
+		f.MiniWave2(),Dancer1(),
+		f.MiniWave1(),Dancer2(),
+		f.MiniWave2(),Dancer2())		
+}
+
 func (f *implStar) Handedness() Handedness {
 	return f.MiniWave1().Handedness()
 }
@@ -285,6 +314,14 @@ type LineOfFour interface {
 	Belles() dancer.Dancers   // no-slot
 	Centers() dancer.Dancers  // no-slot
 	Ends() dancer.Dancers     // no-slot
+}
+
+func (f *implLineOfFour) String() string {
+	return fmt.Sprintf("LineOfFour(%s, %s, %s, %s)",
+		f.LeftCouple().Beau(),
+		f.LeftCouple().Belle(),
+		f.RightCouple().Beau(),
+		f.RightCouple().Belle(),
 }
 
 func (f *implLineOfFour) Beaus() dancer.Dancers {
@@ -331,6 +368,15 @@ type WaveOfFour interface {
 	Belles() dancer.Dancers     // no-slots
 	Centers() dancer.Dancers    // no-slots
 	Ends() dancer.Dancers       // no-slots
+}
+
+func (f *implWaveOfFour) String() string {
+	return fmt.Sprintf("WaveOfFour(%s, %s, %s, %s, %s)",
+		f.Handedness(),
+		f.MiniWave1().Dancer1(),
+		f.MiniWave1().Dancer2(),
+		f.MiniWave2().Dancer1(),
+		f.MiniWave2().Dancer1())
 }
 
 func (f *implWaveOfFour) Handedness() Handedness {
@@ -386,6 +432,15 @@ type TwoFacedLine interface {
 	Ends() dancer.Dancers     // no-slots
 }
 
+func (f *implTwoFacedLine) String() string {
+	return fmt.SPrintf("TwoFacedLine(%s, %s, %s, %s, %s)",
+    	f.Handedness(),
+		f.Couple1().Neau(),
+		f.Couple1().Belle(),
+		f.Couple2().Neau(),
+		f.Couple2().Belle())
+}
+
 func (f *implTwoFacedLine) Handedness() Handedness {
 	return f.CenterMiniWave().Handedness()
 }
@@ -420,3 +475,6 @@ func rule_TwoFacedLine(c1, c2 Couple, mw MiniWave) {
 	}))
 }
 
+// Diamonds
+
+// Zs

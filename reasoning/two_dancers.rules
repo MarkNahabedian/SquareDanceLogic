@@ -1,6 +1,7 @@
 // Definitions and rules about all two dancer square dance formations.
 package reasoning
 
+import "fmt"
 import "squaredance/dancer"
 import "squaredance/geometry"
 
@@ -41,6 +42,10 @@ func (p *pair) Dancer2() dancer.Dancer {
 	return p.dancer2
 }
 
+func (p *pair) String() string {
+	return fmt.Sprintf("Pair(%s, %s)", p.dancer1, p.dancer2)
+}
+
 // rule_PairOfDancers groups each two Dancers pairwise.
 func rule_PairOfDancers(dancer1, dancer2 dancer.Dancer) {
 	// Note that for each pair of dancers we will create two Pair
@@ -65,6 +70,10 @@ type Couple interface {
 	// Roles:
 	Beaus() dancer.Dancers    // no-slot
 	Belles() dancer.Dancers   // no-slot
+}
+
+func (f *implCouple) String() string {
+	return fmt.Sprintf("Couple(%s, %s)", f.Beau(), f.Belle())
 }
 
 func (f *implCouple) Beaus() dancer.Dancers { return dancer.Dancers{ f.Beau() } }
@@ -93,6 +102,10 @@ type MiniWave interface{
 	// Roles
 	Beaus() dancer.Dancers   // no-slot
 	Belles() dancer.Dancers  // no-slot
+}
+
+func (mw *implMiniWave) String() string {
+	return fmt.Sprintf("MiniWave(%s, %s, %s)", mw.Dancer1(), mw.Dancer2(), mw.Handedness())
 }
 
 func (mw *implMiniWave) Handedness() Handedness {
@@ -157,6 +170,10 @@ type FaceToFace interface {
 	Trailers() dancer.Dancers   // no-slot
 }
 
+func (f *implFaceToFace) String() string {
+	return fmt.Sprintf("FaceToFace(%s, %s)", f.Dancer1(), f.Dancer2())
+}
+
 func (f *implFaceToFace) Leaders() dancer.Dancers {
 	return dancer.Dancers {}
 }
@@ -190,6 +207,10 @@ type BackToBack interface {
 	Leaders() dancer.Dancers   // no-slot
 }
 
+func (f *implBackToBack) String() string {
+	return fmt.Sprintf("BackToBack(%s, %s)", f.Dancer1(), f.Dancer2())
+}
+
 func (f *implBackToBack) Leaders() dancer.Dancers {
 	return dancer.Dancers {
 		f.Dancer1(),
@@ -220,6 +241,10 @@ type Tandem interface {
 	// Roles:
 	Leaders() dancer.Dancers   // no-slot
 	Trailers() dancer.Dancers   // no-slot
+}
+
+func (f *implTandem) String() string {
+	return fmt.Sprintf("Tandem(%s, %s)", f.Leader(), f.Trailer())
 }
 
 func (f *implTandem) Leaders() dancer.Dancers {

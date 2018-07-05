@@ -11,13 +11,22 @@ const (
 	LeftHanded
 )
 
+func (h Handedness) String() string {
+	switch h {
+		case NoHanded: return "NoHanded"
+		case RightHanded: return "RightHanded"
+		case LeftHanded: return "LeftHanded"
+	}
+	panic("Unsupported handedness")
+}
+
 func (h Handedness) Opposite() Handedness {
 	switch h {
 		case NoHanded:		return NoHanded
 		case RightHanded:	return LeftHanded
 		case LeftHanded:	return RightHanded
 	}
-	return NoHanded
+	panic("Unsupported handedness")
 }
 
 type HasHandedness interface {
