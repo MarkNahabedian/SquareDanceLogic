@@ -61,9 +61,11 @@ type Dancer interface{
 	Move(geometry.Position, geometry.Direction) Dancer
 	// A single dancer is still a formation so it implements the Formation interface
 	NumberOfDancers() int
-	Dancers() []Dancer
+	Dancers() Dancers
 	HasDancer(Dancer) bool
 }
+
+type Dancers []Dancer
 
 type dancer struct {
 	// The set of dancers that this dancer is dancing with.
@@ -117,20 +119,20 @@ func (d1 *dancer) GoshuaEqual(d2 interface{}) (bool, error) {
 
 type Set interface {
 	FlagpoleCenter() geometry.Position
-	Dancers()        []Dancer
+	Dancers()        Dancers
 
 }
 
 type set struct {
 	flagpoleCenter geometry.Position
-	dancers        []Dancer
+	dancers        Dancers
 }
 
 func (s *set) FlagpoleCenter() geometry.Position {
 	return s.flagpoleCenter
 }
 
-func (s *set) Dancers() []Dancer {
+func (s *set) Dancers() Dancers {
 	return s.dancers
 }
 
@@ -139,7 +141,7 @@ func NewSquaredSet(couples int) Set {
 	circleFraction := geometry.FullCircle.DivideBy(float64(couples))
 	s := set{
 		flagpoleCenter: geometry.NewPositionDownLeft(0, 0),
-		dancers:        make([]Dancer, couples*2),
+		dancers:        make(Dancers, couples*2),
 	}
 	for couple := 0; couple < couples; couple++ {
 		facing := circleFraction.MultiplyBy(float64(couple))
@@ -189,14 +191,14 @@ func Positions(dancers ...Dancer) []geometry.Position {
 
 
 // Union returns the dancers that are present in any of the slices.
-func Union(dancerSets ...[]Dancer) []Dancer {
+func Union(dancerSets ...Dancers) Dancers {
 	got := map[Dancer]bool{}
 	for _, set := range dancerSets {
 		for _, d := range set {
 	    	got[d] = true
 		}
 	}
-	result := []Dancer{}
+	result := Dancers{}
 	for d, keep := range got {
 		if keep {
 			result = append(result, d)
@@ -208,7 +210,7 @@ func Union(dancerSets ...[]Dancer) []Dancer {
 
 // SetDifference returns a slice of those Dancers that are in universe
 // but not in minus.
-func SetDifference(universe []Dancer, minus []Dancer) []Dancer {
+func SetDifference(universe Dancers, minus Dancers) Dancers {
 	skip := func(d Dancer) bool {
 		for _, d2 := range minus {
 			if d == d2 {
@@ -217,7 +219,7 @@ func SetDifference(universe []Dancer, minus []Dancer) []Dancer {
 		}
 		return false
 	}
-	result := []Dancer{}
+	result := Dancers{}
 	for _, d := range universe {
 		if !skip(d) {
 			result = append(result, d)
@@ -227,20 +229,42 @@ func SetDifference(universe []Dancer, minus []Dancer) []Dancer {
 }
 
 
-// Dancer should implement the easonong.Formation interface:
+// Since a single dancer can be considered a Formation, Dancer should
+// implement the reasoning.Formation interface:
 
 // NumberOfDancers is part of the reasoning.Formation interface.
 func (d *dancer) NumberOfDancers() int { return 1 }
 
 // Dancers is part of the reasoning.Formation interface.
-func (d *dancer) Dancers() []Dancer {
-	return []Dancer { d }
+func (d *dancer) Dancers() Dancers {
+	return Dancers { d }
 }
 
 // HasDancer is part of the reasoning.Formation interface.
 func (d *dancer) HasDancer(d2 Dancer) bool {
 	if d2, ok := d2.(*dancer); ok {
 		return d == d2
+	}
+	return false
+}
+
+
+// It's convenient to have Dancers implement the Formation interface too.
+
+// NumberOfDancers is part of the reasoning.Formation interface.
+func (f Dancers) NumberOfDancers() int { return len(f) }
+
+// Dancers is part of the reasoning.Formation interface.
+func (f Dancers) Dancers() Dancers {
+	return f
+}
+
+// HasDancer is part of the reasoning.Formation interface.
+func (f Dancers) HasDancer(d2 Dancer) bool {
+	for _, d := range f {
+		if d == d2 {
+			return true
+		}
 	}
 	return false
 }

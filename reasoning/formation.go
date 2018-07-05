@@ -9,7 +9,7 @@ type Formation interface {
 	NumberOfDancers() int
 
 	// Dancers returns a slice containing the Dancers in the Formation.
-	Dancers() []dancer.Dancer
+	Dancers() dancer.Dancers
 
 	// HasDancer returns true of the specified Dancer is in the Formation.
 	HasDancer(dancer.Dancer) bool

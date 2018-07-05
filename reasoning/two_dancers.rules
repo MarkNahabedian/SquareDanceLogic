@@ -63,12 +63,12 @@ type Couple interface {
 	Beau() dancer.Dancer
 	Belle() dancer.Dancer
 	// Roles:
-	Beaus() []dancer.Dancer    // no-slot
-	Belles() []dancer.Dancer   // no-slot
+	Beaus() dancer.Dancers    // no-slot
+	Belles() dancer.Dancers   // no-slot
 }
 
-func (f *implCouple) Beaus() []dancer.Dancer { return []dancer.Dancer{ f.Beau() } }
-func (f *implCouple) Belles() []dancer.Dancer { return []dancer.Dancer{ f.Belle() } }
+func (f *implCouple) Beaus() dancer.Dancers { return dancer.Dancers{ f.Beau() } }
+func (f *implCouple) Belles() dancer.Dancers { return dancer.Dancers{ f.Belle() } }
 
 func rule_GeneralizedCouple(p Pair) {
 	d1 := p.Dancer1()
@@ -91,8 +91,8 @@ type MiniWave interface{
     // Handedness
 	Handedness() Handedness   // no-slot
 	// Roles
-	Beaus() []dancer.Dancer   // no-slot
-	Belles() []dancer.Dancer  // no-slot
+	Beaus() dancer.Dancers   // no-slot
+	Belles() dancer.Dancers  // no-slot
 }
 
 func (mw *implMiniWave) Handedness() Handedness {
@@ -102,26 +102,26 @@ func (mw *implMiniWave) Handedness() Handedness {
 	return LeftHanded
 }
 
-func (mw *implMiniWave) Beaus() []dancer.Dancer {
+func (mw *implMiniWave) Beaus() dancer.Dancers {
 	switch mw.Handedness() {
 		case RightHanded:
-			return []dancer.Dancer{
+			return dancer.Dancers{
 				mw.Dancer1(), 
 				mw.Dancer2(), 
 			}
 		case LeftHanded:
-			return []dancer.Dancer{}
+			return dancer.Dancers{}
 		default:
 			panic("MiniWave is neither right nor left handed.")
 	}
 }
 
-func (mw *implMiniWave) Belles() []dancer.Dancer {
+func (mw *implMiniWave) Belles() dancer.Dancers {
 	switch mw.Handedness() {
 		case RightHanded:
-			return []dancer.Dancer{}
+			return dancer.Dancers{}
 		case LeftHanded:
-			return []dancer.Dancer{
+			return dancer.Dancers{
 				mw.Dancer1(), 
 				mw.Dancer2(), 
 			}
@@ -153,16 +153,16 @@ type FaceToFace interface {
 	Dancer1() dancer.Dancer
 	Dancer2() dancer.Dancer
 	// Roles
-	Leaders() []dancer.Dancer    // no-slot
-	Trailers() []dancer.Dancer   // no-slot
+	Leaders() dancer.Dancers    // no-slot
+	Trailers() dancer.Dancers   // no-slot
 }
 
-func (f *implFaceToFace) Leaders() []dancer.Dancer {
-	return []dancer.Dancer {}
+func (f *implFaceToFace) Leaders() dancer.Dancers {
+	return dancer.Dancers {}
 }
 
-func (f *implFaceToFace) Trailers() []dancer.Dancer {
-	return []dancer.Dancer {
+func (f *implFaceToFace) Trailers() dancer.Dancers {
+	return dancer.Dancers {
 		f.Dancer1(),
 		f.Dancer2(),
 	}
@@ -187,11 +187,11 @@ type BackToBack interface {
 	Dancer1() dancer.Dancer
 	Dancer2() dancer.Dancer
 	// Roles:
-	Leaders() []dancer.Dancer   // no-slot
+	Leaders() dancer.Dancers   // no-slot
 }
 
-func (f *implBackToBack) Leaders() []dancer.Dancer {
-	return []dancer.Dancer {
+func (f *implBackToBack) Leaders() dancer.Dancers {
+	return dancer.Dancers {
 		f.Dancer1(),
 		f.Dancer2(),
 	}
@@ -218,16 +218,16 @@ type Tandem interface {
 	Trailer() dancer.Dancer
 	Direction() geometry.Direction  // no-slot
 	// Roles:
-	Leaders() []dancer.Dancer   // no-slot
-	Trailers() []dancer.Dancer   // no-slot
+	Leaders() dancer.Dancers   // no-slot
+	Trailers() dancer.Dancers   // no-slot
 }
 
-func (f *implTandem) Leaders() []dancer.Dancer {
-	return []dancer.Dancer{ f.Leader() }
+func (f *implTandem) Leaders() dancer.Dancers {
+	return dancer.Dancers{ f.Leader() }
 }
 
-func (f *implTandem) Trailers() []dancer.Dancer {
-	return []dancer.Dancer{ f.Trailer() }
+func (f *implTandem) Trailers() dancer.Dancers {
+	return dancer.Dancers{ f.Trailer() }
 }
 
 func rule_Tandem(p Pair) {

@@ -33,7 +33,7 @@ func (f *implTwoFacedLine) MiniWave() Couple { return f.miniwave }
 We also define the methods of the Formation interface itself:
 
 func (f *implTwoFacedLine) NumberOfDancers() int { ... }
-func (f *implTwoFacedLine) Dancers() []dancer.Dancer { ... }
+func (f *implTwoFacedLine) Dancers() dancer.Dancers { ... }
 func (f *implTwoFacedLine) HasDancer(d dancer.Dancer) bool { ... }
 
 */
@@ -165,8 +165,8 @@ func (f * STRUCT_TYPE) NumberOfDancers() int {
 	return count
 }
 
-func (f * STRUCT_TYPE) Dancers() []dancer.Dancer {
-	dancers := []dancer.Dancer {}
+func (f * STRUCT_TYPE) Dancers() dancer.Dancers {
+	dancers := dancer.Dancers {}
 	for _, f := range f.nonRedundant() {
 		dancers = append(dancers, f.Dancers()...) 
 	}
