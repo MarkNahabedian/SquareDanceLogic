@@ -1,5 +1,6 @@
 package dancer
 
+import "reflect"
 import "testing"
 import "goshua/goshua"
 import "goshua/equality"
@@ -39,5 +40,38 @@ func TestSquaredSet(t *testing.T) {
 			t.Errorf("Directions don't match: %d:\n  %v\n  %v", i, dancer, partner)
 		}
 
+	}
+}
+
+func TestUnion(t *testing.T) {
+	s := NewSquaredSet(4)
+	dancers1 := s.Dancers()[1:4]
+	dancers2 := s.Dancers()[2:6]
+	got := Union(dancers1, dancers2).Ordered()
+	if want := s.Dancers()[1:6].Ordered(); !reflect.DeepEqual(got, want) {
+		t.Errorf("Union failed: want: %s, got: %s",
+			want.String(), got.String())
+	}
+}
+
+func TestIntersection(t *testing.T) {
+	s := NewSquaredSet(4)
+	dancers1 := s.Dancers()[1:4]
+	dancers2 := s.Dancers()[2:6]
+	got := Intersection(dancers1, dancers2).Ordered()
+	if want := s.Dancers()[2:4].Ordered(); !reflect.DeepEqual(got, want) {
+		t.Errorf("Intersection failed: want: %s, got: %s",
+			want.String(), got.String())
+	}
+}
+
+func TestSetDifference(t *testing.T) {
+	s := NewSquaredSet(4)
+	dancers1 := s.Dancers()[1:4]
+	dancers2 := s.Dancers()[3:6]
+	got := SetDifference(dancers1, dancers2).Ordered()
+	if want := s.Dancers()[1:3].Ordered(); !reflect.DeepEqual(got, want) {
+		t.Errorf("Intersection failed: want: %s, got: %s",
+			want.String(), got.String())
 	}
 }

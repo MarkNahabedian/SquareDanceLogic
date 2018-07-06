@@ -2,7 +2,9 @@
 // dance in.
 package dancer
 
+import "bytes"
 import "fmt"
+import "sort"
 import "squaredance/geometry"
 
 // Gender represents the gender of a square dancer.
@@ -49,6 +51,7 @@ func (g Gender) Opposite() Gender {
 }
 
 type Dancer interface{
+	String() string
 	IsDancer() bool
 	Set() Set
 	CoupleNumber() int
@@ -67,6 +70,40 @@ type Dancer interface{
 
 type Dancers []Dancer
 
+func (ds Dancers) String() string {
+	buf := bytes.NewBufferString("")
+	first := true
+	for _, d := range ds {
+		buf.WriteString(d.String())
+		if !first {
+			buf.WriteString(", ")
+		} else {
+			first = false
+		}
+	}
+	return buf.String()
+}
+
+// Enable sorting by ordinal"
+
+func (ds Dancers) Len() int { return len(ds) }
+
+func (ds Dancers) Swap(i, j int) {
+	ds[i], ds[j] = ds[j], ds[i]
+}
+
+func (ds Dancers) Less(i, j int) bool {
+	return ds[i].Ordinal() < ds[j].Ordinal()
+}
+
+// Ordered sorts the dancers by their Ordinals.  Dancers is modified
+// to reflect that ordering.
+func (ds Dancers) Ordered() Dancers {
+	sort.Sort(ds)
+	return ds
+}
+
+
 type dancer struct {
 	// The set of dancers that this dancer is dancing with.
 	set          Set
@@ -81,6 +118,9 @@ type dancer struct {
 
 
 func (d *dancer) String() string {
+	if d.CoupleNumber() <= 0 || d.Gender() == Unspecified {
+		return fmt.Sprintf("Dancer_%d", d.Ordinal())
+	}
 	return fmt.Sprintf("Dancer_%d%s", d.CoupleNumber(), d.Gender())
 }
 
@@ -203,6 +243,37 @@ func Union(dancerSets ...Dancers) Dancers {
 		if keep {
 			result = append(result, d)
 		}
+	}
+	return result
+}
+
+
+// Intersection returns the Dancers that are present in all of the slices.
+func Intersection(dancerSets ...Dancers) Dancers {
+	attendance := make(map[Dancer] []bool)
+	get := func (d Dancer) []bool {
+		b, found := attendance[d]
+		if found {
+			return b
+		}
+		b = make([]bool, len(dancerSets), len(dancerSets))
+		attendance[d] = b
+		return b
+	}
+	for i, s := range dancerSets {
+		for _, d := range s {
+			get(d)[i] = true
+		}
+	}
+	result := Dancers{}
+	for d, b := range attendance {
+		for i := 0; i < len(b); i++ {
+			if !b[i] {
+				goto skip
+			}
+		}
+		result = append(result, d)
+		skip:
 	}
 	return result
 }
