@@ -267,11 +267,11 @@ type Star interface {
 
 func (f *implStar) String() string {
 	return fmt.Sprintf("Star(%s, %s, %s, %s, %s)",
-		f.Handedness,
-		f.MiniWave1(),Dancer1(),
-		f.MiniWave2(),Dancer1(),
-		f.MiniWave1(),Dancer2(),
-		f.MiniWave2(),Dancer2())		
+		f.Handedness(),
+		f.MiniWave1().Dancer1(),
+		f.MiniWave2().Dancer1(),
+		f.MiniWave1().Dancer2(),
+		f.MiniWave2().Dancer2())		
 }
 
 func (f *implStar) Handedness() Handedness {
@@ -321,7 +321,7 @@ func (f *implLineOfFour) String() string {
 		f.LeftCouple().Beau(),
 		f.LeftCouple().Belle(),
 		f.RightCouple().Beau(),
-		f.RightCouple().Belle(),
+		f.RightCouple().Belle())
 }
 
 func (f *implLineOfFour) Beaus() dancer.Dancers {
@@ -433,11 +433,11 @@ type TwoFacedLine interface {
 }
 
 func (f *implTwoFacedLine) String() string {
-	return fmt.SPrintf("TwoFacedLine(%s, %s, %s, %s, %s)",
+	return fmt.Sprintf("TwoFacedLine(%s, %s, %s, %s, %s)",
     	f.Handedness(),
-		f.Couple1().Neau(),
+		f.Couple1().Beau(),
 		f.Couple1().Belle(),
-		f.Couple2().Neau(),
+		f.Couple2().Beau(),
 		f.Couple2().Belle())
 }
 
