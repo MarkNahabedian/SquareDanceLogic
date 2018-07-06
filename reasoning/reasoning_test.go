@@ -59,6 +59,13 @@ func TestShowFullRete(t *testing.T) {
 }
 
 
+func TestAllFormations (t *testing.T) {
+	for name, typ := range AllFormationTypes {
+		t.Logf("%s\t  %v", name, typ)
+	}
+	t.Errorf("foo")
+}
+
 func TestCouple(t *testing.T) {
 	root_node := rete.MakeRootNode()
 	loadAllRules(root_node)

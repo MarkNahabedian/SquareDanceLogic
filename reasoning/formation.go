@@ -1,5 +1,6 @@
 package reasoning
 
+import "reflect"
 import "squaredance/dancer"
 import "squaredance/geometry"
 
@@ -14,6 +15,8 @@ type Formation interface {
 	// HasDancer returns true of the specified Dancer is in the Formation.
 	HasDancer(dancer.Dancer) bool
 }
+
+var AllFormationTypes map[string] reflect.Type = make(map[string] reflect.Type)
 
 // HasDancers returns true if f contains all of the specified Dancers.
 func HasDancers(f Formation, dancers ...dancer.Dancer) bool {
