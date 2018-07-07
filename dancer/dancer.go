@@ -7,6 +7,7 @@ import "fmt"
 import "sort"
 import "squaredance/geometry"
 
+
 // Gender represents the gender of a square dancer.
 type Gender int
 
@@ -216,6 +217,20 @@ func NewSquaredSet(couples int) Set {
 		dancer.SetOriginalPartner(s.dancers[index^1])
 	}
 	return &s
+}
+
+// MakeSomeDancers returns the specified number of Gender neutral Dancers.
+func MakeSomeDancers(count int) Dancers {
+	dancers := Dancers{}
+	for ordinal := 0; ordinal < count; ordinal++ {
+		dancers = append(dancers,&dancer{
+			set:          nil,
+			ordinal:      ordinal,
+			gender:       Unspecified,
+			coupleNumber: -1,
+		})
+	}
+	return dancers
 }
 
 
