@@ -32,3 +32,21 @@ func TestQuarterRight(t *testing.T) {
 	}
 }
 
+func TestQuarterLeft(t *testing.T) {
+	dancers := loneTestDancer()
+	dancer := dancers[0]
+	p := dancer.Position()
+	d := dancer.Direction()
+	fa := FindAction("QuarterLeft").GetFormationActionFor(dancer)
+	if fa == nil {
+		t.Fatalf("GetFormationActionFor returned nil")
+	}
+	fa.DoIt(dancer)
+	if !p.Equal(dancer.Position()) {
+		t.Errorf("Position changed during QuarterLeft")
+	}
+	if want, got := d.QuarterLeft(), dancer.Direction(); !want.Equal(got) {
+		t.Errorf("Wrong direction, want: %#v, got %#v", want, got)
+	}
+}
+
