@@ -18,6 +18,17 @@ type Formation interface {
 
 var AllFormationTypes map[string] reflect.Type = make(map[string] reflect.Type)
 
+func init() {
+	// Fudge the AllFormationTypes entries for Formations that aren't
+	// automatically expanced.
+	f1 := func(f dancer.Dancer) {}
+	t1 := reflect.TypeOf(f1).In(0)
+	AllFormationTypes[t1.Name()] = t1
+	f2 := func(f dancer.Dancers) {}
+	t2 := reflect.TypeOf(f2).In(0)
+	AllFormationTypes[t2.Name()] = t2
+}
+
 // HasDancers returns true if f contains all of the specified Dancers.
 func HasDancers(f Formation, dancers ...dancer.Dancer) bool {
 	for _, d := range dancers {
