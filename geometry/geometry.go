@@ -30,6 +30,8 @@ import "math"
 // that of couple number three: 0.5, and that of couple number four: 0.75.
 type Direction float64
 
+var Direction0 Direction = 0
+
 // FullCircle is a change in Direction of 1.0.
 const FullCircle Direction = 1.0
 
