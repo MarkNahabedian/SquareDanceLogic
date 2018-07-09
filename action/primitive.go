@@ -59,7 +59,7 @@ func init() {
 				geometry.CoupleDistance / 2
 			update := func(d dancer.Dancer) {
 				dir := d.Position().Direction(center)
-				_ = d.Move(geometry.NewPosition(dir, distance), dir)
+				_ = d.Move(d.Position().Add(geometry.NewPosition(dir, distance)), d.Direction())
 			}
 			update(dancers[0])
 			update(dancers[1])
