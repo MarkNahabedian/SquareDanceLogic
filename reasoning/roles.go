@@ -1,3 +1,4 @@
+
 package reasoning
 
 import "squaredance/geometry"
@@ -54,14 +55,16 @@ func init() {
 			name: "OriginalHeads",
 			filter: func(d dancer.Dancer) bool {
 				cn := d.CoupleNumber()
-				return cn & 1 == 1
+				if cn <= 0 { return false }
+				return (cn & 1) == 1
 			},
 		},
 		&ubiquitousRole {
 			name: "OriginalSides",
 			filter: func(d dancer.Dancer) bool {
 				cn := d.CoupleNumber()
-				return cn & 1 == 0
+				if cn <= 0 { return false }
+				return (cn & 1) == 0
 			},
 		},
 		&ubiquitousRole {
