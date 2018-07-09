@@ -55,8 +55,13 @@ type Dancer interface{
 	String() string
 	IsDancer() bool
 	Set() Set
+	// Couple numbers atart at 1 for the #1 head couple (facing down
+	// the hall). CoupleNumber is only meaningful for Dancers that
+	// started in a squared set.  CoupleNumber <= 0 are invalid.
 	CoupleNumber() int
 	Gender() Gender
+	// Each Dancer in a set has a unique Ordinal.  Ordinal is used to
+	// avoid duplicating symetric Formations.
 	Ordinal() int
 	Position() geometry.Position
 	Direction() geometry.Direction
