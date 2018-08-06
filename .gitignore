@@ -1,0 +1,4 @@
+*.dot
+reasoning/generate_roles.exe
+reasoning/generated_roles.go
+reasoning/impl_*.go
