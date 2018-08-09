@@ -14,3 +14,25 @@ go build squaredance/reasoning/generate_roles
 Each of the files with a ".rules" extension must be processed by the
 rule compiler at goshua/rete/rule_compiler.  It will output one ".go"
 file for each ".rules" file.
+
+If the rule compiler is not already built you'll need to
+<pre>
+go install goshua/rete/rule_compiler
+rule_compiler set.rules two_dancers.rules 
+</pre>
+
+
+Much of the code that defines each formation is automatically
+generated from that formation's interface definition>
+
+<pre>
+go build squaredance/reasoning/formation_expander
+formation_expander.exe two_dancers.go
+</pre>
+
+<b>All of these steps</b> (except for installing the rule compiler)
+are automated in make.go, so all you should need to do is
+
+<pre>
+go generate make.go
+</pre>
