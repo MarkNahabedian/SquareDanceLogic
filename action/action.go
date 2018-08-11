@@ -36,6 +36,13 @@ func LookupFormationType(name string) FormationType {
 }
 
 
+// Action represents some snipet of square dance choreography -- the
+// simplest action a Dancer or Formation of Dancers can perform.  We
+// use them as primitive choreography when defining how a square dance
+// call should be interpreted.
+// How an action is performed might depend on the starting formation.
+// Each Action maps a Formation to a FormationAction which represents
+// the details of how the action should be performed from that Formation.
 type Action interface {
 	Name() string
 	Description() string
@@ -107,6 +114,8 @@ func defineAction(name string, description string) {
 }
 
 
+// FormationAction represents how an Action should be performed from a
+// specific Formation.
 type FormationAction interface {
 	Action() Action
 	FormationType() FormationType
