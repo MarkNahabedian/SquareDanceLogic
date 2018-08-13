@@ -72,7 +72,8 @@ func (a *implAction) GetFormationAction(ft FormationType) FormationAction {
 func (a *implAction) GetFormationActionFor(f reasoning.Formation) FormationAction {
 	t := reflect.TypeOf(f)
 	for _, fa := range a.formationActions {
-		if t.Implements(fa.FormationType()) {
+		if t.AssignableTo(fa.FormationType()) {
+			fmt.Printf("GetFormationActionFor matched %v %v\n", t, fa.FormationType())
 			return fa
 		}
 	}
@@ -139,7 +140,7 @@ func (fa *implFormationAction) String() string {
 }
 
 func (fa *implFormationAction) ApplicableToFormationType(ft FormationType) bool {
-	return ft.Implements(fa.formationType)
+	return ft.AssignableTo(fa.formationType)
 }
 
 func (fa *implFormationAction) ApplicableTo(f reasoning.Formation) bool {

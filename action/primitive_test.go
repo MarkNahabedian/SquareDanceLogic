@@ -72,6 +72,32 @@ func TestAboutFace(t *testing.T) {
 	}
 }
 
+
+func get_formation(dancers dancer.Dancers, formation_name string) []reasoning.Formation {
+	root_node := rete.MakeRootNode()
+	for _, rule := range runtime.AllRules {
+		rule.Inserter()(root_node)
+	}
+	result := []reasoning.Formation{}
+	rete.Walk(root_node, func(n rete.Node) {
+		ttn, ok := n.(*rete.TypeTestNode)
+		if !ok {
+			return
+		}
+		if ttn.TypeName() != formation_name {
+			return
+		}
+		rete.Connect(n, rete.MakeActionNode(func(item interface{}) {
+			result = append(result, item.(reasoning.Formation))
+		}))
+	})
+	for _, d := range dancers {
+		root_node.Receive(d)
+	}
+	return result
+}
+
+
 func TestMeet(t *testing.T) {
 	set := dancer.NewSquaredSet(4)
 	tl := timeline.NewTimeline(set.Dancers())
@@ -127,3 +153,53 @@ func TestMeet(t *testing.T) {
 		}
 	}
 }
+
+func face_to_face() reasoning.Formation {
+	dancers := dancer.MakeSomeDancers(2)
+	dancers[0].Move(geometry.Position{ Left: geometry.Left0, Down: geometry.Down0},
+		geometry.Direction0)
+	dancers[1].Move(geometry.Position{Left: geometry.Left0, Down: geometry.Down1},
+		geometry.FullCircle / 2)
+	r := get_formation(dancers, "FaceToFace")
+	return r[0]
+}
+
+func back_to_back() reasoning.Formation {
+	dancers := dancer.MakeSomeDancers(2)
+	dancers[0].Move(geometry.Position{ Left: geometry.Left0, Down: geometry.Down0},
+		geometry.FullCircle / 2)
+	dancers[1].Move(geometry.Position{Left: geometry.Left0, Down: geometry.Down1},
+		geometry.Direction0)
+	r := get_formation(dancers, "BackToBack")
+	return r[0]
+}
+
+/*
+func TestForwardLeft(t *testing.T) {
+	// Start with FaceToFace dancers.  End in RightHand MiniWave
+	dancers := face_to_face()
+	tl := timeline.NewTimeline(dancers.Dancers())
+	tl.MakeSnapshot(0)
+	fa := FindAction("AboutFace").GetFormationActionFor(dancers)
+	fa.DoIt(dancers)
+	tl.MakeSnapshot(1)
+	dancers2 := get_formation(dancers.Dancers(), "MiniWave")
+	if want, got := 1, len(dancers2); got != want {
+		t.Errorf("Wri=on number of MiniWaves: got %d, want %d.", got, want)
+		return
+	}
+	mw := dancers2[0]
+	if want, got := reasoning.RightHanded, mw.(reasoning.MiniWave).Handedness(); got != want {
+		t.Errorf("Wrong handedness: want %v, got %v.", want, got)
+	}
+}
+*/
+
+// "ForwardRight"
+
+// "BackwardLeft"
+
+// BackwardRight
+
+// "BackToFace"
+
