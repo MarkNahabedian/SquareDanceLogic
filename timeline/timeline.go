@@ -1,6 +1,7 @@
 // Package timeline records Dancer position and direction over time.
 package timeline
 
+import "fmt"
 import "squaredance/geometry"
 import "squaredance/dancer"
 
@@ -38,8 +39,9 @@ func (ds *implDancerSnapshot) Direction() geometry.Direction { return ds.directi
 type Timeline interface {
 	Timeline()
 	Dancers() dancer.Dancers
-	MostRecent() Time
+	MostRecent() Time    // The most recent time recorded in the Timeline. 
 	FindSnapshot(dancer.Dancer, Time) DancerSnapshot
+	FindSnapshots(dancer dancer.Dancer, start, end Time) []DancerSnapshot
 	MakeSnapshot(Time)
 }
 
@@ -62,6 +64,16 @@ func (tl *implTimeline) FindSnapshot(d dancer.Dancer, time Time) DancerSnapshot 
 		}
 	}
 	return nil
+}
+
+func (tl *implTimeline) FindSnapshots(d dancer.Dancer, start, end Time) []DancerSnapshot {
+	found := []DancerSnapshot{}
+	for _, s := range tl.snapshots {
+		if d == s.Dancer() && start <= s.Time() && s.Time() < end {
+			found = append(found, s)
+		}
+	}
+	return found
 }
 
 // MakeSnapshot records DancerSnapshots for the tracked dancers
@@ -90,3 +102,16 @@ func NewTimeline(dancers dancer.Dancers) Timeline {
 		snapshots: []DancerSnapshot{},
 	}
 }
+
+
+// ShowHistory writes the position and directiion of each Dancer
+// over time to standard output.
+func ShowHistory(tl Timeline) {
+	for _, d := range tl.Dancers() {
+		fmt.Printf("\nDancer %s\n", d)
+		for _, s := range tl.FindSnapshots(d, -1, tl.MostRecent() + 1) {
+			fmt.Printf("    %3d  %s  %s\n", s.Time(), s.Position(), s.Direction())
+		}
+	}
+}
+
