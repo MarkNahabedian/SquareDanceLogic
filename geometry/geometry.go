@@ -13,6 +13,7 @@
 // and Y axis of a normal right handed cartesean plane.
 package geometry
 
+import "fmt"
 import "math"
 
 // Direction is how angles are measured in our coordinate system.  It
@@ -29,6 +30,10 @@ import "math"
 // In a squared set, the facing direction of couple number two would be 0.25,
 // that of couple number three: 0.5, and that of couple number four: 0.75.
 type Direction float64
+
+func (d Direction) String() string {
+	return fmt.Sprintf("%f", d)
+}
 
 var Direction0 Direction = 0
 
@@ -145,6 +150,10 @@ const positionTolerance float64 = CoupleDistance / 1000.0
 type Position struct {
 	Down Down
 	Left Left
+}
+
+func (p Position) String() string {
+	return fmt.Sprintf("{%f, %f}", p.Down, p.Left)
 }
 
 // NewPositionDownLeft returns a new Position with the given Down and Left
