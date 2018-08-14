@@ -174,13 +174,15 @@ func back_to_back() reasoning.Formation {
 	return r[0]
 }
 
-/*
 func TestForwardLeft(t *testing.T) {
 	// Start with FaceToFace dancers.  End in RightHand MiniWave
-	dancers := face_to_face()
+	dancers := face_to_face().(reasoning.FaceToFace)
 	tl := timeline.NewTimeline(dancers.Dancers())
 	tl.MakeSnapshot(0)
-	fa := FindAction("AboutFace").GetFormationActionFor(dancers)
+	fa := FindAction("ForwardLeft").GetFormationActionFor(dancers)
+	if fa == nil {
+		t.Fatalf("GetFormationActionFor did not find a FormationAction for %#v", dancers)
+	}
 	fa.DoIt(dancers)
 	tl.MakeSnapshot(1)
 	dancers2 := get_formation(dancers.Dancers(), "MiniWave")
@@ -192,14 +194,38 @@ func TestForwardLeft(t *testing.T) {
 	if want, got := reasoning.RightHanded, mw.(reasoning.MiniWave).Handedness(); got != want {
 		t.Errorf("Wrong handedness: want %v, got %v.", want, got)
 	}
+	timeline.ShowHistory(tl)
 }
-*/
+
+func TestForwardRight(t *testing.T) {
+	// Start with FaceToFace dancers.  End in RightHand MiniWave
+	dancers := face_to_face().(reasoning.FaceToFace)
+	tl := timeline.NewTimeline(dancers.Dancers())
+	tl.MakeSnapshot(0)
+	fa := FindAction("ForwardRight").GetFormationActionFor(dancers)
+	if fa == nil {
+		t.Fatalf("GetFormationActionFor did not find a FormationAction for %#v", dancers)
+	}
+	fa.DoIt(dancers)
+	tl.MakeSnapshot(1)
+	dancers2 := get_formation(dancers.Dancers(), "MiniWave")
+	if want, got := 1, len(dancers2); got != want {
+		t.Errorf("Wri=on number of MiniWaves: got %d, want %d.", got, want)
+		return
+	}
+	mw := dancers2[0]
+	if want, got := reasoning.LeftHanded, mw.(reasoning.MiniWave).Handedness(); got != want {
+		t.Errorf("Wrong handedness: want %v, got %v.", want, got)
+	}
+	timeline.ShowHistory(tl)
+}
+
 
 // "ForwardRight"
 
 // "BackwardLeft"
 
-// BackwardRight
+// "BackwardRight"
 
 // "BackToFace"
 
