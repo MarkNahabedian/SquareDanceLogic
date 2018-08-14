@@ -9,6 +9,18 @@ import "squaredance/timeline"
 import "squaredance/reasoning"
 
 
+// showHistory writes the position and directiion of each Dancer
+// over time to standard output.
+func showHistory(tl timeline.Timeline, t *testing.T) {
+	for _, d := range tl.Dancers() {
+		t.Logf("\nDancer %s\n", d)
+		for _, s := range tl.FindSnapshots(d, -1, tl.MostRecent() + 1) {
+			t.Logf("    %3d  %s  %s\n", s.Time(), s.Position(), s.Direction())
+		}
+	}
+}
+
+
 func loneTestDancer() dancer.Dancers {
 	dancers := dancer.MakeSomeDancers(1)
 	dancer := dancers[0]
@@ -194,7 +206,7 @@ func TestForwardLeft(t *testing.T) {
 	if want, got := reasoning.RightHanded, mw.(reasoning.MiniWave).Handedness(); got != want {
 		t.Errorf("Wrong handedness: want %v, got %v.", want, got)
 	}
-	timeline.ShowHistory(tl)
+	showHistory(tl, t)
 }
 
 func TestForwardRight(t *testing.T) {
@@ -217,15 +229,57 @@ func TestForwardRight(t *testing.T) {
 	if want, got := reasoning.LeftHanded, mw.(reasoning.MiniWave).Handedness(); got != want {
 		t.Errorf("Wrong handedness: want %v, got %v.", want, got)
 	}
-	timeline.ShowHistory(tl)
+	showHistory(tl, t)
 }
 
+func TestBackwardLeft(t *testing.T) {
+	t.Logf("TestBackwardLeft\n")
+	// Start with BackToBack dancers.  End in RightHand MiniWave
+	dancers := back_to_back().(reasoning.BackToBack)
+	tl := timeline.NewTimeline(dancers.Dancers())
+	tl.MakeSnapshot(0)
+	fa := FindAction("BackwardLeft").GetFormationActionFor(dancers)
+	if fa == nil {
+		t.Fatalf("GetFormationActionFor did not find a FormationAction for %#v", dancers)
+	}
+	fa.DoIt(dancers)
+	tl.MakeSnapshot(1)
+	dancers2 := get_formation(dancers.Dancers(), "MiniWave")
+	if want, got := 1, len(dancers2); got != want {
+		t.Errorf("Wri=on number of MiniWaves: got %d, want %d.", got, want)
+		return
+	}
+	mw := dancers2[0]
+	if want, got := reasoning.RightHanded, mw.(reasoning.MiniWave).Handedness(); got != want {
+		t.Errorf("Wrong handedness: want %v, got %v.", want, got)
+	}
+	showHistory(tl, t)
+}
 
-// "ForwardRight"
+func TestBackwardRight(t *testing.T) {
+	t.Logf("TestBackwardRight\n")
+	// Start with BackToBack dancers.  End in RightHand MiniWave
+	dancers := back_to_back().(reasoning.BackToBack)
+	tl := timeline.NewTimeline(dancers.Dancers())
+	tl.MakeSnapshot(0)
+	fa := FindAction("BackwardRight").GetFormationActionFor(dancers)
+	if fa == nil {
+		t.Fatalf("GetFormationActionFor did not find a FormationAction for %#v", dancers)
+	}
+	fa.DoIt(dancers)
+	tl.MakeSnapshot(1)
+	dancers2 := get_formation(dancers.Dancers(), "MiniWave")
+	if want, got := 1, len(dancers2); got != want {
+		t.Errorf("Wri=on number of MiniWaves: got %d, want %d.", got, want)
+		return
+	}
+	mw := dancers2[0]
+	if want, got := reasoning.LeftHanded, mw.(reasoning.MiniWave).Handedness(); got != want {
+		t.Errorf("Wrong handedness: want %v, got %v.", want, got)
+	}
+	showHistory(tl, t)
+}
 
-// "BackwardLeft"
-
-// "BackwardRight"
 
 // "BackToFace"
 
