@@ -126,7 +126,7 @@ func init() {
 		})
 
 	defineAction("BackToFace", "BackToFace backs Dancers out of a MiniWave to face each other.")
-	defineFormationAction("BackToFace", LookupFormationType("BackToBack"),
+	defineFormationAction("BackToFace", LookupFormationType("MiniWave"),
 		func(f reasoning.Formation) {
 			dancers := f.Dancers()
 			center := geometry.Center(dancer.Positions(dancers...)...)
