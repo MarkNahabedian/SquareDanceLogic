@@ -72,7 +72,7 @@ func (a *implAction) GetFormationAction(ft FormationType) FormationAction {
 func (a *implAction) GetFormationActionFor(f reasoning.Formation) FormationAction {
 	t := reflect.TypeOf(f)
 	for _, fa := range a.formationActions {
-		if t.AssignableTo(fa.FormationType()) {
+		if t.ConvertibleTo(fa.FormationType()) {
 			return fa
 		}
 	}
