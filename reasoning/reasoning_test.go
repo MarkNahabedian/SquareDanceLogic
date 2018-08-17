@@ -59,7 +59,14 @@ func TestShowFullRete(t *testing.T) {
 }
 
 
-func TestAllFormations (t *testing.T) {
+func TestAllRules(t *testing.T) {
+	for _, r := range runtime.AllRules {
+		t.Logf("%s \n\t%#v\n\t%#v", r.Name(), r.ParamTypes(), r.EmitTypes())
+	}
+	t.Errorf("foo")
+}
+
+func TestAllFormations(t *testing.T) {
 	for name, typ := range AllFormationTypes {
 		t.Logf("%s\t  %v", name, typ)
 	}

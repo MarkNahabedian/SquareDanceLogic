@@ -18,19 +18,25 @@ file for each ".rules" file.
 If the rule compiler is not already built you'll need to
 <pre>
 go install goshua/rete/rule_compiler
-rule_compiler set.rules two_dancers.rules 
+</pre>
+
+After the rules are compiled, catalog_rule_type_info should be run to
+write a rule_emits.go file which describes what types of objects are
+emitted by each rule.
+<pre>
+go install goshua/rete/rule_compiler/catalog_rule_type_info
 </pre>
 
 
 Much of the code that defines each formation is automatically
-generated from that formation's interface definition>
+generated from that formation's interface definition.
 
 <pre>
 go build squaredance/reasoning/formation_expander
 formation_expander.exe two_dancers.go
 </pre>
 
-<b>All of these steps</b> (except for installing the rule compiler)
+<b>All of these steps</b> (except for that from goshua/rete)
 are automated in make.go, so all you should need to do is
 
 <pre>
