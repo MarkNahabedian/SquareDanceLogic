@@ -5,3 +5,4 @@ reasoning/impl_*.go
 reasoning/four_dancers.go
 reasoning/set.go
 reasoning/two_dancers.go
+reasonong/rule_emits.go
