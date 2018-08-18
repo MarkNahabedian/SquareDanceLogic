@@ -1,7 +1,10 @@
 package reasoning
 
+import "fmt"
+import "os"
+import "strings"
 import "testing"
-import "squaredance/dancer"
+// import "squaredance/dancer"
 import "goshua/rete"
 import "goshua/rete/rule_compiler/runtime"
 
@@ -60,19 +63,33 @@ func TestShowFullRete(t *testing.T) {
 
 
 func TestAllRules(t *testing.T) {
-	for _, r := range runtime.AllRules {
-		t.Logf("%s \n\t%#v\n\t%#v", r.Name(), r.ParamTypes(), r.EmitTypes())
+	filename := "all_rules.txt"
+	out, err := os.Create(filename)
+	if err != nil {
+		t.Fatalf("Can't open %s: %s", filename, err)
 	}
-	t.Errorf("foo")
+	defer out.Close()
+	for _, r := range runtime.AllRules {
+		out.WriteString(fmt.Sprintf("%s \n\t%s\n\t%s\n\n",
+			r.Name(),
+			strings.Join(r.ParamTypes(), ", "),
+			strings.Join(r.EmitTypes(), ", ")))
+	}
 }
 
 func TestAllFormations(t *testing.T) {
-	for name, typ := range AllFormationTypes {
-		t.Logf("%s\t  %v", name, typ)
+	filename := "formation_types.txt"
+	out, err := os.Create(filename)
+	if err != nil {
+		t.Fatalf("Can't open %s: %s", filename, err)
 	}
-	t.Errorf("foo")
+	defer out.Close()
+	for name, typ := range AllFormationTypes {
+		out.WriteString(fmt.Sprintf("%s\t  %v\n", name, typ))
+	}
 }
 
+/*
 func TestCouple(t *testing.T) {
 	root_node := rete.MakeRootNode()
 	loadAllRules(root_node)
@@ -84,10 +101,13 @@ func TestCouple(t *testing.T) {
 	showAllAssertions(t, root_node)
 	t.Errorf("foo")
 }
+*/
 
+/*
 func TestTwoFacedLines(t *testing.T) {
 	root_node := rete.MakeRootNode()
 	loadAllRules(root_node)
 
 }
+*/
 

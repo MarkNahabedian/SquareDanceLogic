@@ -1,8 +1,10 @@
 *.dot
+reasoning/all_rules.txt
+reasoning/formation_types.txt
+reasoning/four_dancers.go
 reasoning/generate_roles.exe
 reasoning/generated_roles.go
 reasoning/impl_*.go
-reasoning/four_dancers.go
+reasoning/rule_emits.go
 reasoning/set.go
 reasoning/two_dancers.go
-reasoning/rule_emits.go
