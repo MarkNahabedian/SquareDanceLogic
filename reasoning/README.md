@@ -42,3 +42,23 @@ are automated in make.go, so all you should need to do is
 <pre>
 go generate make.go
 </pre>
+
+
+Running the reasoning tests
+<pre>
+go test squaredance/reasoning
+</pre>
+has the side effect of writing several files:
+
+* all_rules.txt contains a luist of all rules that have been defined along with their parameters and outputs.
+
+* formation_types.txt just maps from a from the name of a square dance formation to the reflect.Type of the formation's interface type.
+
+* formations_rete.dot is a graphviz file of a rete will all rules loaded into it.
+
+To generate an SVG file from formations_rete.dot, you need to have the
+GraphViz (https://www.graphviz.org/) software installed.  You can then
+run
+<pre>
+dot -O -Tsvg formations_rete.dot
+</pre>
