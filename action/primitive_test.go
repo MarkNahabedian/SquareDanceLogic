@@ -1,6 +1,7 @@
 package action
 
 import "testing"
+import "reflect"
 import "goshua/rete"
 import "goshua/rete/rule_compiler/runtime"
 import "squaredance/geometry"
@@ -85,10 +86,10 @@ func TestAboutFace(t *testing.T) {
 }
 
 
-func get_formation(dancers dancer.Dancers, formation_name string) []reasoning.Formation {
+func get_formation(dancers dancer.Dancers, formation_type reflect.Type) []reasoning.Formation {
 	root_node := rete.MakeRootNode()
 	for _, rule := range runtime.AllRules {
-		rule.Inserter()(root_node)
+		rule.Installer()(root_node)
 	}
 	result := []reasoning.Formation{}
 	rete.Walk(root_node, func(n rete.Node) {
@@ -96,7 +97,7 @@ func get_formation(dancers dancer.Dancers, formation_name string) []reasoning.Fo
 		if !ok {
 			return
 		}
-		if ttn.TypeName() != formation_name {
+		if ttn.Type != formation_type {
 			return
 		}
 		rete.Connect(n, rete.MakeActionNode(func(item interface{}) {
@@ -109,14 +110,13 @@ func get_formation(dancers dancer.Dancers, formation_name string) []reasoning.Fo
 	return result
 }
 
-
 func TestMeet(t *testing.T) {
 	set := dancer.NewSquaredSet(4)
 	tl := timeline.NewTimeline(set.Dancers())
 	tl.MakeSnapshot(0)
 	root_node := rete.MakeRootNode()
 	for _, rule := range runtime.AllRules {
-		rule.Inserter()(root_node)
+		rule.Installer()(root_node)
 	}
 	headsff := []reasoning.FaceToFace{}
 	rete.Walk(root_node, func(n rete.Node) {
@@ -124,7 +124,7 @@ func TestMeet(t *testing.T) {
 		if !ok {
 			return
 		}
-		if ttn.TypeName() != "FaceToFace" {
+		if ttn.Type != reflect.TypeOf(headsff).Elem() {
 			return
 		}
 		rete.Connect(n, rete.MakeActionNode(func(item interface{}) {
@@ -172,7 +172,7 @@ func face_to_face() reasoning.Formation {
 		geometry.Direction0)
 	dancers[1].Move(geometry.Position{Left: geometry.Left0, Down: geometry.Down1},
 		geometry.FullCircle / 2)
-	r := get_formation(dancers, "FaceToFace")
+	r := get_formation(dancers, reflect.TypeOf(func(t reasoning.FaceToFace){}).In(0))
 	return r[0]
 }
 
@@ -182,7 +182,7 @@ func back_to_back() reasoning.Formation {
 		geometry.FullCircle / 2)
 	dancers[1].Move(geometry.Position{Left: geometry.Left0, Down: geometry.Down1},
 		geometry.Direction0)
-	r := get_formation(dancers, "BackToBack")
+	r := get_formation(dancers, reflect.TypeOf(func(t reasoning.BackToBack){}).In(0))
 	return r[0]
 }
 
@@ -199,7 +199,7 @@ func mini_wave(handedness reasoning.Handedness) reasoning.Formation {
 		dir.Opposite())
 	dancers[1].Move(geometry.Position{Left: geometry.Left1, Down: geometry.Down0},
 		dir)
-	r := get_formation(dancers, "MiniWave")
+	r := get_formation(dancers, reflect.TypeOf(func(t reasoning.MiniWave){}).In(0))
 	return r[0]
 }
 
@@ -214,7 +214,7 @@ func TestForwardLeft(t *testing.T) {
 	}
 	fa.DoIt(dancers)
 	tl.MakeSnapshot(1)
-	dancers2 := get_formation(dancers.Dancers(), "MiniWave")
+	dancers2 := get_formation(dancers.Dancers(), reflect.TypeOf(func(t reasoning.MiniWave){}).In(0))
 	if want, got := 1, len(dancers2); got != want {
 		t.Errorf("Wrong number of MiniWaves: got %d, want %d.", got, want)
 		return
@@ -237,7 +237,8 @@ func TestForwardRight(t *testing.T) {
 	}
 	fa.DoIt(dancers)
 	tl.MakeSnapshot(1)
-	dancers2 := get_formation(dancers.Dancers(), "MiniWave")
+	dancers2 := get_formation(dancers.Dancers(),
+		reflect.TypeOf(func(t reasoning.MiniWave){}).In(0))
 	if want, got := 1, len(dancers2); got != want {
 		t.Errorf("Wrong number of MiniWaves: got %d, want %d.", got, want)
 		return
@@ -261,7 +262,8 @@ func TestBackwardLeft(t *testing.T) {
 	}
 	fa.DoIt(dancers)
 	tl.MakeSnapshot(1)
-	dancers2 := get_formation(dancers.Dancers(), "MiniWave")
+	dancers2 := get_formation(dancers.Dancers(),
+		reflect.TypeOf(func(t reasoning.MiniWave){}).In(0))
 	if want, got := 1, len(dancers2); got != want {
 		t.Errorf("Wrong number of MiniWaves: got %d, want %d.", got, want)
 		return
@@ -285,7 +287,8 @@ func TestBackwardRight(t *testing.T) {
 	}
 	fa.DoIt(dancers)
 	tl.MakeSnapshot(1)
-	dancers2 := get_formation(dancers.Dancers(), "MiniWave")
+	dancers2 := get_formation(dancers.Dancers(),
+		reflect.TypeOf(func(t reasoning.MiniWave){}).In(0))
 	if want, got := 1, len(dancers2); got != want {
 		t.Errorf("Wrong number of MiniWaves: got %d, want %d.", got, want)
 		return
@@ -309,7 +312,8 @@ func TestBackToFaceRight(t *testing.T) {
 	}
 	fa.DoIt(dancers)
 	tl.MakeSnapshot(1)
-	dancers2 := get_formation(dancers.Dancers(), "FaceToFace")
+	dancers2 := get_formation(dancers.Dancers(),
+		reflect.TypeOf(func(t reasoning.FaceToFace){}).In(0))
 	if want, got := 1, len(dancers2); got != want {
 		t.Errorf("Wrong number of FaceToFace formations: got %d, want %d.", got, want)
 		return
@@ -329,7 +333,8 @@ func TestBackToFaceLeft(t *testing.T) {
 	}
 	fa.DoIt(dancers)
 	tl.MakeSnapshot(1)
-	dancers2 := get_formation(dancers.Dancers(), "FaceToFace")
+	dancers2 := get_formation(dancers.Dancers(),
+		reflect.TypeOf(func(t reasoning.FaceToFace){}).In(0))
 	if want, got := 1, len(dancers2); got != want {
 		t.Errorf("Wrong number of FaceToFace formations: got %d, want %d.", got, want)
 		return
