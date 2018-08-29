@@ -1,9 +1,0 @@
-package reasoning
-
-import "squaredance/dancer"
-
-func rule_SetHasDancers(s dancer.Set) {
-	for _, d := range s.Dancers() {
-		__node.Emit(d)
-	}
-}
