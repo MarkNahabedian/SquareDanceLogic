@@ -2,6 +2,7 @@ package reasoning
 
 import "fmt"
 import "os"
+import "reflect"
 import "strings"
 import "testing"
 // import "squaredance/dancer"
@@ -11,7 +12,7 @@ import "goshua/rete/rule_compiler/runtime"
 
 func loadAllRules(root rete.Node) {
 	for _, rule := range runtime.AllRules {
-		rule.Inserter()(root)
+		rule.Installer()(root)
 	}
 }
 
@@ -63,6 +64,13 @@ func TestShowFullRete(t *testing.T) {
 
 
 func TestAllRules(t *testing.T) {
+	typesPretty := func(ts []reflect.Type) string {
+		s := make([]string, len(ts))
+		for i, t1 := range ts {
+			s[i] = t1.String()
+		}
+		return strings.Join(s, ", ")
+	}
 	filename := "all_rules.txt"
 	out, err := os.Create(filename)
 	if err != nil {
@@ -72,8 +80,8 @@ func TestAllRules(t *testing.T) {
 	for _, r := range runtime.AllRules {
 		out.WriteString(fmt.Sprintf("%s \n\t%s\n\t%s\n\n",
 			r.Name(),
-			strings.Join(r.ParamTypes(), ", "),
-			strings.Join(r.EmitTypes(), ", ")))
+			typesPretty(r.ParamTypes()),
+			typesPretty(r.EmitTypes())))
 	}
 }
 
