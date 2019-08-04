@@ -23,7 +23,10 @@ type Pair interface {
 }
 
 func MakePair(dancer1, dancer2 dancer.Dancer) Pair {
-	return Pair(&pair{ dancer1: dancer1, dancer2: dancer2 })
+	if dancer1.Ordinal() < dancer2.Ordinal() {
+		return Pair(&pair{ dancer1: dancer1, dancer2: dancer2 })
+	}
+	return Pair(&pair{ dancer1: dancer2, dancer2: dancer1 })
 }
 
 type pair struct {
@@ -43,6 +46,10 @@ func (p *pair) Dancer2() dancer.Dancer {
 	return p.dancer2
 }
 
+func (p *pair) Ordinal() int {
+	return p.dancer1.Ordinal()
+}
+
 func (p *pair) String() string {
 	return fmt.Sprintf("Pair(%s, %s)", p.dancer1, p.dancer2)
 }
@@ -52,7 +59,7 @@ func rule_PairOfDancers(node rete.Node, dancer1, dancer2 dancer.Dancer) {
 	// Note that for each pair of dancers we will create two Pair
 	// objects: one each for the two possible orders of the dancers.
 	if dancer1 != dancer2 {
-		node.Emit(Pair(&pair{dancer1: dancer1, dancer2: dancer2}))
+		node.Emit(Pair(MakePair(dancer1, dancer2)))
 	}
 }
 
@@ -71,6 +78,10 @@ type Couple interface {
 	// Roles:
 	Beaus() dancer.Dancers    // no-slot
 	Belles() dancer.Dancers   // no-slot
+}
+
+func (f *implCouple) Ordinal() int {
+	return f.Beau().Ordinal()
 }
 
 func (f *implCouple) String() string {
@@ -103,6 +114,13 @@ type MiniWave interface{
 	// Roles
 	Beaus() dancer.Dancers   // no-slot
 	Belles() dancer.Dancers  // no-slot
+}
+
+func MakeMiniWave(dancer1, dancer2 dancer.Dancer) MiniWave {
+	if dancer1.Ordinal() < dancer2.Ordinal() {
+		return &implMiniWave{ dancer1, dancer2 }
+	}
+	return &implMiniWave{ dancer2, dancer1 }
 }
 
 func (mw *implMiniWave) String() string {
@@ -147,15 +165,15 @@ func (mw *implMiniWave) Belles() dancer.Dancers {
 func rule_MiniWave(node rete.Node, p Pair) {
 	d1 := p.Dancer1()
 	d2 := p.Dancer2()
-	if d1.Ordinal() >= d2.Ordinal() {
+	if d1.Ordinal() >= d2.Ordinal() {   // Huh?  de-dup?
 		return
 	}
 	if RightOf(d1, d2) && RightOf(d2, d1) {
-		node.Emit(MiniWave(&implMiniWave{dancer1: d1, dancer2: d2}))
+		node.Emit(MakeMiniWave(d1, d2))
 		return
 	}
 	if LeftOf(d1, d2) && LeftOf(d2, d1) {
-		node.Emit(MiniWave(&implMiniWave{dancer1: d1, dancer2: d2}))
+		node.Emit(MakeMiniWave(d1, d2))
 	}
 }
 
@@ -189,7 +207,7 @@ func (f *implFaceToFace) Trailers() dancer.Dancers {
 func rule_FaceToFace(node rete.Node, p Pair) {
 	d1 := p.Dancer1()
 	d2 := p.Dancer2()
-	if d1.Ordinal() >= d2.Ordinal() {
+	if d1.Ordinal() >= d2.Ordinal() {  // Huh?  de-dup?
 		return
 	}
 	if InFrontOf(d1, d2) && InFrontOf(d2, d1) {
