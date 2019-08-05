@@ -10,7 +10,7 @@ package reasoning
 
 // Expanding formation boilerplate code
 //go:generate go build squaredance/reasoning/formation_expander
-//go:generate formation_expander two_dancers.go four_dancers.go
+//go:generate formation_expander two_dancers_rules.go four_dancers_rules.go
 
 // Compiling rules
 //go:generate rule_compiler
