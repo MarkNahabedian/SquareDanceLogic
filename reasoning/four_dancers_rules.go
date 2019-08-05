@@ -11,13 +11,13 @@ type FacingCouples interface {
 	FacingCouples()
 	Couple1() Couple
 	Couple2() Couple
-	Facing1() FaceToFace  // redundant
-	Facing2() FaceToFace  // redundant
+	Facing1() FaceToFace  // fe:"redundant"
+	Facing2() FaceToFace  // fe:"redundant"
 	// Roles:
-	Beaus() dancer.Dancers    // no-slot
-	Belles() dancer.Dancers   // no-slot
-	Leaders() dancer.Dancers    // no-slot
-	Trailers() dancer.Dancers    // no-slot
+	Beaus() dancer.Dancers    // fe:"no-slot"
+	Belles() dancer.Dancers   // fe:"no-slot"
+	Leaders() dancer.Dancers    // fe:"no-slot"
+	Trailers() dancer.Dancers    // fe:"no-slot"
 }
 
 func (f *implFacingCouples) String() string {
@@ -67,13 +67,13 @@ type TandemCouples interface {
 	TandemCouples()
 	Couple1() Couple
 	Couple2() Couple
-	BeausTandem() Tandem   // redundant
-	BellesTandem() Tandem  // redundant
+	BeausTandem() Tandem   // fe:"redundant"
+	BellesTandem() Tandem  // fe:"redundant"
 	// Roles
-	Beaus() dancer.Dancers       // no-slot
-	Belles() dancer.Dancers      // no-slot
-	Leaders() dancer.Dancers     // no-slot
-	Trailers()  dancer.Dancers   // no-slot
+	Beaus() dancer.Dancers       // fe:"no-slot"
+	Belles() dancer.Dancers      // fe:"no-slot"
+	Leaders() dancer.Dancers     // fe:"no-slot"
+	Trailers()  dancer.Dancers   // fe:"no-slot"
 }
 
 func (f *implTandemCouples) String() string {
@@ -123,13 +123,13 @@ type BackToBackCouples interface {
 	BackToBackCouples()
 	Couple1() Couple
 	Couple2() Couple
-	BackToBack1() BackToBack  // redundant
-	BackToBack2() BackToBack  // redundant
+	BackToBack1() BackToBack  // fe:"redundant"
+	BackToBack2() BackToBack  // fe:"redundant"
 	// Roles:
-	Beaus() dancer.Dancers     // no-slot
-	Belles() dancer.Dancers    // no-slot
-	Leaders()dancer.Dancers    // no-slot
-	Trailers() dancer.Dancers  // no-slot 
+	Beaus() dancer.Dancers     // fe:"no-slot"
+	Belles() dancer.Dancers    // fe:"no-slot"
+	Leaders()dancer.Dancers    // fe:"no-slot"
+	Trailers() dancer.Dancers  // fe:"no-slot"
 }
 
 func (f *implBackToBackCouples) String() string {
@@ -180,15 +180,15 @@ type BoxOfFour interface {
 	BoxOfFour()
 	MiniWave1() MiniWave
 	MiniWave2() MiniWave
-	Tandem1() Tandem       // redundant
-	Tandem2() Tandem       // redundant
+	Tandem1() Tandem       // fe:+redundant"
+	Tandem2() Tandem       // fe:"redundant"
 	// Handedness:
-	Handedness() Handedness      // no-slot
+	Handedness() Handedness      // fe:"no-slot"
 	// Roles:
-	Beaus() dancer.Dancers      // no-slot
-	Belles() dancer.Dancers     // no-slot
-	Leaders() dancer.Dancers    // no-slot
-	Trailers() dancer.Dancers   // no-slot
+	Beaus() dancer.Dancers      // fe:"no-slot"
+	Belles() dancer.Dancers     // fe:"no-slot"
+	Leaders() dancer.Dancers    // fe:"no-slot"
+	Trailers() dancer.Dancers   // fe:"no-slot"
 }
 
 func (f *implBoxOfFour) String() string {
@@ -260,10 +260,10 @@ type Star interface {
 	MiniWave1() MiniWave
 	MiniWave2() MiniWave
 	// Handedness:
-	Handedness() Handedness    // no-slot
+	Handedness() Handedness    // fe:"no-slot"
 	// Roles:
-	Beaus() dancer.Dancers    // no-slot
-	Belles() dancer.Dancers   // no-slot
+	Beaus() dancer.Dancers    // fe:"no-slot"
+	Belles() dancer.Dancers   // fe:"no-slot"
 }
 
 func (f *implStar) String() string {
@@ -308,13 +308,13 @@ type LineOfFour interface {
 	Formation
 	LineOfFour()
 	LeftCouple() Couple
-	CenterCouple() Couple    // redudant
+	CenterCouple() Couple    // fe:"redudant"
 	RightCouple() Couple
 	// Roles:
-	Beaus() dancer.Dancers    // no-slot
-	Belles() dancer.Dancers   // no-slot
-	Centers() dancer.Dancers  // no-slot
-	Ends() dancer.Dancers     // no-slot
+	Beaus() dancer.Dancers    // fe:"no-slot"
+	Belles() dancer.Dancers   // fe:"no-slot"
+	Centers() dancer.Dancers  // fe:"no-slot"
+	Ends() dancer.Dancers     // fe:"no-slot"
 }
 
 func (f *implLineOfFour) String() string {
@@ -359,16 +359,16 @@ func rule_LineOfFour(node rete.Node, c1, c2, c3 Couple) {
 type WaveOfFour interface {
 	Formation
 	WaveOfFour()
-	CenterMiniWave() MiniWave    // redundant
+	CenterMiniWave() MiniWave    // fe:"redundant"
 	MiniWave1() MiniWave
 	MiniWave2() MiniWave
 	// Handedness:
-	Handedness() Handedness      // no-slot
+	Handedness() Handedness      // fe:"no-slot"
 	// Roles:
-	Beaus() dancer.Dancers      // no-slots
-	Belles() dancer.Dancers     // no-slots
-	Centers() dancer.Dancers    // no-slots
-	Ends() dancer.Dancers       // no-slots
+	Beaus() dancer.Dancers      // fe:"no-slots"
+	Belles() dancer.Dancers     // fe:"no-slots"
+	Centers() dancer.Dancers    // fe:"no-slots"
+	Ends() dancer.Dancers       // fe:"no-slots"
 }
 
 func (f *implWaveOfFour) String() string {
@@ -423,14 +423,14 @@ type TwoFacedLine interface {
 	TwoFacedLine()
 	Couple1() Couple
 	Couple2() Couple
-	CenterMiniWave() MiniWave  // redundant
+	CenterMiniWave() MiniWave  // fe:"redundant"
 	// Handedness:
-	Handedness() Handedness    // no-slot
+	Handedness() Handedness    // fe:"no-slot"
 	// Roles:
-	Beaus() dancer.Dancers    // no-slots
-	Belles() dancer.Dancers   // no-slots
-	Centers() dancer.Dancers  // no-slots
-	Ends() dancer.Dancers     // no-slots
+	Beaus() dancer.Dancers    // fe:"no-slots"
+	Belles() dancer.Dancers   // fe:"no-slots"
+	Centers() dancer.Dancers  // fe:"no-slots"
+	Ends() dancer.Dancers     // fe:"no-slots"
 }
 
 func (f *implTwoFacedLine) String() string {

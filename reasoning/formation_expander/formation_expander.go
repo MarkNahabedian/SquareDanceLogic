@@ -45,6 +45,7 @@ import "flag"
 import "fmt"
 import "os"
 import "path"
+import "reflect"
 import "strings"
 import "go/ast"
 import "go/parser"
@@ -152,7 +153,7 @@ const formation_methods_template = `
 package foo
 
 // Code below expects this definition to be first.
-func ( f * STRUCT_TYPE)nonRedundant() []Formation {
+func (f * STRUCT_TYPE) nonRedundant() []Formation {
 	return []Formation { }
 }
 
@@ -265,7 +266,11 @@ func commentHasKeyword(comment_group *ast.CommentGroup, keyword string) bool {
 		return false
 	}
 	for _, c := range comment_group.List {
-		if strings.Contains(c.Text, keyword) {
+		val, ok := reflect.StructTag(c.Text[2:]).Lookup("fe")
+		if !ok {
+			continue
+		}
+		if strings.Contains(val, keyword) {
 			return true
 		}
 	}

@@ -76,8 +76,8 @@ type Couple interface {
 	Beau() dancer.Dancer
 	Belle() dancer.Dancer
 	// Roles:
-	Beaus() dancer.Dancers    // no-slot
-	Belles() dancer.Dancers   // no-slot
+	Beaus() dancer.Dancers    // fe:"no-slot"
+	Belles() dancer.Dancers   // fe:"no-slot"
 }
 
 func (f *implCouple) Ordinal() int {
@@ -110,10 +110,10 @@ type MiniWave interface{
 	Dancer1() dancer.Dancer
 	Dancer2() dancer.Dancer
     // Handedness
-	Handedness() Handedness   // no-slot
+	Handedness() Handedness   // fe:"no-slot"
 	// Roles
-	Beaus() dancer.Dancers   // no-slot
-	Belles() dancer.Dancers  // no-slot
+	Beaus() dancer.Dancers   // fe:"no-slot"
+	Belles() dancer.Dancers  // fe:"no-slot"
 }
 
 func MakeMiniWave(dancer1, dancer2 dancer.Dancer) MiniWave {
@@ -185,8 +185,8 @@ type FaceToFace interface {
 	Dancer1() dancer.Dancer
 	Dancer2() dancer.Dancer
 	// Roles
-	Leaders() dancer.Dancers    // no-slot
-	Trailers() dancer.Dancers   // no-slot
+	Leaders() dancer.Dancers    // fe:"no-slot"
+	Trailers() dancer.Dancers   // fe:"no-slot"
 }
 
 func (f *implFaceToFace) String() string {
@@ -223,7 +223,7 @@ type BackToBack interface {
 	Dancer1() dancer.Dancer
 	Dancer2() dancer.Dancer
 	// Roles:
-	Leaders() dancer.Dancers   // no-slot
+	Leaders() dancer.Dancers   // fe:"no-slot"
 }
 
 func (f *implBackToBack) String() string {
@@ -256,10 +256,10 @@ type Tandem interface {
 	Tandem()
 	Leader() dancer.Dancer
 	Trailer() dancer.Dancer
-	Direction() geometry.Direction  // no-slot
+	Direction() geometry.Direction  // fe:"no-slot"
 	// Roles:
-	Leaders() dancer.Dancers   // no-slot
-	Trailers() dancer.Dancers   // no-slot
+	Leaders() dancer.Dancers   // fe:"no-slot"
+	Trailers() dancer.Dancers   // fe:"no-slot"
 }
 
 func (f *implTandem) String() string {
