@@ -9,34 +9,34 @@ import "squaredance/geometry"
 type FacingCouples interface {
 	Formation
 	FacingCouples()
-	Couple1() Couple
-	Couple2() Couple
-	Facing1() FaceToFace  // fe:"redundant"
-	Facing2() FaceToFace  // fe:"redundant"
+	Couple1() Couple      // defimpl:"read couple1"  fe:"dancers"
+	Couple2() Couple      // defimpl:"read couple2"  fe:"dancers"
+	Facing1() FaceToFace  // defimpl:"read facing1"
+	Facing2() FaceToFace  // defimpl:"read facing2"
 	// Roles:
-	Beaus() dancer.Dancers    // fe:"no-slot"
-	Belles() dancer.Dancers   // fe:"no-slot"
-	Leaders() dancer.Dancers    // fe:"no-slot"
-	Trailers() dancer.Dancers    // fe:"no-slot"
+	Beaus() dancer.Dancers
+	Belles() dancer.Dancers
+	Leaders() dancer.Dancers
+	Trailers() dancer.Dancers
 }
 
-func (f *implFacingCouples) String() string {
+func (f *FacingCouplesImpl) String() string {
 	return fmt.Sprintf("FacingCouples(%s, %s)", f.Couple1(), f.Couple2())
 }
 
-func (f *implFacingCouples) Beaus() dancer.Dancers {
+func (f *FacingCouplesImpl) Beaus() dancer.Dancers {
 	return dancer.Union(f.Couple1().Beaus(), f.Couple2().Beaus())
 }
 
-func (f *implFacingCouples) Belles() dancer.Dancers {
+func (f *FacingCouplesImpl) Belles() dancer.Dancers {
 	return dancer.Union(f.Couple1().Belles(), f.Couple2().Belles())
 }
 
-func (f *implFacingCouples) Leaders() dancer.Dancers {
+func (f *FacingCouplesImpl) Leaders() dancer.Dancers {
 	return dancer.Union(f.Facing1().Leaders(), f.Facing2().Leaders())
 }
 
-func (f *implFacingCouples) Trailers() dancer.Dancers {
+func (f *FacingCouplesImpl) Trailers() dancer.Dancers {
 	return dancer.Union(f.Facing1().Trailers(), f.Facing2().Trailers())
 }
 
@@ -53,7 +53,7 @@ func rule_FacingCouples(node rete.Node, couple1, couple2 Couple, facing1, facing
 	if !HasDancers(facing2, couple2.Beau(), couple1.Belle()) {
 		return
 	}
-	node.Emit(FacingCouples(&implFacingCouples{
+	node.Emit(FacingCouples(&FacingCouplesImpl{
 		couple1: couple1,
 		couple2: couple2,
 		facing1: facing1,
@@ -65,34 +65,34 @@ func rule_FacingCouples(node rete.Node, couple1, couple2 Couple, facing1, facing
 type TandemCouples interface {
 	Formation
 	TandemCouples()
-	Couple1() Couple
-	Couple2() Couple
-	BeausTandem() Tandem   // fe:"redundant"
-	BellesTandem() Tandem  // fe:"redundant"
+	Couple1() Couple        // defimpl:"read couple1" fe:"dancers"
+	Couple2() Couple        // defimpl:"read couple2" fe:"dancers"
+	BeausTandem() Tandem   // defimpl:"read beaustandem"
+	BellesTandem() Tandem  // defimpl:"read bellestandem"
 	// Roles
-	Beaus() dancer.Dancers       // fe:"no-slot"
-	Belles() dancer.Dancers      // fe:"no-slot"
-	Leaders() dancer.Dancers     // fe:"no-slot"
-	Trailers()  dancer.Dancers   // fe:"no-slot"
+	Beaus() dancer.Dancers
+	Belles() dancer.Dancers
+	Leaders() dancer.Dancers
+	Trailers()  dancer.Dancers
 }
 
-func (f *implTandemCouples) String() string {
+func (f *TandemCouplesImpl) String() string {
 	return fmt.Sprintf("TandemCouples(%s, %s)", f.Couple1(), f.Couple2())
 }
 
-func (f *implTandemCouples) Beaus() dancer.Dancers {
+func (f *TandemCouplesImpl) Beaus() dancer.Dancers {
 	return f.BeausTandem().Dancers()
 }
 
-func (f *implTandemCouples) Belles() dancer.Dancers {
+func (f *TandemCouplesImpl) Belles() dancer.Dancers {
 	return f.BellesTandem().Dancers()
 }
 
-func (f *implTandemCouples) Leaders() dancer.Dancers {
+func (f *TandemCouplesImpl) Leaders() dancer.Dancers {
 	return dancer.Union(f.BeausTandem().Leaders(), f.BellesTandem().Leaders())
 }
 
-func (f *implTandemCouples) Trailers() dancer.Dancers {
+func (f *TandemCouplesImpl) Trailers() dancer.Dancers {
 	return dancer.Union(f.BeausTandem().Trailers(), f.BellesTandem().Trailers())
 }
 
@@ -109,7 +109,7 @@ func rule_TandemCouples(node rete.Node, couple1, couple2 Couple, tandem1, tandem
 	if !HasDancers(tandem2, couple1.Belle(), couple2.Belle()) {
 		return
 	}
-	node.Emit(TandemCouples(&implTandemCouples{
+	node.Emit(TandemCouples(&TandemCouplesImpl{
 		couple1: couple1,
 		couple2: couple2,
 		beaustandem: tandem1,
@@ -121,10 +121,10 @@ func rule_TandemCouples(node rete.Node, couple1, couple2 Couple, tandem1, tandem
 type BackToBackCouples interface {
 	Formation
 	BackToBackCouples()
-	Couple1() Couple
-	Couple2() Couple
-	BackToBack1() BackToBack  // fe:"redundant"
-	BackToBack2() BackToBack  // fe:"redundant"
+	Couple1() Couple           // defimpl:"read couple1" fe:"dancers"
+	Couple2() Couple           // defimpl:"read couple2" fe:"dancers"
+	BackToBack1() BackToBack  // defimpl:"read backtoback1"
+	BackToBack2() BackToBack  // defimpl:"read backtoback2"
 	// Roles:
 	Beaus() dancer.Dancers     // fe:"no-slot"
 	Belles() dancer.Dancers    // fe:"no-slot"
@@ -132,23 +132,23 @@ type BackToBackCouples interface {
 	Trailers() dancer.Dancers  // fe:"no-slot"
 }
 
-func (f *implBackToBackCouples) String() string {
+func (f *BackToBackCouplesImpl) String() string {
 	return fmt.Sprintf("BackToBackCouples(%s, %s)", f.Couple1(), f.Couple2())
 }
 
-func (f *implBackToBackCouples) Beaus() dancer.Dancers {
+func (f *BackToBackCouplesImpl) Beaus() dancer.Dancers {
 	return dancer.Union(f.Couple1().Beaus(), f.Couple2().Beaus())
 }
 
-func (f *implBackToBackCouples) Belles() dancer.Dancers {
+func (f *BackToBackCouplesImpl) Belles() dancer.Dancers {
 	return dancer.Union(f.Couple1().Belles(), f.Couple2().Belles())
 }
 
-func (f *implBackToBackCouples) Leaders () dancer.Dancers {
+func (f *BackToBackCouplesImpl) Leaders () dancer.Dancers {
 	return f.Dancers()
 }
 
-func (f *implBackToBackCouples) Trailers() dancer.Dancers {
+func (f *BackToBackCouplesImpl) Trailers() dancer.Dancers {
 	return dancer.Dancers{}
 }
 
@@ -166,7 +166,7 @@ func rule_BackToBackCouples(node rete.Node, couple1, couple2 Couple, bb1, bb2 Ba
 	if !HasDancers(bb2, couple2.Beau(), couple1.Belle()) {
 		return
 	}
-	node.Emit(BackToBackCouples(&implBackToBackCouples{
+	node.Emit(BackToBackCouples(&BackToBackCouplesImpl{
 		couple1: couple1,
 		couple2: couple2,
 		backtoback1: bb1,
@@ -178,43 +178,43 @@ func rule_BackToBackCouples(node rete.Node, couple1, couple2 Couple, bb1, bb2 Ba
 type BoxOfFour interface {
 	Formation
 	BoxOfFour()
-	MiniWave1() MiniWave
-	MiniWave2() MiniWave
-	Tandem1() Tandem       // fe:+redundant"
-	Tandem2() Tandem       // fe:"redundant"
+	MiniWave1() MiniWave   // defimpl:"read miniwave1" fe:"dancers"
+	MiniWave2() MiniWave   // defimpl:"read miniwave2" fe:"dancers"
+	Tandem1() Tandem       // defimpl:"read tandem1"
+	Tandem2() Tandem       // defimpl:"read tandem2"
 	// Handedness:
-	Handedness() Handedness      // fe:"no-slot"
+	Handedness() Handedness
 	// Roles:
-	Beaus() dancer.Dancers      // fe:"no-slot"
-	Belles() dancer.Dancers     // fe:"no-slot"
-	Leaders() dancer.Dancers    // fe:"no-slot"
-	Trailers() dancer.Dancers   // fe:"no-slot"
+	Beaus() dancer.Dancers
+	Belles() dancer.Dancers
+	Leaders() dancer.Dancers
+	Trailers() dancer.Dancers
 }
 
-func (f *implBoxOfFour) String() string {
+func (f *BoxOfFourImpl) String() string {
 	return fmt.Sprintf("BoxOfFour(%s, %s, %s, %s, %s)",
 		f.Handedness(),
 		f.Tandem1().Leader(), f.Tandem1().Trailer(),
 		f.Tandem2().Leader(), f.Tandem2().Trailer())
 }
 
-func (f *implBoxOfFour) Handedness() Handedness {
+func (f *BoxOfFourImpl) Handedness() Handedness {
 	return f.MiniWave1().Handedness()
 }
 
-func (f *implBoxOfFour) Beaus() dancer.Dancers {
+func (f *BoxOfFourImpl) Beaus() dancer.Dancers {
 	return dancer.Union(f.MiniWave1().Beaus(), f.MiniWave2().Beaus())
 }
 
-func (f *implBoxOfFour) Belles() dancer.Dancers {
+func (f *BoxOfFourImpl) Belles() dancer.Dancers {
 	return dancer.Union(f.MiniWave1().Belles(), f.MiniWave2().Belles())
 }
 
-func (f *implBoxOfFour) Leaders() dancer.Dancers {
+func (f *BoxOfFourImpl) Leaders() dancer.Dancers {
 	return dancer.Union(f.Tandem1().Leaders(), f.Tandem2().Leaders())
 }
 
-func (f *implBoxOfFour) Trailers() dancer.Dancers {
+func (f *BoxOfFourImpl) Trailers() dancer.Dancers {
 	return dancer.Union(f.Tandem1().Trailers(), f.Tandem2().Trailers())
 }
 
@@ -245,7 +245,7 @@ func rule_BoxOfFour(node rete.Node, mw1, mw2 MiniWave, tandem1, tandem2 Tandem) 
 	} else {
   		return
 	}
-	node.Emit(BoxOfFour(&implBoxOfFour{
+	node.Emit(BoxOfFour(&BoxOfFourImpl{
 		miniwave1: mw1,
 		miniwave2: mw2,
 		tandem1: tandem1,
@@ -257,16 +257,16 @@ func rule_BoxOfFour(node rete.Node, mw1, mw2 MiniWave, tandem1, tandem2 Tandem) 
 type Star interface {
 	Formation
 	Star()
-	MiniWave1() MiniWave
-	MiniWave2() MiniWave
+	MiniWave1() MiniWave       // defimpl:"read miniwave1" fe:"dancers"
+	MiniWave2() MiniWave       // defimpl:"read miniwave2" fe:"dancers"
 	// Handedness:
-	Handedness() Handedness    // fe:"no-slot"
+	Handedness() Handedness
 	// Roles:
-	Beaus() dancer.Dancers    // fe:"no-slot"
-	Belles() dancer.Dancers   // fe:"no-slot"
+	Beaus() dancer.Dancers
+	Belles() dancer.Dancers
 }
 
-func (f *implStar) String() string {
+func (f *StarImpl) String() string {
 	return fmt.Sprintf("Star(%s, %s, %s, %s, %s)",
 		f.Handedness(),
 		f.MiniWave1().Dancer1(),
@@ -275,15 +275,15 @@ func (f *implStar) String() string {
 		f.MiniWave2().Dancer2())		
 }
 
-func (f *implStar) Handedness() Handedness {
+func (f *StarImpl) Handedness() Handedness {
 	return f.MiniWave1().Handedness()
 }
 
-func (f *implStar) Beaus() dancer.Dancers {
+func (f *StarImpl) Beaus() dancer.Dancers {
 	return dancer.Union(f.MiniWave1().Beaus(), f.MiniWave2().Beaus())
 }
 
-func (f *implStar) Belles() dancer.Dancers {
+func (f *StarImpl) Belles() dancer.Dancers {
 	return dancer.Union(f.MiniWave1().Belles(), f.MiniWave2().Belles())
 }
 
@@ -297,7 +297,7 @@ func rule_Star(node rete.Node, mw1, mw2 MiniWave) {
 		dir.Equal(mw2.Dancer2().Direction())) {
 		return
 	}
-	node.Emit(Star(&implStar{
+	node.Emit(Star(&StarImpl{
 		miniwave1: mw1,
 		miniwave2: mw2,
 	}))
@@ -307,17 +307,17 @@ func rule_Star(node rete.Node, mw1, mw2 MiniWave) {
 type LineOfFour interface {
 	Formation
 	LineOfFour()
-	LeftCouple() Couple
-	CenterCouple() Couple    // fe:"redudant"
-	RightCouple() Couple
+	LeftCouple() Couple      // defimpl:"read leftcouple" fe:"dancers"
+	CenterCouple() Couple    // defimpl:"read centercouple"
+	RightCouple() Couple     // defimpl:"read rightcouple" fe:"dancers"
 	// Roles:
-	Beaus() dancer.Dancers    // fe:"no-slot"
-	Belles() dancer.Dancers   // fe:"no-slot"
-	Centers() dancer.Dancers  // fe:"no-slot"
-	Ends() dancer.Dancers     // fe:"no-slot"
+	Beaus() dancer.Dancers
+	Belles() dancer.Dancers
+	Centers() dancer.Dancers
+	Ends() dancer.Dancers
 }
 
-func (f *implLineOfFour) String() string {
+func (f *LineOfFourImpl) String() string {
 	return fmt.Sprintf("LineOfFour(%s, %s, %s, %s)",
 		f.LeftCouple().Beau(),
 		f.LeftCouple().Belle(),
@@ -325,19 +325,19 @@ func (f *implLineOfFour) String() string {
 		f.RightCouple().Belle())
 }
 
-func (f *implLineOfFour) Beaus() dancer.Dancers {
+func (f *LineOfFourImpl) Beaus() dancer.Dancers {
 	return dancer.Union(f.LeftCouple().Beaus(), f.RightCouple().Beaus())
 }
 
-func (f *implLineOfFour) Belles() dancer.Dancers {
+func (f *LineOfFourImpl) Belles() dancer.Dancers {
 	return dancer.Union(f.LeftCouple().Belles(), f.RightCouple().Belles())
 }
 
-func (f *implLineOfFour) Centers() dancer.Dancers {
+func (f *LineOfFourImpl) Centers() dancer.Dancers {
 	return f.CenterCouple().Dancers()
 }
 
-func (f *implLineOfFour) Ends() dancer.Dancers {
+func (f *LineOfFourImpl) Ends() dancer.Dancers {
 	return dancer.SetDifference(f.Dancers(), f.Centers())
 }
 
@@ -348,7 +348,7 @@ func rule_LineOfFour(node rete.Node, c1, c2, c3 Couple) {
 	if !(c2.Belle() == c3.Beau()) {
 		return
 	}
-	node.Emit(LineOfFour(&implLineOfFour{
+	node.Emit(LineOfFour(&LineOfFourImpl{
 		leftcouple: c1,
 		centercouple: c2,
 		rightcouple: c3,
@@ -359,19 +359,19 @@ func rule_LineOfFour(node rete.Node, c1, c2, c3 Couple) {
 type WaveOfFour interface {
 	Formation
 	WaveOfFour()
-	CenterMiniWave() MiniWave    // fe:"redundant"
-	MiniWave1() MiniWave
-	MiniWave2() MiniWave
+	CenterMiniWave() MiniWave    // defimpl:"read centerminiwave"
+	MiniWave1() MiniWave          // defimpl:"read miniwave1" fe:"dancers"
+	MiniWave2() MiniWave          // defimpl:"read miniwave2" fe:"dancers"
 	// Handedness:
-	Handedness() Handedness      // fe:"no-slot"
+	Handedness() Handedness
 	// Roles:
-	Beaus() dancer.Dancers      // fe:"no-slots"
-	Belles() dancer.Dancers     // fe:"no-slots"
-	Centers() dancer.Dancers    // fe:"no-slots"
-	Ends() dancer.Dancers       // fe:"no-slots"
+	Beaus() dancer.Dancers
+	Belles() dancer.Dancers
+	Centers() dancer.Dancers
+	Ends() dancer.Dancers
 }
 
-func (f *implWaveOfFour) String() string {
+func (f *WaveOfFourImpl) String() string {
 	return fmt.Sprintf("WaveOfFour(%s, %s, %s, %s, %s)",
 		f.Handedness(),
 		f.MiniWave1().Dancer1(),
@@ -380,23 +380,23 @@ func (f *implWaveOfFour) String() string {
 		f.MiniWave2().Dancer1())
 }
 
-func (f *implWaveOfFour) Handedness() Handedness {
+func (f *WaveOfFourImpl) Handedness() Handedness {
 	return f.MiniWave1().Handedness()
 }
 
-func (f *implWaveOfFour) Beaus() dancer.Dancers {
+func (f *WaveOfFourImpl) Beaus() dancer.Dancers {
 	return dancer.Union(f.MiniWave1().Beaus(), f.MiniWave2().Beaus())
 }
 
-func (f *implWaveOfFour) Belles() dancer.Dancers {
+func (f *WaveOfFourImpl) Belles() dancer.Dancers {
 	return dancer.Union(f.MiniWave1().Belles(), f.MiniWave2().Belles())
 }
 
-func (f *implWaveOfFour) Centers() dancer.Dancers {
+func (f *WaveOfFourImpl) Centers() dancer.Dancers {
 	return f.CenterMiniWave().Dancers()
 }
 
-func (f *implWaveOfFour) Ends() dancer.Dancers {
+func (f *WaveOfFourImpl) Ends() dancer.Dancers {
 	return dancer.SetDifference(f.Dancers(), f.Centers())
 }
 
@@ -410,7 +410,7 @@ func rule_WaveOfFour(node rete.Node, mw1, mw2, mw3 MiniWave) {
 			return
 		}
 	}
-	node.Emit(WaveOfFour(&implWaveOfFour{
+	node.Emit(WaveOfFour(&WaveOfFourImpl{
 		centerminiwave: mw2,
 		miniwave1:mw1,
 		miniwave2: mw3,
@@ -421,19 +421,19 @@ func rule_WaveOfFour(node rete.Node, mw1, mw2, mw3 MiniWave) {
 type TwoFacedLine interface {
 	Formation
 	TwoFacedLine()
-	Couple1() Couple
-	Couple2() Couple
-	CenterMiniWave() MiniWave  // fe:"redundant"
+	Couple1() Couple            // defimpl:"read couple1" fe:"dancers"
+	Couple2() Couple            // defimpl:"read couple2" fe:"dancers"
+	CenterMiniWave() MiniWave  // defimpl:"read centerminiwave"
 	// Handedness:
-	Handedness() Handedness    // fe:"no-slot"
+	Handedness() Handedness
 	// Roles:
-	Beaus() dancer.Dancers    // fe:"no-slots"
-	Belles() dancer.Dancers   // fe:"no-slots"
-	Centers() dancer.Dancers  // fe:"no-slots"
-	Ends() dancer.Dancers     // fe:"no-slots"
+	Beaus() dancer.Dancers
+	Belles() dancer.Dancers
+	Centers() dancer.Dancers
+	Ends() dancer.Dancers
 }
 
-func (f *implTwoFacedLine) String() string {
+func (f *TwoFacedLineImpl) String() string {
 	return fmt.Sprintf("TwoFacedLine(%s, %s, %s, %s, %s)",
     	f.Handedness(),
 		f.Couple1().Beau(),
@@ -442,23 +442,23 @@ func (f *implTwoFacedLine) String() string {
 		f.Couple2().Belle())
 }
 
-func (f *implTwoFacedLine) Handedness() Handedness {
+func (f *TwoFacedLineImpl) Handedness() Handedness {
 	return f.CenterMiniWave().Handedness()
 }
 
-func (f *implTwoFacedLine) Beaus() dancer.Dancers {
+func (f *TwoFacedLineImpl) Beaus() dancer.Dancers {
 	return dancer.Union(f.Couple1().Beaus(), f.Couple2().Beaus())
 }
 
-func (f *implTwoFacedLine) Belles() dancer.Dancers {
+func (f *TwoFacedLineImpl) Belles() dancer.Dancers {
 	return dancer.Union(f.Couple1().Belles(), f.Couple2().Belles())
 }
 
-func (f *implTwoFacedLine) Centers() dancer.Dancers {
+func (f *TwoFacedLineImpl) Centers() dancer.Dancers {
 	return f.CenterMiniWave().Dancers()
 }
 
-func (f *implTwoFacedLine) Ends() dancer.Dancers {
+func (f *TwoFacedLineImpl) Ends() dancer.Dancers {
 	return dancer.SetDifference(f.Dancers(), f.Centers())
 }
 
@@ -469,7 +469,7 @@ func rule_TwoFacedLine(node rete.Node, c1, c2 Couple, mw MiniWave) {
 	if !mw.HasDancer(c2.Belle()) {
 		return
 	}
-	node.Emit(TwoFacedLine(&implTwoFacedLine{
+	node.Emit(TwoFacedLine(&TwoFacedLineImpl{
 		couple1: c1,
 		couple2: c2,
 		centerminiwave: mw,

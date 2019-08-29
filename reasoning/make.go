@@ -9,6 +9,7 @@ package reasoning
 //go:generate generate_roles
 
 // Expanding formation boilerplate code
+//go:generate defimpl
 //go:generate go build squaredance/reasoning/formation_expander
 //go:generate formation_expander two_dancers_rules.go four_dancers_rules.go
 

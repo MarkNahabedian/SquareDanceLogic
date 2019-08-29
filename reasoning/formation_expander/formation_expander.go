@@ -1,40 +1,49 @@
 /*
 formation_expander looks for Formation interface definitions in a
 go source file and writes a new source file with additional
-definitions that implement those Formation interfaces.
+definitions that implement Formation methods.
 
-For example, from the definition
+formation_expander should be used in conjunction with defimpl.
+
+For example, we start with the definition
 
 type TwoFacedLine interface {
 	Formation
 	TwoFacedLine()
-	Couple1() Couple
-	Couple2() Couple
-	MiniWave() MiniWave   // redundant
-	Handedness() ...      // no-slot
+	Couple1() Couple      // defimpl:"read couple1" fe:"dancers"
+	Couple2() Couple      // defimpl:"read couple2" fe:"dancers"
+	MiniWave() MiniWave
+	Handedness()
 }
 
-we would generate the definition of the implementing struct
+From the above, defimpl would generate the definition of the
+implementing struct
 
-type implTwoFacedLine struct {
+type TwoFacedLineImpl struct {
 	couple1 Couple
 	couple2 Couple
-	miniwave Miniwave	// redundant
 }
 
-func (f *implTwoFacedLine) TwoFacedLine() {}
+func (f *TwoFacedLineImpl) TwoFacedLine() {}
 
 and the field accessor methods
 
-func (f *implTwoFacedLine) Couple1() Couple { return f.couple1 }
-func (f *implTwoFacedLine) Couple2() Couple { return f.couple2 }
-func (f *implTwoFacedLine) MiniWave() Couple { return f.miniwave }
+func (f *TwoFacedLineImpl) Couple1() Couple { return f.couple1 }
+func (f *TwoFacedLineImpl) Couple2() Couple { return f.couple2 }
+func (f *TwoFacedLineImpl) MiniWave() Couple { return f.miniwave }
 
-We also define the methods of the Formation interface itself:
+formation_expander will define the methods of the Formation interface
+itself:
 
-func (f *implTwoFacedLine) NumberOfDancers() int { ... }
-func (f *implTwoFacedLine) Dancers() dancer.Dancers { ... }
-func (f *implTwoFacedLine) HasDancer(d dancer.Dancer) bool { ... }
+func (f *TwoFacedLineImpl) NumberOfDancers() int { ... }
+func (f *TwoFacedLineImpl) Dancers() dancer.Dancers { ... }
+func (f *TwoFacedLineImpl) HasDancer(d dancer.Dancer) bool { ... }
+
+func init() {
+	foo := func(f TwoFacedLine) {}
+	t := reflect.TypeOf(foo).In(0)
+	AllFormationTypes[t.Name()] = t
+}
 
 */
 
@@ -47,21 +56,19 @@ import "os"
 import "path"
 import "reflect"
 import "strings"
+import "text/template"
+import "defimpl/util"
 import "go/ast"
 import "go/parser"
 import "go/token"
 import "go/format"
-import "goshua/go_tools"
 
 
 // Any method of a Formation interface definition that has a comment
-// containing this keyword is not used to compute the Dancers of a formation.
-const Redundant string = "redundant"
+// containing this keyword is used to help compute the Dancers of the
+// formation.
+const DancersTag = "dancers"
 
-// This keyword in a Formation interface method comment indicates that
-// the struct that implements the interface should not define a slot
-// corresponding to this method.
-const NoSlot string = "no-slot"
 
 var Usage = func() {
 	fmt.Fprintf(os.Stderr, "Usage of %s:\n", os.Args[0])
@@ -82,7 +89,7 @@ func main() {
 
 func output_path(input_path string) string {
 	cleaned := path.Clean(input_path)
-	return path.Join(path.Dir(cleaned), "impl_" + path.Base(cleaned))
+	return path.Join(path.Dir(cleaned), "feout_" + path.Base(cleaned))
 }
 
 
@@ -95,7 +102,7 @@ import "squaredance/dancer"
 
 
 func processFile(input_fileset *token.FileSet, filepath string) {
-	fmt.Printf("Processing file %s\n", filepath)
+	fmt.Printf("formation_expander processing file %s\n", filepath)
 	astFile, err := parser.ParseFile(input_fileset, filepath, nil, parser.ParseComments)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "%s\n", err)
@@ -143,135 +150,95 @@ type formationDef struct {
 }
 
 
-const reader_method_template = `
-package foo
-func (f *STRUCT_TYPE) READER_NAME() FIELD_TYPE { return f.FIELD_NAME }
-` // end
-
-
-const formation_methods_template = `
+var formation_methods_template = template.Must(template.New("formation_methods_template").Parse(`
 package foo
 
-// Code below expects this definition to be first.
-func (f * STRUCT_TYPE) nonRedundant() []Formation {
-	return []Formation { }
-}
+func (f *{{.STRUCT_TYPE}}) {{.FORMATION_NAME}}() {}
 
-func (f *STRUCT_TYPE) FORMATION_NAME() {}
-
-func (f * STRUCT_TYPE) NumberOfDancers() int {
+func (f *{{.STRUCT_TYPE}}) NumberOfDancers() int {
 	count := 0
-	for _, f := range f.nonRedundant() {
-		count += f.NumberOfDancers()
-	}
+{{range .READERMETHODS}}
+	count += f.{{.}}().NumberOfDancers()
+{{end}}
 	return count
 }
 
-func (f * STRUCT_TYPE) Dancers() dancer.Dancers {
+func (f *{{.STRUCT_TYPE}}) Dancers() dancer.Dancers {
 	dancers := dancer.Dancers {}
-	for _, f := range f.nonRedundant() {
-		dancers = append(dancers, f.Dancers()...) 
-	}
+{{range .READERMETHODS}}
+	dancers = append(dancers, f.{{.}}().Dancers()...)
+{{end}}
 	return dancers
 }
 
-func (f * STRUCT_TYPE) HasDancer(d dancer.Dancer) bool {
-	for _, f := range f.nonRedundant() {
-		if f.HasDancer(d) {
-			return true
-		}
+func (f *{{.STRUCT_TYPE}}) HasDancer(d dancer.Dancer) bool {
+{{range .READERMETHODS}}
+	if f.{{.}}().HasDancer(d) {
+		return true
 	}
+{{end}}
 	return false
 }
 
 func init() {
-	foo := func(f FORMATION_NAME) {}
+	foo := func(f {{.FORMATION_NAME}}) {}
 	t := reflect.TypeOf(foo).In(0)
 	AllFormationTypes[t.Name()] = t
 }
 
-` // end
+`)) // end
 
 
 func (fdef *formationDef) generate(output_fileset *token.FileSet) (decls []ast.Decl) {
-	implName := "impl" + fdef.ts.Name.Name
-	struct_type := &ast.StructType { Fields: &ast.FieldList{ List: []*ast.Field{} } }
-	decls = append(decls, &ast.GenDecl {
-		Tok: token.TYPE,
-		Specs: []ast.Spec {
-			&ast.TypeSpec {
-				Name: ast.NewIdent(implName),
-				Type: struct_type,
-			},
-		},
-	})
-	// field reader methods
-	nonRedundant := []string{}
+	implName := util.ImplName("", fdef.ts.Name.Name)   // WHERE DO WE GET PACKAGE FROM?
+	// field reader methods for unique dancers
+	unique_dancers := []string{}
 	for _, field := range fdef.fields {
-		var field_type ast.Expr
-		if ft, ok := field.Type.(*ast.FuncType); ok {
-			if ft.Results == nil || len(ft.Results.List) == 0 {
-				continue
-			}
-			field_type = ft.Results.List[0].Type
-		} else {
-			continue
-		}
-		new_field := &ast.Field {
-			Type: field_type,
-		}
-		noslot := commentHasKeyword(field.Comment, NoSlot)
 		for _, name := range field.Names {
-			field_name := strings.ToLower(name.Name)
-			new_field.Names = append(new_field.Names, ast.NewIdent(field_name))
-			if noslot {
-				continue
+			if commentHasKeyword(field.Comment, DancersTag) {
+				unique_dancers = append(unique_dancers, name.Name)
 			}
-			reader := parseDefinition(reader_method_template)
-			v := go_tools.NewSubstitutingVisitor()
-			v.Substitutions["STRUCT_TYPE"] = implName
-			v.Substitutions["READER_NAME"] = name.Name
-			v.Substitutions["FIELD_TYPE"] = NodeString(field_type)
-			v.Substitutions["FIELD_NAME"] = field_name
-			ast.Walk(v, reader)
-			decls = append(decls, reader.Decls...)
-			if !commentHasKeyword(field.Comment, Redundant) {
-				nonRedundant = append(nonRedundant, name.Name)
-			}
-		}
-		if !noslot {
-			struct_type.Fields.List = append(struct_type.Fields.List, new_field)
 		}
 	}
 	// Formation methods
-	{
-		code := parseDefinition(formation_methods_template)
-		v := go_tools.NewSubstitutingVisitor()
-		v.Substitutions["STRUCT_TYPE"] = implName
-		v.Substitutions["FORMATION_NAME"] = fdef.ts.Name.Name
-		ast.Walk(v, code)
-		result0slice := code.Decls[0].(*ast.FuncDecl).Body.List[0].(*ast.ReturnStmt).Results[0].(*ast.CompositeLit)
-		for _, reader := range nonRedundant {
-			result0slice.Elts = append(result0slice.Elts,
-				parseExpression(fmt.Sprintf("f.%s()", reader)))
-		}
-		decls = append(decls, code.Decls...)
+	b :=bytes.NewBufferString("")
+	err := formation_methods_template.Execute(b,
+		struct {
+			STRUCT_TYPE string
+			FORMATION_NAME string
+			READERMETHODS []string
+		} {
+			STRUCT_TYPE: implName,
+			FORMATION_NAME: fdef.ts.Name.Name,
+			READERMETHODS: unique_dancers,
+		})
+	if err != nil {
+		panic(err)
 	}
-	return decls
+	code := parseDefinition(b.String())
+	return code.Decls
 }
 
 
-func commentHasKeyword(comment_group *ast.CommentGroup, keyword string) bool {
-	if comment_group == nil {
-		return false
+func commentHasKeyword(cmt ast.Node, keyword string) bool {
+	tag_test := func(comment string) bool {
+		val, ok := reflect.StructTag(comment[2:]).Lookup("fe")
+		return ok && strings.Contains(val, keyword)
 	}
-	for _, c := range comment_group.List {
-		val, ok := reflect.StructTag(c.Text[2:]).Lookup("fe")
-		if !ok {
-			continue
+	switch c := cmt.(type) {
+	case *ast.Comment:
+		if cmt == nil {
+			return false
 		}
-		if strings.Contains(val, keyword) {
-			return true
+		return tag_test(c.Text)
+	case *ast.CommentGroup:
+		if c == nil {
+			return false
+		}
+		for _, c1 := range c.List {
+			if tag_test(c1.Text) {
+				return true
+			}
 		}
 	}
 	return false
@@ -328,7 +295,7 @@ func parseExpression(exp string) ast.Expr {
 
 func parseDefinition(def string) *ast.File {
 	fset := token.NewFileSet()
-	astFile, err := parser.ParseFile(fset, "", def, 0)
+	astFile, err := parser.ParseFile(fset, "", def, parser.ParseComments)
 	if err != nil {
 		panic(fmt.Sprintf("Errors:\n%s", err))
 	}
@@ -340,3 +307,4 @@ func NodeString(n ast.Node) string {
 	format.Node(w, token.NewFileSet(), n)
 	return w.String()
 }
+

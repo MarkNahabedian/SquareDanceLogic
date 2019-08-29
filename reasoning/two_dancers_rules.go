@@ -73,29 +73,29 @@ func rule_PairOfDancers(node rete.Node, dancer1, dancer2 dancer.Dancer) {
 type Couple interface {
 	Formation
 	Couple()
-	Beau() dancer.Dancer
-	Belle() dancer.Dancer
+	Beau() dancer.Dancer      // defimpl:"read beau" fe:"dancers"
+	Belle() dancer.Dancer     // defimpl:"read belle" fe:"dancers"
 	// Roles:
-	Beaus() dancer.Dancers    // fe:"no-slot"
-	Belles() dancer.Dancers   // fe:"no-slot"
+	Beaus() dancer.Dancers
+	Belles() dancer.Dancers
 }
 
-func (f *implCouple) Ordinal() int {
+func (f *CoupleImpl) Ordinal() int {
 	return f.Beau().Ordinal()
 }
 
-func (f *implCouple) String() string {
+func (f *CoupleImpl) String() string {
 	return fmt.Sprintf("Couple(%s, %s)", f.Beau(), f.Belle())
 }
 
-func (f *implCouple) Beaus() dancer.Dancers { return dancer.Dancers{ f.Beau() } }
-func (f *implCouple) Belles() dancer.Dancers { return dancer.Dancers{ f.Belle() } }
+func (f *CoupleImpl) Beaus() dancer.Dancers { return dancer.Dancers{ f.Beau() } }
+func (f *CoupleImpl) Belles() dancer.Dancers { return dancer.Dancers{ f.Belle() } }
 
 func rule_GeneralizedCouple(node rete.Node, p Pair) {
 	d1 := p.Dancer1()
 	d2 := p.Dancer2()
 	if RightOf(d1, d2) && LeftOf(d2, d1) {
-		node.Emit(Couple(&implCouple{beau: d1, belle: d2}))
+		node.Emit(Couple(&CoupleImpl{beau: d1, belle: d2}))
 	}
 }
 
@@ -107,34 +107,34 @@ func rule_GeneralizedCouple(node rete.Node, p Pair) {
 type MiniWave interface{
 	Formation
 	MiniWave()
-	Dancer1() dancer.Dancer
-	Dancer2() dancer.Dancer
+	Dancer1() dancer.Dancer   // defimpl:"read dancer1" fe:"dancers"
+	Dancer2() dancer.Dancer   // defimpl:"read dancer2" fe:"dancers"
     // Handedness
-	Handedness() Handedness   // fe:"no-slot"
+	Handedness() Handedness
 	// Roles
-	Beaus() dancer.Dancers   // fe:"no-slot"
-	Belles() dancer.Dancers  // fe:"no-slot"
+	Beaus() dancer.Dancers
+	Belles() dancer.Dancers
 }
 
 func MakeMiniWave(dancer1, dancer2 dancer.Dancer) MiniWave {
 	if dancer1.Ordinal() < dancer2.Ordinal() {
-		return &implMiniWave{ dancer1, dancer2 }
+		return &MiniWaveImpl{ dancer1, dancer2 }
 	}
-	return &implMiniWave{ dancer2, dancer1 }
+	return &MiniWaveImpl{ dancer2, dancer1 }
 }
 
-func (mw *implMiniWave) String() string {
+func (mw *MiniWaveImpl) String() string {
 	return fmt.Sprintf("MiniWave(%s, %s, %s)", mw.Dancer1(), mw.Dancer2(), mw.Handedness())
 }
 
-func (mw *implMiniWave) Handedness() Handedness {
+func (mw *MiniWaveImpl) Handedness() Handedness {
 	if RightOf(mw.Dancer1(), mw.Dancer2()) {
 		return RightHanded
 	}
 	return LeftHanded
 }
 
-func (mw *implMiniWave) Beaus() dancer.Dancers {
+func (mw *MiniWaveImpl) Beaus() dancer.Dancers {
 	switch mw.Handedness() {
 		case RightHanded:
 			return dancer.Dancers{
@@ -148,7 +148,7 @@ func (mw *implMiniWave) Beaus() dancer.Dancers {
 	}
 }
 
-func (mw *implMiniWave) Belles() dancer.Dancers {
+func (mw *MiniWaveImpl) Belles() dancer.Dancers {
 	switch mw.Handedness() {
 		case RightHanded:
 			return dancer.Dancers{}
@@ -182,22 +182,22 @@ func rule_MiniWave(node rete.Node, p Pair) {
 type FaceToFace interface {
 	Formation
 	FaceToFace()
-	Dancer1() dancer.Dancer
-	Dancer2() dancer.Dancer
+	Dancer1() dancer.Dancer     // defimpl:"read dancer1" fe:"dancers" 
+	Dancer2() dancer.Dancer     // defimpl:"read dancer2" fe:"dancers"
 	// Roles
-	Leaders() dancer.Dancers    // fe:"no-slot"
-	Trailers() dancer.Dancers   // fe:"no-slot"
+	Leaders() dancer.Dancers
+	Trailers() dancer.Dancers
 }
 
-func (f *implFaceToFace) String() string {
+func (f *FaceToFaceImpl) String() string {
 	return fmt.Sprintf("FaceToFace(%s, %s)", f.Dancer1(), f.Dancer2())
 }
 
-func (f *implFaceToFace) Leaders() dancer.Dancers {
+func (f *FaceToFaceImpl) Leaders() dancer.Dancers {
 	return dancer.Dancers {}
 }
 
-func (f *implFaceToFace) Trailers() dancer.Dancers {
+func (f *FaceToFaceImpl) Trailers() dancer.Dancers {
 	return dancer.Dancers {
 		f.Dancer1(),
 		f.Dancer2(),
@@ -211,7 +211,7 @@ func rule_FaceToFace(node rete.Node, p Pair) {
 		return
 	}
 	if InFrontOf(d1, d2) && InFrontOf(d2, d1) {
-		node.Emit(FaceToFace(&implFaceToFace{dancer1: d1, dancer2: d2}))
+		node.Emit(FaceToFace(&FaceToFaceImpl{dancer1: d1, dancer2: d2}))
 	}
 }
 
@@ -220,17 +220,17 @@ func rule_FaceToFace(node rete.Node, p Pair) {
 type BackToBack interface {
 	Formation
 	BackToBack()
-	Dancer1() dancer.Dancer
-	Dancer2() dancer.Dancer
+	Dancer1() dancer.Dancer    // defimpl:"read dancer1" fe:"dancers"
+	Dancer2() dancer.Dancer    // defimpl:"read dancer2" fe:"dancers"
 	// Roles:
-	Leaders() dancer.Dancers   // fe:"no-slot"
+	Leaders() dancer.Dancers
 }
 
-func (f *implBackToBack) String() string {
+func (f *BackToBackImpl) String() string {
 	return fmt.Sprintf("BackToBack(%s, %s)", f.Dancer1(), f.Dancer2())
 }
 
-func (f *implBackToBack) Leaders() dancer.Dancers {
+func (f *BackToBackImpl) Leaders() dancer.Dancers {
 	return dancer.Dancers {
 		f.Dancer1(),
 		f.Dancer2(),
@@ -244,7 +244,7 @@ func rule_BackToBack(node rete.Node, p Pair) {
 		return
 	}
 	if Behind(d1, d2) && Behind(d2, d1) {
-		node.Emit(BackToBack(&implBackToBack{dancer1: d1, dancer2: d2}))
+		node.Emit(BackToBack(&BackToBackImpl{dancer1: d1, dancer2: d2}))
 	}
 }
 
@@ -254,24 +254,28 @@ func rule_BackToBack(node rete.Node, p Pair) {
 type Tandem interface {
 	Formation
 	Tandem()
-	Leader() dancer.Dancer
-	Trailer() dancer.Dancer
-	Direction() geometry.Direction  // fe:"no-slot"
+	Leader() dancer.Dancer          // defimpl:"read leader" fe:"dancers"
+	Trailer() dancer.Dancer         // defimpl:"read trailer" fe:"dancers"
+	Direction() geometry.Direction
 	// Roles:
-	Leaders() dancer.Dancers   // fe:"no-slot"
-	Trailers() dancer.Dancers   // fe:"no-slot"
+	Leaders() dancer.Dancers
+	Trailers() dancer.Dancers
 }
 
-func (f *implTandem) String() string {
+func (f *TandemImpl) String() string {
 	return fmt.Sprintf("Tandem(%s, %s)", f.Leader(), f.Trailer())
 }
 
-func (f *implTandem) Leaders() dancer.Dancers {
+func (f *TandemImpl) Leaders() dancer.Dancers {
 	return dancer.Dancers{ f.Leader() }
 }
 
-func (f *implTandem) Trailers() dancer.Dancers {
+func (f *TandemImpl) Trailers() dancer.Dancers {
 	return dancer.Dancers{ f.Trailer() }
+}
+
+func (t *TandemImpl) Direction() geometry.Direction {
+	return t.Leader().Direction()
 }
 
 func rule_Tandem(node rete.Node, p Pair) {
@@ -281,7 +285,7 @@ func rule_Tandem(node rete.Node, p Pair) {
 		return
 	}
 	if Behind(d1, d2) && InFrontOf(d2, d1) {
-		node.Emit(Tandem(&implTandem{leader: d1, trailer: d2}))
+		node.Emit(Tandem(&TandemImpl{leader: d1, trailer: d2}))
 	}
 }
 
