@@ -2,7 +2,6 @@ package reasoning
 
 import "reflect"
 import "squaredance/dancer"
-import "squaredance/geometry"
 
 // Formation represents a square dance formation.
 type Formation interface {
@@ -50,6 +49,3 @@ func OrderedDancers(dancers ...dancer.Dancer) bool {
 	return true
 }
 
-func (t *implTandem) Direction() geometry.Direction {
-	return t.Leader().Direction()
-}
