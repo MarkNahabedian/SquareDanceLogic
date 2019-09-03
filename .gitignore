@@ -6,3 +6,4 @@ reasoning/generate_roles.exe
 reasoning/formation_types.txt
 reasoning/*_rules_out.go
 reasoning/generated_roles.go
+reasoning/feout_*.go
