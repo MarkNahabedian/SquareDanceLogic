@@ -44,52 +44,40 @@ func LookupFormationType(name string) FormationType {
 // Each Action maps a Formation to a FormationAction which represents
 // the details of how the action should be performed from that Formation.
 type Action interface {
-	Name() string
-	Description() string
+	Name() string              // defimpl:"read name"
+	Description() string      // defimpl:"read description"
+	AddFormationAction(...FormationAction)     // defimpl:"append formationActions"
+	DoFormationActions(func(FormationAction) bool)         // defimpl:"iterate formationActions"
 	GetFormationAction(FormationType) FormationAction
 	GetFormationActionFor(f reasoning.Formation) FormationAction
-	AddFormationAction(FormationAction)
 }
 
-type implAction struct {
-	name string
-	description string
-	formationActions []FormationAction
-}
 
-func (a *implAction) Name() string { return a.name }
-func (a *implAction) Description() string { return a.description }
-
-func (a *implAction) GetFormationAction(ft FormationType) FormationAction {
-	for _, fa := range a.formationActions {
+func (a *ActionImpl) GetFormationAction(ft FormationType) FormationAction {
+	var found FormationAction
+	a.DoFormationActions(func(fa FormationAction) bool {
 		if fa.ApplicableToFormationType(ft) {
-			return fa
+			found = fa
+			return false
 		}
-	}
-	return nil
+		return true
+	})
+	return found
 }
 
-func (a *implAction) GetFormationActionFor(f reasoning.Formation) FormationAction {
+func (a *ActionImpl) GetFormationActionFor(f reasoning.Formation) FormationAction {
 	t := reflect.TypeOf(f)
-	for _, fa := range a.formationActions {
+	var found FormationAction
+	a.DoFormationActions(func(fa FormationAction) bool {
 		if t.ConvertibleTo(fa.FormationType()) {
-			return fa
+			found = fa
+			return false
 		}
-	}
-	return nil
+		return true
+	})
+	return found
 }
 
-func (a *implAction) AddFormationAction(fa FormationAction) {
-	if a.GetFormationAction(fa.FormationType()) != nil {
-		panic(fmt.Sprintf("Attempt to redefine %s", fa))
-	}
-	a.formationActions = append(a.formationActions, fa)
-}
-
-
-func (a *implAction) FormationActions() []FormationAction {
-	return a.formationActions
-}
 
 var AllActions []Action = []Action{}
 
@@ -106,7 +94,7 @@ func defineAction(name string, description string) {
 	if FindAction(name) != nil {
 		panic(fmt.Sprintf("Attempt to redefine action %s", name))
 	}
-	AllActions = append(AllActions, &implAction{
+	AllActions = append(AllActions, &ActionImpl{
 		name: name,
 		description: description,
 		formationActions: []FormationAction{},
@@ -117,36 +105,29 @@ func defineAction(name string, description string) {
 // FormationAction represents how an Action should be performed from a
 // specific Formation.
 type FormationAction interface {
-	Action() Action
-	FormationType() FormationType
+	Action() Action                        // defimpl:"read action"
+	FormationType() FormationType         // defimpl:"read formationType"
+	DoItFunc() func(reasoning.Formation)   // defimpl:"read doItFunc"
+	DoIt(reasoning.Formation)
+	String() string
 	ApplicableTo(reasoning.Formation) bool
 	ApplicableToFormationType(FormationType) bool
-	DoIt(reasoning.Formation)
 }
 
 
-type implFormationAction struct {
-	action Action
-	formationType FormationType
-	doItFunc func(reasoning.Formation)
-}
-
-func (fa *implFormationAction) Action() Action { return fa.action }
-func (fa *implFormationAction) FormationType() FormationType { return fa.formationType }
-
-func (fa *implFormationAction) String() string {
+func (fa *FormationActionImpl) String() string {
 	return fmt.Sprintf("%s on %s", fa.Action().Name(), fa.FormationType().Name())
 }
 
-func (fa *implFormationAction) ApplicableToFormationType(ft FormationType) bool {
+func (fa *FormationActionImpl) ApplicableToFormationType(ft FormationType) bool {
 	return ft.AssignableTo(fa.formationType)
 }
 
-func (fa *implFormationAction) ApplicableTo(f reasoning.Formation) bool {
+func (fa *FormationActionImpl) ApplicableTo(f reasoning.Formation) bool {
 	return fa.ApplicableToFormationType(FormationType(reflect.TypeOf(f)))
 }
 
-func (fa *implFormationAction) DoIt(f reasoning.Formation) {
+func (fa *FormationActionImpl) DoIt(f reasoning.Formation) {
 	if !fa.ApplicableTo(f) {
 		panic(fmt.Sprintf("%s doesn't apply to %#v", fa, f))
 	}
@@ -157,10 +138,12 @@ func (fa *implFormationAction) DoIt(f reasoning.Formation) {
 func defineFormationAction(actionName string, formationType FormationType, doit func(reasoning.Formation)) {
 	a := FindAction(actionName)
 	if a == nil {
-		a = &implAction{ name: actionName, formationActions: []FormationAction{} }
+		a = &ActionImpl{
+			name: actionName,
+			formationActions: []FormationAction{} }
 		AllActions = append(AllActions, a)
 	}
-	a.AddFormationAction(&implFormationAction{
+	a.AddFormationAction(&FormationActionImpl{
 		action: a,
 		formationType: formationType,
 		doItFunc: doit,
