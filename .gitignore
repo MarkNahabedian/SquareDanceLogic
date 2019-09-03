@@ -1,11 +1,8 @@
 *.dot
+*.svg
+impl_*.go
 reasoning/all_rules.txt
-reasoning/formation_types.txt
-reasoning/formations_rete.dot.svg
-reasoning/four_dancers.go
 reasoning/generate_roles.exe
+reasoning/formation_types.txt
+reasoning/*_rules_out.go
 reasoning/generated_roles.go
-reasoning/impl_*.go
-reasoning/rule_emits.go
-reasoning/set.go
-reasoning/two_dancers.go
