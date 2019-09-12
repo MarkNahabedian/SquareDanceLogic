@@ -54,18 +54,18 @@ func (g Gender) Opposite() Gender {
 type Dancer interface{
 	String() string
 	IsDancer() bool
-	Set() Set
+	Set() Set                           // defimpl:"read set"
 	// Couple numbers atart at 1 for the #1 head couple (facing down
 	// the hall). CoupleNumber is only meaningful for Dancers that
 	// started in a squared set.  CoupleNumber <= 0 are invalid.
-	CoupleNumber() int
-	Gender() Gender
+	CoupleNumber() int                // defimpl:"read coupleNumber"
+	Gender() Gender                    // defimpl:"read gender"
 	// Each Dancer in a set has a unique Ordinal.  Ordinal is used to
 	// avoid duplicating symetric Formations.
-	Ordinal() int
-	Position() geometry.Position
-	Direction() geometry.Direction
-	OriginalPartner() Dancer
+	Ordinal() int                      // defimpl:"read ordinal"
+	Position() geometry.Position       // defimpl:"read position"
+	Direction() geometry.Direction     // defimpl:"read direction"
+	OriginalPartner() Dancer          // defimpl:"read originalPartner"
 	SetOriginalPartner(Dancer)
 	Move(geometry.Position, geometry.Direction) Dancer
 	// A single dancer is still a formation so it implements the Formation interface
@@ -110,82 +110,43 @@ func (ds Dancers) Ordered() Dancers {
 }
 
 
-type dancer struct {
-	// The set of dancers that this dancer is dancing with.
-	set          Set
-	coupleNumber int
-	gender       Gender
-	// Each dancer in a set has a unique Ordinal.
-	ordinal         int
-	position        geometry.Position
-	direction       geometry.Direction
-	originalPartner Dancer
-}
-
-
-func (d *dancer) String() string {
+func (d *DancerImpl) String() string {
 	if d.CoupleNumber() <= 0 || d.Gender() == Unspecified {
 		return fmt.Sprintf("Dancer_%d", d.Ordinal())
 	}
 	return fmt.Sprintf("Dancer_%d%s", d.CoupleNumber(), d.Gender())
 }
 
-func (d *dancer) IsDancer() bool { return true }
+func (d *DancerImpl) IsDancer() bool { return true }
 
-func (d *dancer) Set() Set { return d.set }
-
-func (d *dancer) CoupleNumber() int { return d.coupleNumber }
-
-func (d *dancer) Gender() Gender { return d.gender }
-
-func (d *dancer) Ordinal() int { return d.ordinal }
-
-func (d *dancer) Position() geometry.Position { return d.position }
-
-func (d *dancer) Direction() geometry.Direction { return d.direction }
-
-func (d *dancer) OriginalPartner() Dancer { return d.originalPartner }
-
-func (d *dancer) SetOriginalPartner(d2 Dancer) {
+func (d *DancerImpl) SetOriginalPartner(d2 Dancer) {
 	d.originalPartner = d2
 }
 
 // Modify the Dancer's position and direction.
-func (d *dancer) Move(newPosition geometry.Position, newDirection geometry.Direction) Dancer {
+func (d *DancerImpl) Move(newPosition geometry.Position, newDirection geometry.Direction) Dancer {
 	d.position = newPosition
 	d.direction = newDirection
 	return d
 }
 
-func (d1 *dancer) GoshuaEqual(d2 interface{}) (bool, error) {
-	// If Dancers aren't EQ then they're not EQUAL.
+func (d1 *DancerImpl) GoshuaEqual(d2 interface{}) (bool, error) {
+	// If DancerImpls aren't EQ then they're not EQUAL.
 	return false, nil
 }
 
 
 type Set interface {
-	FlagpoleCenter() geometry.Position
-	Dancers()        Dancers
+	FlagpoleCenter() geometry.Position   // defimpl:"read flagpoleCenter"
+	Dancers()        Dancers              // defimpl:"read dancers"
 
 }
 
-type set struct {
-	flagpoleCenter geometry.Position
-	dancers        Dancers
-}
-
-func (s *set) FlagpoleCenter() geometry.Position {
-	return s.flagpoleCenter
-}
-
-func (s *set) Dancers() Dancers {
-	return s.dancers
-}
 
 // SquaredSet returns a new squared set with the specified number of couples.
 func NewSquaredSet(couples int) Set {
 	circleFraction := geometry.FullCircle.DivideBy(float64(couples))
-	s := set{
+	s := SetImpl{
 		flagpoleCenter: geometry.NewPositionDownLeft(0, 0),
 		dancers:        make(Dancers, couples*2),
 	}
@@ -203,7 +164,7 @@ func NewSquaredSet(couples int) Set {
 				ordinalAdjustment = 1
 			}
 			index := 2*couple + ordinalAdjustment
-			s.dancers[index] = &dancer{
+			s.dancers[index] = &DancerImpl{
 				set:          &s,
 				ordinal:      index,
 				gender:       gender,
@@ -228,7 +189,7 @@ func NewSquaredSet(couples int) Set {
 func MakeSomeDancers(count int) Dancers {
 	dancers := Dancers{}
 	for ordinal := 0; ordinal < count; ordinal++ {
-		dancers = append(dancers,&dancer{
+		dancers = append(dancers,&DancerImpl{
 			set:          nil,
 			ordinal:      ordinal,
 			gender:       Unspecified,
@@ -324,16 +285,16 @@ func SetDifference(universe Dancers, minus Dancers) Dancers {
 // implement the reasoning.Formation interface:
 
 // NumberOfDancers is part of the reasoning.Formation interface.
-func (d *dancer) NumberOfDancers() int { return 1 }
+func (d *DancerImpl) NumberOfDancers() int { return 1 }
 
 // Dancers is part of the reasoning.Formation interface.
-func (d *dancer) Dancers() Dancers {
+func (d *DancerImpl) Dancers() Dancers {
 	return Dancers { d }
 }
 
 // HasDancer is part of the reasoning.Formation interface.
-func (d *dancer) HasDancer(d2 Dancer) bool {
-	if d2, ok := d2.(*dancer); ok {
+func (d *DancerImpl) HasDancer(d2 Dancer) bool {
+	if d2, ok := d2.(*DancerImpl); ok {
 		return d == d2
 	}
 	return false
