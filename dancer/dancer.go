@@ -139,7 +139,19 @@ func (d1 *DancerImpl) GoshuaEqual(d2 interface{}) (bool, error) {
 type Set interface {
 	FlagpoleCenter() geometry.Position   // defimpl:"read flagpoleCenter"
 	Dancers()        Dancers              // defimpl:"read dancers"
+	// Support the reasoning/Formation interface:
+	NumberOfDancers() int
+	HasDancer(d Dancer) bool
+}
 
+// NumberOfDancers is part of the reasoning/Formatioon interface.
+func (s *SetImpl) NumberOfDancers() int{
+	return s.Dancers().NumberOfDancers()
+}
+
+// HasDancer is part of the reasoning/Formatioon interface.
+func (s *SetImpl) HasDancer(d Dancer) bool {
+	return s.Dancers().HasDancer(d)
 }
 
 
