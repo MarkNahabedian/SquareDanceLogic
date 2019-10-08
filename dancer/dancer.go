@@ -4,6 +4,7 @@ package dancer
 
 import "bytes"
 import "fmt"
+import "math"
 import "sort"
 import "squaredance/geometry"
 
@@ -107,6 +108,40 @@ func (ds Dancers) Less(i, j int) bool {
 func (ds Dancers) Ordered() Dancers {
 	sort.Sort(ds)
 	return ds
+}
+
+// DancersByLocation is like Danceers, but is sorted by distance from
+// a corner of the floor rather than by ordinal.
+type SpatiallyOrderedDancers Dancers
+
+func (ds SpatiallyOrderedDancers) Len() int {
+	return len(ds)
+}
+
+func (ds SpatiallyOrderedDancers) Swap(i, j int) {
+	ds[i], ds[j] = ds[j], ds[i]
+}
+
+func (ds SpatiallyOrderedDancers) Less(i, j int) bool {
+	minLeft := float64(ds[0].Position().Left)
+	minDown := float64(ds[0].Position().Down)
+	for _, d := range(ds) {
+		minLeft = math.Min(minLeft, float64(d.Position().Left))
+		minDown = math.Min(minDown, float64(d.Position().Down))
+	}
+	distance := func(d Dancer) float64 {
+		p := d.Position()
+		dl := float64(p.Left) - minLeft
+		dd := float64(p.Down) - minDown
+		return math.Sqrt(dl * dl + dd * dd)
+	}
+	di := distance(ds[i])
+	dj := distance(ds[j])
+	// If they're the same distance, prefer the least Left.
+	if di == dj {
+		return ds[i].Position().Left  < ds[j].Position().Left
+	}
+	return di < dj
 }
 
 

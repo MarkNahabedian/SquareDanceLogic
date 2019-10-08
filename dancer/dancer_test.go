@@ -1,6 +1,7 @@
 package dancer
 
 import "reflect"
+import "sort"
 import "testing"
 import "goshua/goshua"
 import "goshua/equality"
@@ -73,5 +74,27 @@ func TestSetDifference(t *testing.T) {
 	if want := s.Dancers()[1:3].Ordered(); !reflect.DeepEqual(got, want) {
 		t.Errorf("Intersection failed: want: %s, got: %s",
 			want.String(), got.String())
+	}
+}
+
+func TestSpatiallyOrderedDancers(t *testing.T) {
+	s := NewSquaredSet(4)
+	ordinals := func (ds Dancers) []int {
+		result := []int{}
+		for _, d := range ds {
+			result = append(result, d.Ordinal())
+		}
+		return result
+	}
+	dancers := s.Dancers()
+	sort.Sort(SpatiallyOrderedDancers(dancers))
+	gots := ordinals(dancers)
+	wants := []int{ 2, 1, 3, 0, 4, 7, 5, 6 }
+	for i, got := range gots {
+		want := wants[i]
+		if got != want {
+			t.Errorf("Spatial ordering failed at %d: want: %d, got: %d",
+				i, got, want)
+		}
 	}
 }
