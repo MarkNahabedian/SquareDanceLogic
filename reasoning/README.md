@@ -50,7 +50,7 @@ go test squaredance/reasoning
 </pre>
 has the side effect of writing several files:
 
-* all_rules.txt contains a luist of all rules that have been defined along with their parameters and outputs.
+* all_rules.txt contains a list of all rules that have been defined along with their parameters and outputs.
 
 * formation_types.txt just maps from a from the name of a square dance formation to the reflect.Type of the formation's interface type.
 
