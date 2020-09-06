@@ -48,9 +48,7 @@ func init() {
 }
 
 func TestShowFullRete(t *testing.T) {
-	root_node := rete.MakeRootNode()
-	loadAllRules(root_node)
-	bufferAllTypes(root_node)
+	root_node := MakeFormationsRete()
 	// Show the rete
 	rete.Walk(root_node, func(n rete.Node) {
 		t.Logf("node %T %s", n, n.Label())
@@ -99,9 +97,7 @@ func TestAllFormations(t *testing.T) {
 
 /*
 func TestCouple(t *testing.T) {
-	root_node := rete.MakeRootNode()
-	loadAllRules(root_node)
-	bufferAllTypes(root_node)
+	root_node := MakeFormationsRete()
 
 	set := dancer.NewSquaredSet(4)
 	root_node.Receive(set)
@@ -113,8 +109,7 @@ func TestCouple(t *testing.T) {
 
 /*
 func TestTwoFacedLines(t *testing.T) {
-	root_node := rete.MakeRootNode()
-	loadAllRules(root_node)
+	root_node := MakeFormationsRete()
 
 }
 */
