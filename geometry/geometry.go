@@ -36,6 +36,9 @@ func (d Direction) String() string {
 }
 
 var Direction0 Direction = 0
+var Direction1 Direction = Direction0 + FullCircle / 4
+var Direction2 Direction = Direction0 + 2 * FullCircle / 4
+var Direction3 Direction = Direction0 + 3 * FullCircle / 4
 
 // FullCircle is a change in Direction of 1.0.
 const FullCircle Direction = 1.0
