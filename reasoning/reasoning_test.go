@@ -10,21 +10,6 @@ import "goshua/rete"
 import "goshua/rete/rule_compiler/runtime"
 
 
-func loadAllRules(root rete.Node) {
-	for _, rule := range runtime.AllRules {
-		rule.Installer()(root)
-	}
-}
-
-func bufferAllTypes(root rete.Node) {
-	// Make sure the assertions get buffered so we can dump them:
-	rete.Walk(root, func(n rete.Node) {
-		if _, ok := n.(*rete.TypeTestNode); ok {
-			_ = rete.GetBuffered(n)
-		}
-	})
-}
-
 func showAllAssertions(t *testing.T, root rete.Node) {
 	rete.Walk(root, func(n rete.Node) {
 		if n, ok := n.(*rete.BufferNode); ok {
