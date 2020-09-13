@@ -2,8 +2,6 @@ package action
 
 import "testing"
 import "reflect"
-import "goshua/rete"
-import "goshua/rete/rule_compiler/runtime"
 import "squaredance/geometry"
 import "squaredance/dancer"
 import "squaredance/timeline"
@@ -86,57 +84,38 @@ func TestAboutFace(t *testing.T) {
 }
 
 
+var formationFinder *reasoning.FormationFinder = nil
+
 func get_formation(dancers dancer.Dancers, formation_type reflect.Type) []reasoning.Formation {
-	root_node := rete.MakeRootNode()
-	for _, rule := range runtime.AllRules {
-		rule.Installer()(root_node)
+	if formationFinder == nil {
+		formationFinder = reasoning.MakeFormationFinder()
 	}
+	formationFinder.Clear()
+	formationFinder.Injest(dancers)
 	result := []reasoning.Formation{}
-	rete.Walk(root_node, func(n rete.Node) {
-		ttn, ok := n.(*rete.TypeTestNode)
-		if !ok {
-			return
-		}
-		if ttn.Type != formation_type {
-			return
-		}
-		rete.Connect(n, rete.MakeActionNode(func(item interface{}) {
-			result = append(result, item.(reasoning.Formation))
-		}))
+	formationFinder.DoFormations(formation_type, func (f reasoning.Formation) {
+		result = append(result, f)
 	})
-	for _, d := range dancers {
-		root_node.Receive(d)
-	}
 	return result
 }
+
 
 func TestMeet(t *testing.T) {
 	set := dancer.NewSquaredSet(4)
 	tl := timeline.NewTimeline(set.Dancers())
 	tl.MakeSnapshot(0)
-	root_node := rete.MakeRootNode()
-	for _, rule := range runtime.AllRules {
-		rule.Installer()(root_node)
-	}
+	// Get FaceToFace formations:
+	formations := get_formation(set.Dancers(), reflect.TypeOf(func(t reasoning.FaceToFace){}).In(0))
+	// Restrict to heads:
 	headsff := []reasoning.FaceToFace{}
-	rete.Walk(root_node, func(n rete.Node) {
-		ttn, ok := n.(*rete.TypeTestNode)
-		if !ok {
-			return
+	for _, ff := range formations {
+		heads := reasoning.LookupRole("OriginalHeads").Dancers(ff.Dancers())
+		if len(heads) == 2 {
+			headsff = append(headsff, ff.(reasoning.FaceToFace))
 		}
-		if ttn.Type != reflect.TypeOf(headsff).Elem() {
-			return
-		}
-		rete.Connect(n, rete.MakeActionNode(func(item interface{}) {
-			ff := item.(reasoning.FaceToFace)
-			heads := reasoning.LookupRole("OriginalHeads").Dancers(ff.Dancers())
-			if len(heads) == 2 {
-				headsff = append(headsff, ff)
-			}
-		}))
-	})
-	root_node.Receive(set)
+	}
 	if l := len(headsff); l != 2 {
+		t.Log(headsff)
 		t.Fatalf("Expected 2 Head FaceToFace formations, got %d.", l)
 	}
 	for _, ff := range headsff {
@@ -155,8 +134,7 @@ func TestMeet(t *testing.T) {
 		}
 	}
 	// Head dancers are close together now
-	for _, ff1 := range headsff {
-		ff := ff1.(reasoning.FaceToFace)
+	for _, ff := range headsff {
 		distance := tl.FindSnapshot(ff.Dancer1(), 1).Position().Distance(
 			tl.FindSnapshot(ff.Dancer2(), 1).Position())
 		if distance > geometry.CoupleDistance {
@@ -168,9 +146,9 @@ func TestMeet(t *testing.T) {
 
 func face_to_face() reasoning.Formation {
 	dancers := dancer.MakeSomeDancers(2)
-	dancers[0].Move(geometry.Position{ Left: geometry.Left0, Down: geometry.Down0},
+	dancers[0].Move(geometry.Position{ Left: geometry.Left0, Down: geometry.Down0 },
 		geometry.Direction0)
-	dancers[1].Move(geometry.Position{Left: geometry.Left0, Down: geometry.Down1},
+	dancers[1].Move(geometry.Position{ Left: geometry.Left0, Down: geometry.Down1 },
 		geometry.FullCircle / 2)
 	r := get_formation(dancers, reflect.TypeOf(func(t reasoning.FaceToFace){}).In(0))
 	return r[0]
@@ -178,9 +156,9 @@ func face_to_face() reasoning.Formation {
 
 func back_to_back() reasoning.Formation {
 	dancers := dancer.MakeSomeDancers(2)
-	dancers[0].Move(geometry.Position{ Left: geometry.Left0, Down: geometry.Down0},
+	dancers[0].Move(geometry.Position{ Left: geometry.Left0, Down: geometry.Down0 },
 		geometry.FullCircle / 2)
-	dancers[1].Move(geometry.Position{Left: geometry.Left0, Down: geometry.Down1},
+	dancers[1].Move(geometry.Position{ Left: geometry.Left0, Down: geometry.Down1 },
 		geometry.Direction0)
 	r := get_formation(dancers, reflect.TypeOf(func(t reasoning.BackToBack){}).In(0))
 	return r[0]
@@ -195,9 +173,9 @@ func mini_wave(handedness reasoning.Handedness) reasoning.Formation {
 	case reasoning.LeftHanded:
 		dir = geometry.Direction0.Opposite()
 	}
-	dancers[0].Move(geometry.Position{ Left: geometry.Left0, Down: geometry.Down0},
+	dancers[0].Move(geometry.Position{ Left: geometry.Left0, Down: geometry.Down0 },
 		dir.Opposite())
-	dancers[1].Move(geometry.Position{Left: geometry.Left1, Down: geometry.Down0},
+	dancers[1].Move(geometry.Position{ Left: geometry.Left1, Down: geometry.Down0 },
 		dir)
 	r := get_formation(dancers, reflect.TypeOf(func(t reasoning.MiniWave){}).In(0))
 	return r[0]
