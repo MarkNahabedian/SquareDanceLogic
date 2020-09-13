@@ -33,12 +33,12 @@ func init() {
 }
 
 func TestShowFullRete(t *testing.T) {
-	root_node := MakeFormationsRete()
+	formation_finder := MakeFormationFinder()
 	// Show the rete
-	rete.Walk(root_node, func(n rete.Node) {
+	rete.Walk(formation_finder.rete, func(n rete.Node) {
 		t.Logf("node %T %s", n, n.Label())
 	})
-	graph, err := rete.MakeGraph(root_node)
+	graph, err := rete.MakeGraph(formation_finder.rete)
 	if err != nil {
 		t.Fatal(err)
 	}
