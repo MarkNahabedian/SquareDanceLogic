@@ -2,6 +2,7 @@
 package reasoning
 
 import "fmt"
+import "reflect"
 import "goshua/rete"
 import "squaredance/dancer"
 import "squaredance/geometry"
@@ -13,44 +14,33 @@ import "squaredance/geometry"
 // Dancers in both possible orderings, so for every two Dancers, two Pairs
 // are made, one with one dancer as Dancer1, and the other with the other
 // Danceer as Dancer1.  This should simplify a number of the other two Dancer
-// rules, which dont need to consider which Dancer is which in a given Pair
+// rules, which don't need to consider which Dancer is which in a given Pair
 // because there will be another Pair with its Dancers in the other ordering.
 type Pair interface {
 	// Should Pair be a Formation?
 	Pair()
-	Dancer1() dancer.Dancer
-	Dancer2() dancer.Dancer
+	Dancer1() dancer.Dancer   // defimpl:"read dancer1"
+	Dancer2() dancer.Dancer   // defimpl:"read dancer2"
 }
 
 func MakePair(dancer1, dancer2 dancer.Dancer) Pair {
+/*
 	if dancer1.Ordinal() < dancer2.Ordinal() {
 		return Pair(&pair{ dancer1: dancer1, dancer2: dancer2 })
 	}
-	return Pair(&pair{ dancer1: dancer2, dancer2: dancer1 })
+*/
+	return Pair(&PairImpl{ dancer1: dancer2, dancer2: dancer1 })
 }
 
-type pair struct {
-	dancer1 dancer.Dancer
-	dancer2 dancer.Dancer
-}
+func (p *PairImpl) Pair() {}
 
-func (p *pair) Pair() {}
-
-// Dancer1 returns one dancer of a Pair.
-func (p *pair) Dancer1() dancer.Dancer {
-	return p.dancer1
-}
-
-// Dancer2 returns the Dancer of the Pair that is not returned by Dancer1.
-func (p *pair) Dancer2() dancer.Dancer {
-	return p.dancer2
-}
-
-func (p *pair) Ordinal() int {
+/*
+func (p *PairImpl) Ordinal() int {
 	return p.dancer1.Ordinal()
 }
+*/
 
-func (p *pair) String() string {
+func (p *PairImpl) String() string {
 	return fmt.Sprintf("Pair(%s, %s)", p.dancer1, p.dancer2)
 }
 
@@ -100,12 +90,36 @@ func rule_GeneralizedCouple(node rete.Node, p Pair) {
 }
 
 
+type TwoDancerSymetric interface {
+	isSymetricHelper(TwoDancerSymetric) bool
+	Dancer1() dancer.Dancer
+	Dancer2() dancer.Dancer
+}
+
+// IsTwoDancerSymetric returns true if the two Formations would be
+// identical to each other if the dancers were swapped.
+func IsTwoDancerSymetric(formation1, formation2 interface{}) bool {
+	f1, ok1 := formation1.(TwoDancerSymetric)
+	f2, ok2 := formation2.(TwoDancerSymetric)
+	if !(ok1 && ok2) {
+		return false
+	}
+	if reflect.TypeOf(formation1) != reflect.TypeOf(formation2) {
+		return false
+	}
+	return (f1.isSymetricHelper(f2) &&
+		f1.Dancer1() == f2.Dancer2() &&
+                f1.Dancer2() == f2.Dancer1())
+}
+
+
 // A MiniWave consists of two Dancers facing in opposite directions.
 // There isn't anything inate to a MiniWave that would restrict which
 // of the same two Dancers is Dancer1 versus which is Dancer2 unless
 // we resort to Dancer.Ordinal.
 type MiniWave interface{
 	Formation
+	TwoDancerSymetric
 	MiniWave()
 	Dancer1() dancer.Dancer   // defimpl:"read dancer1" fe:"dancers"
 	Dancer2() dancer.Dancer   // defimpl:"read dancer2" fe:"dancers"
@@ -121,6 +135,11 @@ func MakeMiniWave(dancer1, dancer2 dancer.Dancer) MiniWave {
 		return &MiniWaveImpl{ dancer1, dancer2 }
 	}
 	return &MiniWaveImpl{ dancer2, dancer1 }
+}
+
+func (mw *MiniWaveImpl) isSymetricHelper(other TwoDancerSymetric) bool {
+	o, ok := other.(*MiniWaveImpl)
+	return ok && mw.Handedness() == o.Handedness()
 }
 
 func (mw *MiniWaveImpl) String() string {
@@ -181,12 +200,17 @@ func rule_MiniWave(node rete.Node, p Pair) {
 // FaceToFace represents two dancewrs that are facing each other.
 type FaceToFace interface {
 	Formation
+	TwoDancerSymetric
 	FaceToFace()
 	Dancer1() dancer.Dancer     // defimpl:"read dancer1" fe:"dancers" 
 	Dancer2() dancer.Dancer     // defimpl:"read dancer2" fe:"dancers"
 	// Roles
 	Leaders() dancer.Dancers
 	Trailers() dancer.Dancers
+}
+
+func (mw *FaceToFaceImpl)  isSymetricHelper(other TwoDancerSymetric) bool {
+	return true
 }
 
 func (f *FaceToFaceImpl) String() string {
@@ -207,7 +231,8 @@ func (f *FaceToFaceImpl) Trailers() dancer.Dancers {
 func rule_FaceToFace(node rete.Node, p Pair) {
 	d1 := p.Dancer1()
 	d2 := p.Dancer2()
-	if d1.Ordinal() >= d2.Ordinal() {  // Huh?  de-dup?
+	// Remove the duplication that's inherent in Pair:
+	if d1.Ordinal() >= d2.Ordinal() {
 		return
 	}
 	if InFrontOf(d1, d2) && InFrontOf(d2, d1) {
@@ -219,11 +244,16 @@ func rule_FaceToFace(node rete.Node, p Pair) {
 // BackToBack represents two dancers with their backs to each other.
 type BackToBack interface {
 	Formation
+	TwoDancerSymetric
 	BackToBack()
 	Dancer1() dancer.Dancer    // defimpl:"read dancer1" fe:"dancers"
 	Dancer2() dancer.Dancer    // defimpl:"read dancer2" fe:"dancers"
 	// Roles:
 	Leaders() dancer.Dancers
+}
+
+func (mw *BackToBackImpl)  isSymetricHelper(other TwoDancerSymetric) bool {
+	return true
 }
 
 func (f *BackToBackImpl) String() string {
