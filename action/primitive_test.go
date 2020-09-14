@@ -8,6 +8,11 @@ import "squaredance/timeline"
 import "squaredance/reasoning"
 
 
+func TestWritePrimitiveCatalog(t *testing.T) {
+	WriteCatalog(Primitive)
+}
+
+
 // showHistory writes the position and directiion of each Dancer
 // over time to standard output.
 func showHistory(tl timeline.Timeline, t *testing.T) {
