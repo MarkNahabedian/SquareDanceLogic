@@ -9,12 +9,12 @@ func init() {
 	// Actions which just change a Dancer's facing direction:
 
 	defineAction("QuarterRight", "QuarterRight turns the dancers one wall to the right.")
-	defineFormationAction("QuarterRight", LookupFormationType("Dancer"),
+	defineFormationAction("QuarterRight", Primitive, LookupFormationType("Dancer"),
 		func(f reasoning.Formation) {
 			d := f.Dancers()[0]
 			d.Move(d.Position(), d.Direction().QuarterRight())
 		})
-	defineFormationAction("QuarterRight", LookupFormationType("Dancers"),
+	defineFormationAction("QuarterRight", Primitive, LookupFormationType("Dancers"),
 		func(f reasoning.Formation) {
 			for _, d := range f.Dancers() {
 				d.Move(d.Position(), d.Direction().QuarterRight())
@@ -22,12 +22,12 @@ func init() {
 		})
 
 	defineAction("QuarterLeft", "QuarterLeft turns the dancers one wall to the right.")
-	defineFormationAction("QuarterLeft", LookupFormationType("Dancer"),
+	defineFormationAction("QuarterLeft", Primitive, LookupFormationType("Dancer"),
 		func(f reasoning.Formation) {
 			d := f.Dancers()[0]
 			d.Move(d.Position(), d.Direction().QuarterLeft())
 		})
-	defineFormationAction("QuarterLeft", LookupFormationType("Dancers"),
+	defineFormationAction("QuarterLeft", Primitive, LookupFormationType("Dancers"),
 		func(f reasoning.Formation) {
 			for _, d := range f.Dancers() {
 				d.Move(d.Position(), d.Direction().QuarterLeft())
@@ -35,12 +35,12 @@ func init() {
 		})
 
 	defineAction("AboutFace", "AboutFace turns the dancers around 180 degrees.")
-	defineFormationAction("AboutFace", LookupFormationType("Dancer"),
+	defineFormationAction("AboutFace", Primitive, LookupFormationType("Dancer"),
 		func(f reasoning.Formation) {
 			d := f.Dancers()[0]
 			d.Move(d.Position(), d.Direction().Opposite())
 		})
-	defineFormationAction("AboutFace", LookupFormationType("Dancers"),
+	defineFormationAction("AboutFace", Primitive, LookupFormationType("Dancers"),
 		func(f reasoning.Formation) {
 			for _, d := range f.Dancers() {
 				d.Move(d.Position(), d.Direction().Opposite())
@@ -51,7 +51,7 @@ func init() {
 	// approach and pass by each other:
 
 	defineAction("Meet", "Meet moves FaceToFace Dancers up to meet each other.")
-	defineFormationAction("Meet", LookupFormationType("FaceToFace"),
+	defineFormationAction("Meet", Primitive, LookupFormationType("FaceToFace"),
 		func(f reasoning.Formation) {
 			dancers := f.Dancers()
 			center := geometry.Center(dancer.Positions(dancers...)...)
@@ -66,7 +66,7 @@ func init() {
 		})
 
 	defineAction("ForwardLeft", "ForwardLeft moves FaceToFace dancers to a RightHanded MiniWave.")
-	defineFormationAction("ForwardLeft", LookupFormationType("FaceToFace"),
+	defineFormationAction("ForwardLeft", Primitive, LookupFormationType("FaceToFace"),
 		func(f reasoning.Formation) {
 			dancers := f.Dancers()
 			center := geometry.Center(dancer.Positions(dancers...)...)
@@ -81,7 +81,7 @@ func init() {
 		})
 
 	defineAction("ForwardRight", "ForwardRight moves FaceToFace dancers to a LeftHanded MiniWave.")
-	defineFormationAction("ForwardRight", LookupFormationType("FaceToFace"),
+	defineFormationAction("ForwardRight", Primitive, LookupFormationType("FaceToFace"),
 		func(f reasoning.Formation) {
 			dancers := f.Dancers()
 			center := geometry.Center(dancer.Positions(dancers...)...)
@@ -96,7 +96,7 @@ func init() {
 		})
 
 	defineAction("BackwardLeft", "BackwardLeft moves BackToBack dancers to a RightHanded MiniWave.")
-	defineFormationAction("BackwardLeft", LookupFormationType("BackToBack"),
+	defineFormationAction("BackwardLeft", Primitive, LookupFormationType("BackToBack"),
 		func(f reasoning.Formation) {
 			dancers := f.Dancers()
 			center := geometry.Center(dancer.Positions(dancers...)...)
@@ -111,7 +111,7 @@ func init() {
 		})
 
 	defineAction("BackwardRight", "BackwardRight moves BackToBack dancers to a LeftHanded MiniWave.")
-	defineFormationAction("BackwardRight", LookupFormationType("BackToBack"),
+	defineFormationAction("BackwardRight", Primitive, LookupFormationType("BackToBack"),
 		func(f reasoning.Formation) {
 			dancers := f.Dancers()
 			center := geometry.Center(dancer.Positions(dancers...)...)
@@ -126,7 +126,7 @@ func init() {
 		})
 
 	defineAction("BackToFace", "BackToFace backs Dancers out of a MiniWave to face each other.")
-	defineFormationAction("BackToFace", LookupFormationType("MiniWave"),
+	defineFormationAction("BackToFace", Primitive, LookupFormationType("MiniWave"),
 		func(f reasoning.Formation) {
 			dancers := f.Dancers()
 			center := geometry.Center(dancer.Positions(dancers...)...)

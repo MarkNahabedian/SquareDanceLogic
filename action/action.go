@@ -106,6 +106,7 @@ func defineAction(name string, description string) {
 // specific Formation.
 type FormationAction interface {
 	Action() Action                        // defimpl:"read action"
+	Level() Level                          // defimpl:"read level"
 	FormationType() FormationType         // defimpl:"read formationType"
 	DoItFunc() func(reasoning.Formation)   // defimpl:"read doItFunc"
 	DoIt(reasoning.Formation)
@@ -135,7 +136,7 @@ func (fa *FormationActionImpl) DoIt(f reasoning.Formation) {
 }
 
 
-func defineFormationAction(actionName string, formationType FormationType, doit func(reasoning.Formation)) {
+func defineFormationAction(actionName string, level Level, formationType FormationType, doit func(reasoning.Formation)) {
 	a := FindAction(actionName)
 	if a == nil {
 		a = &ActionImpl{
@@ -145,6 +146,7 @@ func defineFormationAction(actionName string, formationType FormationType, doit 
 	}
 	a.AddFormationAction(&FormationActionImpl{
 		action: a,
+		level: level,
 		formationType: formationType,
 		doItFunc: doit,
 	})
