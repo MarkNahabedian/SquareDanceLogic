@@ -1,7 +1,9 @@
 package reasoning
 
+import "fmt"
 import "reflect"
 import "goshua/rete"
+import defimpl_runtime "defimpl/runtime"
 import "squaredance/dancer"
 import "goshua/rete/rule_compiler/runtime"
 
@@ -13,15 +15,18 @@ type FormationFinder struct {
 
 
 func MakeFormationFinder() *FormationFinder {
-	ff := &FormationFinder{}
-	ff.rete = rete.MakeRootNode()
-	ff.typeToBuffer = make(map[reflect.Type]rete.AbstractBufferNode)
+	ff := &FormationFinder{
+		rete: rete.MakeRootNode(),
+		typeToBuffer: make(map[reflect.Type]rete.AbstractBufferNode),
+	}
 	loadAllRules(ff.rete)
 	// Add bufferes where needed.  Index the buffers
 	rete.Walk(ff.rete, func(n rete.Node) {
 		if ttn, ok := n.(*rete.TypeTestNode); ok {
 			if ttn.Type.Implements(reflect.TypeOf(func(TwoDancerSymetric){}).In(0)) {
 				ff.typeToBuffer[ttn.Type] = rete.GetUniqueBuffered(n, IsTwoDancerSymetric)
+			} else {
+				ff.typeToBuffer[ttn.Type] = rete.GetBuffered(n)
 			}
 		}
 	})
@@ -49,9 +54,19 @@ func (ff *FormationFinder) Clear() {
 
 
 func (ff *FormationFinder) DoFormations(formationType reflect.Type, f func(Formation)) {
+	if formationType.Kind() != reflect.Interface {
+		formationType = defimpl_runtime.ImplToInterface(formationType)
+		if formationType.Kind() != reflect.Interface {
+			panic(fmt.Sprintf("Not an interface trpe: %s", formationType))
+		}
+	}
 	bn := ff.typeToBuffer[formationType]
+	if bn == nil {
+		panic(fmt.Sprintf("no buffer for %s", formationType))
+	}
 	bn.DoItems(func (item interface{}) {
 		f(item.(Formation))
 	})
 }
+
 

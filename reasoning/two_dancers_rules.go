@@ -89,6 +89,20 @@ func rule_GeneralizedCouple(node rete.Node, p Pair) {
 	}
 }
 
+func init() {
+	RegisterFormationSample(func() Formation {
+		dancers := dancer.MakeSomeDancers(2)
+		dancers[0].Move(geometry.Position{ Left: geometry.Left0, Down: geometry.Down0 },
+			geometry.Direction0)
+		dancers[1].Move(geometry.Position{ Left: geometry.Left1, Down: geometry.Down0 },
+			geometry.Direction0)
+		return Couple(&CoupleImpl {
+			beau: dancers[1],
+			belle: dancers[0],
+		})
+	})
+}
+
 
 type TwoDancerSymetric interface {
 	isSymetricHelper(TwoDancerSymetric) bool
@@ -196,6 +210,21 @@ func rule_MiniWave(node rete.Node, p Pair) {
 	}
 }
 
+func init() {
+	RegisterFormationSample(func() Formation {
+		dancers := dancer.MakeSomeDancers(2)
+		// Right handed
+		dancers[0].Move(geometry.Position{ Left: geometry.Left0, Down: geometry.Down0 },
+			geometry.FullCircle / 2)
+		dancers[1].Move(geometry.Position{ Left: geometry.Left1, Down: geometry.Down0 },
+			geometry.Direction0)
+		return MiniWave(&MiniWaveImpl {
+			dancer1: dancers[1],
+			dancer2: dancers[0],
+		})
+	})
+}
+
 
 // FaceToFace represents two dancewrs that are facing each other.
 type FaceToFace interface {
@@ -240,6 +269,20 @@ func rule_FaceToFace(node rete.Node, p Pair) {
 	}
 }
 
+func init() {
+	RegisterFormationSample(func() Formation {
+		dancers := dancer.MakeSomeDancers(2)
+		dancers[0].Move(geometry.Position{ Left: geometry.Left0, Down: geometry.Down0 },
+			geometry.Direction0)
+		dancers[1].Move(geometry.Position{ Left: geometry.Left0, Down: geometry.Down1 },
+			geometry.FullCircle / 2)
+		return FaceToFace(&FaceToFaceImpl{
+			dancer1: dancers[0],
+			dancer2: dancers[1],
+		})
+	})
+}
+
 
 // BackToBack represents two dancers with their backs to each other.
 type BackToBack interface {
@@ -277,6 +320,21 @@ func rule_BackToBack(node rete.Node, p Pair) {
 		node.Emit(BackToBack(&BackToBackImpl{dancer1: d1, dancer2: d2}))
 	}
 }
+
+func init() {
+	RegisterFormationSample(func() Formation {
+		dancers := dancer.MakeSomeDancers(2)
+		dancers[0].Move(geometry.Position{ Left: geometry.Left0, Down: geometry.Down0 },
+			geometry.FullCircle / 2)
+		dancers[1].Move(geometry.Position{ Left: geometry.Left0, Down: geometry.Down1 },
+			geometry.Direction0)
+		return BackToBack(&BackToBackImpl{
+			dancer1: dancers[0],
+			dancer2: dancers[1],
+		})
+	})
+}
+
 
 
 // Tandem represents two dancers facing the same direction with the Leader
