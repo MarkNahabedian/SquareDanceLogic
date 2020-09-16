@@ -88,29 +88,12 @@ func TestAboutFace(t *testing.T) {
 	}
 }
 
-
-var formationFinder *reasoning.FormationFinder = nil
-
-func get_formation(dancers dancer.Dancers, formation_type reflect.Type) []reasoning.Formation {
-	if formationFinder == nil {
-		formationFinder = reasoning.MakeFormationFinder()
-	}
-	formationFinder.Clear()
-	formationFinder.Injest(dancers)
-	result := []reasoning.Formation{}
-	formationFinder.DoFormations(formation_type, func (f reasoning.Formation) {
-		result = append(result, f)
-	})
-	return result
-}
-
-
 func TestMeet(t *testing.T) {
 	set := dancer.NewSquaredSet(4)
 	tl := timeline.NewTimeline(set.Dancers())
 	tl.MakeSnapshot(0)
 	// Get FaceToFace formations:
-	formations := get_formation(set.Dancers(), reflect.TypeOf(func(t reasoning.FaceToFace){}).In(0))
+	formations := reasoning.FindFormations(set.Dancers(), reflect.TypeOf(func(t reasoning.FaceToFace){}).In(0))
 	// Restrict to heads:
 	headsff := []reasoning.FaceToFace{}
 	for _, ff := range formations {
@@ -149,26 +132,6 @@ func TestMeet(t *testing.T) {
 	}
 }
 
-func face_to_face() reasoning.Formation {
-	dancers := dancer.MakeSomeDancers(2)
-	dancers[0].Move(geometry.Position{ Left: geometry.Left0, Down: geometry.Down0 },
-		geometry.Direction0)
-	dancers[1].Move(geometry.Position{ Left: geometry.Left0, Down: geometry.Down1 },
-		geometry.FullCircle / 2)
-	r := get_formation(dancers, reflect.TypeOf(func(t reasoning.FaceToFace){}).In(0))
-	return r[0]
-}
-
-func back_to_back() reasoning.Formation {
-	dancers := dancer.MakeSomeDancers(2)
-	dancers[0].Move(geometry.Position{ Left: geometry.Left0, Down: geometry.Down0 },
-		geometry.FullCircle / 2)
-	dancers[1].Move(geometry.Position{ Left: geometry.Left0, Down: geometry.Down1 },
-		geometry.Direction0)
-	r := get_formation(dancers, reflect.TypeOf(func(t reasoning.BackToBack){}).In(0))
-	return r[0]
-}
-
 func mini_wave(handedness reasoning.Handedness) reasoning.Formation {
 	dancers := dancer.MakeSomeDancers(2)
 	var dir geometry.Direction
@@ -182,13 +145,13 @@ func mini_wave(handedness reasoning.Handedness) reasoning.Formation {
 		dir.Opposite())
 	dancers[1].Move(geometry.Position{ Left: geometry.Left1, Down: geometry.Down0 },
 		dir)
-	r := get_formation(dancers, reflect.TypeOf(func(t reasoning.MiniWave){}).In(0))
+	r := reasoning.FindFormations(dancers, reflect.TypeOf(func(t reasoning.MiniWave){}).In(0))
 	return r[0]
 }
 
 func TestForwardLeft(t *testing.T) {
 	// Start with FaceToFace dancers.  End in RightHand MiniWave
-	dancers := face_to_face().(reasoning.FaceToFace)
+	dancers := reasoning.MakeSampleFormation(reasoning.AllFormationTypes["FaceToFace"])
 	tl := timeline.NewTimeline(dancers.Dancers())
 	tl.MakeSnapshot(0)
 	fa := FindAction("ForwardLeft").GetFormationActionFor(dancers)
@@ -197,7 +160,7 @@ func TestForwardLeft(t *testing.T) {
 	}
 	fa.DoIt(dancers)
 	tl.MakeSnapshot(1)
-	dancers2 := get_formation(dancers.Dancers(), reflect.TypeOf(func(t reasoning.MiniWave){}).In(0))
+	dancers2 := reasoning.FindFormations(dancers.Dancers(), reflect.TypeOf(func(t reasoning.MiniWave){}).In(0))
 	if want, got := 1, len(dancers2); got != want {
 		t.Errorf("Wrong number of MiniWaves: got %d, want %d.", got, want)
 		return
@@ -211,7 +174,7 @@ func TestForwardLeft(t *testing.T) {
 
 func TestForwardRight(t *testing.T) {
 	// Start with FaceToFace dancers.  End in RightHand MiniWave
-	dancers := face_to_face().(reasoning.FaceToFace)
+	dancers := reasoning.MakeSampleFormation(reasoning.AllFormationTypes["FaceToFace"])
 	tl := timeline.NewTimeline(dancers.Dancers())
 	tl.MakeSnapshot(0)
 	fa := FindAction("ForwardRight").GetFormationActionFor(dancers)
@@ -220,7 +183,7 @@ func TestForwardRight(t *testing.T) {
 	}
 	fa.DoIt(dancers)
 	tl.MakeSnapshot(1)
-	dancers2 := get_formation(dancers.Dancers(),
+	dancers2 := reasoning.FindFormations(dancers.Dancers(),
 		reflect.TypeOf(func(t reasoning.MiniWave){}).In(0))
 	if want, got := 1, len(dancers2); got != want {
 		t.Errorf("Wrong number of MiniWaves: got %d, want %d.", got, want)
@@ -236,7 +199,7 @@ func TestForwardRight(t *testing.T) {
 func TestBackwardLeft(t *testing.T) {
 	t.Logf("TestBackwardLeft\n")
 	// Start with BackToBack dancers.  End in RightHand MiniWave
-	dancers := back_to_back().(reasoning.BackToBack)
+	dancers := reasoning.MakeSampleFormation(reasoning.AllFormationTypes["BackToBack"])
 	tl := timeline.NewTimeline(dancers.Dancers())
 	tl.MakeSnapshot(0)
 	fa := FindAction("BackwardLeft").GetFormationActionFor(dancers)
@@ -245,7 +208,7 @@ func TestBackwardLeft(t *testing.T) {
 	}
 	fa.DoIt(dancers)
 	tl.MakeSnapshot(1)
-	dancers2 := get_formation(dancers.Dancers(),
+	dancers2 := reasoning.FindFormations(dancers.Dancers(),
 		reflect.TypeOf(func(t reasoning.MiniWave){}).In(0))
 	if want, got := 1, len(dancers2); got != want {
 		t.Errorf("Wrong number of MiniWaves: got %d, want %d.", got, want)
@@ -261,7 +224,7 @@ func TestBackwardLeft(t *testing.T) {
 func TestBackwardRight(t *testing.T) {
 	t.Logf("TestBackwardRight\n")
 	// Start with BackToBack dancers.  End in RightHand MiniWave
-	dancers := back_to_back().(reasoning.BackToBack)
+	dancers := reasoning.MakeSampleFormation(reasoning.AllFormationTypes["BackToBack"])
 	tl := timeline.NewTimeline(dancers.Dancers())
 	tl.MakeSnapshot(0)
 	fa := FindAction("BackwardRight").GetFormationActionFor(dancers)
@@ -270,7 +233,7 @@ func TestBackwardRight(t *testing.T) {
 	}
 	fa.DoIt(dancers)
 	tl.MakeSnapshot(1)
-	dancers2 := get_formation(dancers.Dancers(),
+	dancers2 := reasoning.FindFormations(dancers.Dancers(),
 		reflect.TypeOf(func(t reasoning.MiniWave){}).In(0))
 	if want, got := 1, len(dancers2); got != want {
 		t.Errorf("Wrong number of MiniWaves: got %d, want %d.", got, want)
@@ -295,7 +258,7 @@ func TestBackToFaceRight(t *testing.T) {
 	}
 	fa.DoIt(dancers)
 	tl.MakeSnapshot(1)
-	dancers2 := get_formation(dancers.Dancers(),
+	dancers2 := reasoning.FindFormations(dancers.Dancers(),
 		reflect.TypeOf(func(t reasoning.FaceToFace){}).In(0))
 	if want, got := 1, len(dancers2); got != want {
 		t.Errorf("Wrong number of FaceToFace formations: got %d, want %d.", got, want)
@@ -316,7 +279,7 @@ func TestBackToFaceLeft(t *testing.T) {
 	}
 	fa.DoIt(dancers)
 	tl.MakeSnapshot(1)
-	dancers2 := get_formation(dancers.Dancers(),
+	dancers2 := reasoning.FindFormations(dancers.Dancers(),
 		reflect.TypeOf(func(t reasoning.FaceToFace){}).In(0))
 	if want, got := 1, len(dancers2); got != want {
 		t.Errorf("Wrong number of FaceToFace formations: got %d, want %d.", got, want)
