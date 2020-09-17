@@ -68,7 +68,11 @@ type Dancer interface{
 	Direction() geometry.Direction     // defimpl:"read direction"
 	OriginalPartner() Dancer          // defimpl:"read originalPartner"
 	SetOriginalPartner(Dancer)
+	// Move changes the Dancer's position and direction to the specified values.
 	Move(geometry.Position, geometry.Direction) Dancer
+	// MoveBy changes the Dancer's position by the specified
+	// vector expressed as a Position.
+	MoveBy(geometry.Position)
 	// A single dancer is still a formation so it implements the Formation interface
 	NumberOfDancers() int
 	Dancers() Dancers
@@ -165,6 +169,10 @@ func (d *DancerImpl) Move(newPosition geometry.Position, newDirection geometry.D
 	return d
 }
 
+func (d *DancerImpl) MoveBy(delta geometry.Position) {
+	d.position = d.position.Add(delta)
+}
+
 func (d1 *DancerImpl) GoshuaEqual(d2 interface{}) (bool, error) {
 	// If DancerImpls aren't EQ then they're not EQUAL.
 	return false, nil
@@ -192,13 +200,13 @@ func (s *SetImpl) HasDancer(d Dancer) bool {
 
 // SquaredSet returns a new squared set with the specified number of couples.
 func NewSquaredSet(couples int) Set {
-	circleFraction := geometry.FullCircle.DivideBy(float64(couples))
+	circleFraction := geometry.FullCircle.DivideBy(float32(couples))
 	s := SetImpl{
 		flagpoleCenter: geometry.NewPositionDownLeft(0, 0),
 		dancers:        make(Dancers, couples*2),
 	}
 	for couple := 0; couple < couples; couple++ {
-		facing := circleFraction.MultiplyBy(float64(couple))
+		facing := circleFraction.MultiplyBy(float32(couple))
 		for _, gender := range []Gender{Guy, Gal} {
 			var side int
 			var ordinalAdjustment int
@@ -221,7 +229,7 @@ func NewSquaredSet(couples int) Set {
 						facing.Opposite(), 1.5*geometry.CoupleDistance)).
 					Add(geometry.NewPosition(
 						facing.Add(geometry.FullCircle.DivideBy(4.0)),
-						float64(side)*geometry.CoupleDistance/2.0)),
+						float32(side)*geometry.CoupleDistance/2.0)),
 				direction: geometry.Direction(facing),
 			}
 		}
