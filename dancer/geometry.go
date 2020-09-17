@@ -38,3 +38,8 @@ func (dancers Dancers) Bounds() (leftmost, rightmost geometry.Left, downmost, up
 	return leftmost, rightmost, upmost, downmost
 }
 
+
+func Distance (dancer1, dancer2 Dancer) float32 {
+	return dancer1.Position().Subtract(dancer2.Position()).Magnitude()
+}
+
