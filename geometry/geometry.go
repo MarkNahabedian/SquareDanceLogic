@@ -29,7 +29,7 @@ import "math"
 // facing direction of couple number one in a squared set.
 // In a squared set, the facing direction of couple number two would be 0.25,
 // that of couple number three: 0.5, and that of couple number four: 0.75.
-type Direction float64
+type Direction float32
 
 func (d Direction) String() string {
 	return fmt.Sprintf("%f", d)
@@ -67,27 +67,27 @@ func (d Direction) QuarterLeft() Direction {
 
 // Inverse returns the arithmetic inverse dirrection to d.
 func (d Direction) Inverse() Direction {
-	return Direction(-float64(d)).Canonicalize()
+	return Direction(-float32(d)).Canonicalize()
 }
 
 // Add returns to sum of the two Directions.
 func (d1 Direction) Add(d2 Direction) Direction {
-	return Direction(float64(d1) + float64(d2)).Canonicalize()
+	return Direction(float32(d1) + float32(d2)).Canonicalize()
 }
 
 // Subtract subtracts the Direction d2 from d1.
 func (d1 Direction) Subtract(d2 Direction) Direction {
-	return Direction(float64(d1) - float64(d2)).Canonicalize()
+	return Direction(float32(d1) - float32(d2)).Canonicalize()
 }
 
 // Multiply multiplies the Direction d by multiplier.
-func (d Direction) MultiplyBy(multiplier float64) Direction {
-	return Direction(float64(d) * multiplier).Canonicalize()
+func (d Direction) MultiplyBy(multiplier float32) Direction {
+	return Direction(float32(d) * multiplier).Canonicalize()
 }
 
 // Divide divides the Direction d by divisor.
-func (d Direction) DivideBy(divisor float64) Direction {
-	return Direction(float64(d) / divisor).Canonicalize()
+func (d Direction) DivideBy(divisor float32) Direction {
+	return Direction(float32(d) / divisor).Canonicalize()
 }
 
 // Equal returns true if Directions d1 and d2 are within directionTolerance
@@ -118,12 +118,12 @@ func (d1 Down) Equal(d2 Down) bool {
 
 // Add returns the sum of two Down coordinates.
 func (d1 Down) Add(d2 Down) Down {
-	return Down(float64(d1) + float64(d2))
+	return Down(float32(d1) + float32(d2))
 }
 
 // Subtract subtracts the Down coorsinate d2 from d1.
 func (d1 Down) Subtract(d2 Down) Down {
-	return Down(float64(d1) - float64(d2))
+	return Down(float32(d1) - float32(d2))
 }
 
 // Equal returns true if the two Left coordinates are within
@@ -134,19 +134,19 @@ func (d1 Left) Equal(d2 Left) bool {
 
 // Add returns the sum of two Left coordinates.
 func (d1 Left) Add(d2 Left) Left {
-	return Left(float64(d1) + float64(d2))
+	return Left(float32(d1) + float32(d2))
 }
 
 // Subtract subtracts the Left coorsinate d2 from d1.
 func (d1 Left) Subtract(d2 Left) Left {
-	return Left(float64(d1) - float64(d2))
+	return Left(float32(d1) - float32(d2))
 }
 
 // CoupleDistance is the distance between (the center reference points
 // of) two dancers standing side by side.
-const CoupleDistance float64 = 1.0
+const CoupleDistance float32 = 1.0
 
-const positionTolerance float64 = CoupleDistance / 1000.0
+const positionTolerance float64 = float64(CoupleDistance) / 1000.0
 
 // Position represents a position on the floor or in a square dance set,
 // or the relationship between one position and another.
@@ -161,7 +161,7 @@ func (p Position) String() string {
 
 // NewPositionDownLeft returns a new Position with the given Down and Left
 // values.
-func NewPositionDownLeft(down float64, left float64) Position {
+func NewPositionDownLeft(down float32, left float32) Position {
 	return Position{
 		Down: Down(down),
 		Left: Left(left),
@@ -170,11 +170,11 @@ func NewPositionDownLeft(down float64, left float64) Position {
 
 // NewPosition returns a new Position computed from the given direction and
 // distance.
-func NewPosition(direction Direction, distance float64) Position {
+func NewPosition(direction Direction, distance float32) Position {
 	angle := float64(direction) * 2 * math.Pi
 	return Position{
-		Down: Down(distance * math.Cos(angle)),
-		Left: Left(distance * math.Sin(angle)),
+		Down: Down(float32(float64(distance) * math.Cos(angle))),
+		Left: Left(float32(float64(distance) * math.Sin(angle))),
 	}
 }
 
@@ -185,10 +185,10 @@ func (p1 Position) Equal(p2 Position) bool {
 }
 
 // Distance returns the distance between two Positions.
-func (p1 Position) Distance(p2 Position) float64 {
-	d := float64(p2.Down.Subtract(p1.Down))
-	l := float64(p2.Left.Subtract(p1.Left))
-	return math.Sqrt(d*d + l*l)
+func (p1 Position) Distance(p2 Position) float32 {
+	d := float32(p2.Down.Subtract(p1.Down))
+	l := float32(p2.Left.Subtract(p1.Left))
+	return float32(math.Sqrt(float64(d*d + l*l)))
 }
 
 // Direction returns the Direction p2 is in from the perspective of p1.
@@ -214,19 +214,38 @@ func (p1 Position) Subtract(p2 Position) Position {
 	}
 }
 
+func (p Position) Scale(scale float32) Position {
+	return Position {
+		Down: Down(float32(p.Down) * scale),
+		Left: Left(float32(p.Left) * scale),
+	}
+}
+
+// Magnitude returns the magnitude of the Position interpreted as a
+// vector.
+func (p Position) Magnitude() float32 {
+	return float32(math.Sqrt(float64(p.Down * p.Down) + float64(p.Left * p.Left)))
+}
+
+func (p Position) Angle() Direction {
+	d := float64(p.Down)
+	l := float64(p.Left)
+	return Direction(math.Atan2(l, d) / (2 * math.Pi))
+}
+
 // Center returns a new Position that's at the center of the specified
 // Positions.
 func Center(positions ...Position) Position {
-	down := 0.0
-	left := 0.0
+	down := float32(0.0)
+	left := float32(0.0)
 	count := 0
 	for _, p := range positions {
-		down += float64(p.Down)
-		left += float64(p.Left)
+		down += float32(p.Down)
+		left += float32(p.Left)
 		count += 1
 	}
 	return Position{
-		Down: Down(down / float64(count)),
-		Left: Left(left / float64(count)),
+		Down: Down(down / float32(count)),
+		Left: Left(left / float32(count)),
 	}
 }
