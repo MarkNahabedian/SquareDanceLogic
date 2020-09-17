@@ -97,11 +97,11 @@ func (d1 Direction) Equal(d2 Direction) bool {
 }
 
 // Down is a distance along the Down axis -- away from the caller.
-type Down float64
+type Down float32
 
 // Left is a distance along the Left axis -- towards the left hand
 // wall from the caller's point of view.
-type Left float64
+type Left float32
 
 const (
 	Down0 = Down(0)
