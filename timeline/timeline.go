@@ -14,50 +14,36 @@ type Time int
 // specific Dancer at a specific Time.
 type DancerSnapshot interface {
 	DancerSnapshot()
-	Time() Time
-	Dancer() dancer.Dancer
-	Position() geometry.Position
-	Direction() geometry.Direction
+	Time() Time                        //defimpl:"read time"
+	Dancer() dancer.Dancer             //defimpl:"read dancer"
+	Position() geometry.Position       //defimpl:"read position"
+	Direction() geometry.Direction     //defimpl:"read direction"
 }
 
-type implDancerSnapshot struct {
-	time Time
-	dancer dancer.Dancer
-	position geometry.Position
-	direction geometry.Direction
-}
-
-func (ds *implDancerSnapshot) DancerSnapshot() {}
-func (ds *implDancerSnapshot) Time() Time { return ds.time }
-func (ds *implDancerSnapshot) Dancer() dancer.Dancer { return ds.dancer }
-func (ds *implDancerSnapshot) Position() geometry.Position { return ds.position }
-func (ds *implDancerSnapshot) Direction() geometry.Direction { return ds.direction }
+func (ds *DancerSnapshotImpl) DancerSnapshot() {}
 
 
 // Timeline is used to record the positions and directions of a group
 // of Dancers over time.
 type Timeline interface {
 	Timeline()
-	Dancers() dancer.Dancers
-	MostRecent() Time    // The most recent time recorded in the Timeline. 
-	FindSnapshot(dancer.Dancer, Time) DancerSnapshot
+	Dancers() dancer.Dancers                    //defimpl:"read dancers"
+	// The most recent time recorded in the Timeline. 
+	MostRecent() Time                          //defimpl:"read mostRecent"
+	DoSnapshots(func(DancerSnapshot) bool)     //defimpl:"iterate snapshots"
+    	FindSnapshot(dancer.Dancer, Time) DancerSnapshot
 	FindSnapshots(dancer dancer.Dancer, start, end Time) []DancerSnapshot
 	MakeSnapshot(Time)
+	// Bounds returns the most extreme coordinates of all dancers
+	// throughout the Timeline.
+	Bounds() (leftmost, rightmost geometry.Left, downmost, upmost geometry.Down)
 }
 
-type implTimeline struct {
-	dancers dancer.Dancers
-	mostRecent Time
-	snapshots []DancerSnapshot
-}
-
-func (tl *implTimeline) Timeline() {}
-func (tl *implTimeline) Dancers() dancer.Dancers { return tl.dancers }
-func (tl *implTimeline) MostRecent() Time { return tl.mostRecent }
+func (tl *TimelineImpl) Timeline() {}
 
 // FindSnapshot looks through the recorded DancerSnapshots for this
 // Timeline for one that matches the specified Dancer and Time.
-func (tl *implTimeline) FindSnapshot(d dancer.Dancer, time Time) DancerSnapshot {
+func (tl *TimelineImpl) FindSnapshot(d dancer.Dancer, time Time) DancerSnapshot {
 	for _, s := range tl.snapshots {
 		if d == s.Dancer() && time == s.Time() {
 			return s
@@ -66,7 +52,7 @@ func (tl *implTimeline) FindSnapshot(d dancer.Dancer, time Time) DancerSnapshot 
 	return nil
 }
 
-func (tl *implTimeline) FindSnapshots(d dancer.Dancer, start, end Time) []DancerSnapshot {
+func (tl *TimelineImpl) FindSnapshots(d dancer.Dancer, start, end Time) []DancerSnapshot {
 	found := []DancerSnapshot{}
 	for _, s := range tl.snapshots {
 		if d == s.Dancer() && start <= s.Time() && s.Time() < end {
@@ -78,9 +64,9 @@ func (tl *implTimeline) FindSnapshots(d dancer.Dancer, start, end Time) []Dancer
 
 // MakeSnapshot records DancerSnapshots for the tracked dancers
 // labeled with the specified Time.
-func (tl *implTimeline) MakeSnapshot(time Time) {
+func (tl *TimelineImpl) MakeSnapshot(time Time) {
 	for _, d := range tl.Dancers() {
-		s := &implDancerSnapshot {
+		s := &DancerSnapshotImpl {
 			time: time,
 			dancer: d,
 			position: d.Position(),
@@ -96,7 +82,7 @@ func (tl *implTimeline) MakeSnapshot(time Time) {
 // NewTimeline returns a new, empty Timeline for tracking the
 // specified dancers.
 func NewTimeline(dancers dancer.Dancers) Timeline {
-	return &implTimeline{
+	return &TimelineImpl{
 		dancers: dancers,
 		mostRecent: Time(0),
 		snapshots: []DancerSnapshot{},
@@ -113,5 +99,31 @@ func ShowHistory(tl Timeline) {
 			fmt.Printf("    %3d  %s  %s\n", s.Time(), s.Position(), s.Direction())
 		}
 	}
+}
+
+
+func (timeline *TimelineImpl) Bounds() (leftmost, rightmost geometry.Left, downmost, upmost geometry.Down) {
+	p := timeline.snapshots[0].Position()
+	leftmost = p.Left
+	rightmost = p.Left
+	downmost = p.Down
+	upmost = p.Down
+	timeline.DoSnapshots(func (ds DancerSnapshot) bool {
+		p = ds.Position()
+		if p.Left > leftmost {
+			leftmost = p.Left
+		}
+		if p.Left < rightmost {
+			rightmost = p.Left
+		}
+		if p.Down > downmost {
+			downmost = p.Down
+		}
+		if p.Down > upmost {
+			upmost = p.Down
+		}
+		return true
+	})
+	return leftmost, rightmost, downmost, upmost
 }
 
