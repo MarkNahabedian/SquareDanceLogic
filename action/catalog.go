@@ -63,12 +63,27 @@ type html_page_arg struct {
 	FormationActions []FormationAction
 }
 
-// Parameters are level and sortes slice of FormationAction.
-var html_page = template.Must(template.New("html_page").Parse(`<html>
+// Parameters are level and sortes slice of FormationAction.31
+var html_page = template.Must(template.New("html_page").Parse(`<html
+    xmlns:svg="http://www.w3.org/2000/svg">
   <head>
     <title>
       Catalog of {{.Level}} level Formation Actions
     </title>
+    <script type="text/javascript"
+            src="https://marknahabedian.github.io/SquareDanceFormationDiagrams/dancers.js">
+    </script>
+    <script type="text/javascript">
+      {{range .FormationActions}}
+        {{if .StartSample}}
+          new Floor([
+            {{range .StartSample.Dancers}}
+              new Dancer({{.Position.Left}}, {{.Position.Down}}, {{.Direction}}, "{{.Ordinal}}", Dancer.gender.NEU),
+            {{end}}
+          ]).draw("{{.IdString}}")
+        {{end}}
+      {{end}}
+    </script>
   </head>
   <body>
     <h1>
@@ -85,7 +100,15 @@ var html_page = template.Must(template.New("html_page").Parse(`<html>
         <tr>
           <td>{{.Action.Name}}</td>
           <td>{{.FormationType.Name}}</td>
-          <td></td>
+          <td>
+            {{if .StartSample}}
+              <svg:svg svg:id="{{.IdString}}"></svg:svg>
+            {{else}}
+              <span>
+                {{printf "%s" .FormationType.Name}}
+              </span>
+            {{end}}
+          </td>
           <td></td>
         </tr>
       {{end}}

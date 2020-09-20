@@ -19,7 +19,7 @@ func showHistory(tl timeline.Timeline, t *testing.T) {
 	for _, d := range tl.Dancers() {
 		t.Logf("\nDancer %s\n", d)
 		for _, s := range tl.FindSnapshots(d, -1, tl.MostRecent() + 1) {
-			t.Logf("    %3d  %s  %s\n", s.Time(), s.Position(), s.Direction())
+			t.Logf("    %3d  %s  %v\n", s.Time(), s.Position(), s.Direction())
 		}
 	}
 }

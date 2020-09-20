@@ -5,4 +5,5 @@
 package action
 
 //go:generate defimpl
+//go:generate go test
 

@@ -108,16 +108,26 @@ type FormationAction interface {
 	Action() Action                        // defimpl:"read action"
 	Level() Level                          // defimpl:"read level"
 	FormationType() FormationType         // defimpl:"read formationType"
+	// DoItFunc is a function that will perform the action.
 	DoItFunc() func(reasoning.Formation)   // defimpl:"read doItFunc"
 	DoIt(reasoning.Formation)
 	String() string
 	ApplicableTo(reasoning.Formation) bool
 	ApplicableToFormationType(FormationType) bool
+	// IdString returns a string suitable for use as an HTML ID
+	IdString() string
+	// StartSample returnsa a sample Formation that this
+	// FormationAction could start from.
+	StartSample() reasoning.Formation
 }
 
 
 func (fa *FormationActionImpl) String() string {
 	return fmt.Sprintf("%s on %s", fa.Action().Name(), fa.FormationType().Name())
+}
+
+func (fa *FormationActionImpl) IdString() string {
+	return fmt.Sprintf("%s-%s", fa.Action().Name(), fa.FormationType().Name())
 }
 
 func (fa *FormationActionImpl) ApplicableToFormationType(ft FormationType) bool {
@@ -133,6 +143,12 @@ func (fa *FormationActionImpl) DoIt(f reasoning.Formation) {
 		panic(fmt.Sprintf("%s doesn't apply to %#v", fa, f))
 	}
 	fa.doItFunc(f)
+}
+
+func (fa *FormationActionImpl) StartSample() reasoning.Formation {
+	// MakeSampleFormation could return nil if no sample
+	// constructor has been defined for the FormationType.
+	return reasoning.MakeSampleFormation(fa.FormationType())
 }
 
 
