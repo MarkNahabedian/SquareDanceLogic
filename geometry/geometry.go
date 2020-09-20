@@ -31,10 +31,6 @@ import "math"
 // that of couple number three: 0.5, and that of couple number four: 0.75.
 type Direction float32
 
-func (d Direction) String() string {
-	return fmt.Sprintf("%f", d)
-}
-
 var Direction0 Direction = 0
 var Direction1 Direction = Direction0 + FullCircle / 4
 var Direction2 Direction = Direction0 + 2 * FullCircle / 4
