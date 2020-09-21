@@ -83,10 +83,10 @@ td {
           new Floor([
             {{range .StartSample.Dancers -}}
               new Dancer({{.Position.Left}}, {{.Position.Down}}, {{.Direction}}, "{{.Ordinal}}", Dancer.gender.NEU),
-            {{- end}}
-          ]).draw("{{.IdString}}"),
-        {{- end}}
-      {{- end}}
+            {{end -}}
+          ]).draw("{{.IdString}}");
+        {{end -}}
+      {{- end -}}
     </script>
   </head>
   <body>
