@@ -78,6 +78,7 @@ td {
             src="https://marknahabedian.github.io/SquareDanceFormationDiagrams/dancers.js">
     </script>
     <script type="text/javascript">
+function contentLoaded() {
       {{range .FormationActions -}}
         {{if .StartSample -}}
           new Floor([
@@ -87,6 +88,9 @@ td {
           ]).draw("{{.IdString}}");
         {{end -}}
       {{- end -}}
+}
+
+document.addEventListener("DOMContentLoaded", contentLoaded, false);
     </script>
   </head>
   <body>
