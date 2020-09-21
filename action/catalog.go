@@ -78,13 +78,13 @@ td {
             src="https://marknahabedian.github.io/SquareDanceFormationDiagrams/dancers.js">
     </script>
     <script type="text/javascript">
-      {{range .FormationActions}}
-        {{if .StartSample}}
+      {{range .FormationActions -}}
+        {{if .StartSample -}}
           new Floor([
-            {{range .StartSample.Dancers}}
+            {{range .StartSample.Dancers -}}
               new Dancer({{.Position.Left}}, {{.Position.Down}}, {{.Direction}}, "{{.Ordinal}}", Dancer.gender.NEU),
             {{- end}}
-          ]).draw("{{.IdString}}")
+          ]).draw("{{.IdString}}"),
         {{- end}}
       {{- end}}
     </script>
@@ -102,14 +102,14 @@ td {
           <th>After</th>
         </tr>
       </thead>
-      {{range .FormationActions}}
+      {{range .FormationActions -}}
         <tr>
           <td>{{.Action.Name}}</td>
           <td>{{.FormationType.Name}}</td>
           <td>
-            {{if .StartSample}}
+            {{if .StartSample -}}
               <svg id="{{.IdString}}"></svg>
-            {{- else}}
+            {{- else -}}
               <span>
                 {{printf "%s" .FormationType.Name}}
               </span>
