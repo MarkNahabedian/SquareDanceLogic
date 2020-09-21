@@ -64,12 +64,16 @@ type html_page_arg struct {
 }
 
 // Parameters are level and sortes slice of FormationAction.31
-var html_page = template.Must(template.New("html_page").Parse(`<html
-    xmlns:svg="http://www.w3.org/2000/svg">
+var html_page = template.Must(template.New("html_page").Parse(`<html>
   <head>
     <title>
       Catalog of {{.Level}} level Formation Actions
     </title>
+    <style>
+td {
+  text-align: center;
+}
+    </style>
     <script type="text/javascript"
             src="https://marknahabedian.github.io/SquareDanceFormationDiagrams/dancers.js">
     </script>
@@ -79,10 +83,10 @@ var html_page = template.Must(template.New("html_page").Parse(`<html
           new Floor([
             {{range .StartSample.Dancers}}
               new Dancer({{.Position.Left}}, {{.Position.Down}}, {{.Direction}}, "{{.Ordinal}}", Dancer.gender.NEU),
-            {{end}}
+            {{- end}}
           ]).draw("{{.IdString}}")
-        {{end}}
-      {{end}}
+        {{- end}}
+      {{- end}}
     </script>
   </head>
   <body>
@@ -90,28 +94,30 @@ var html_page = template.Must(template.New("html_page").Parse(`<html
       Catalog of {{.Level}} level Formation Actions
     </h1>
     <table>
-      <tr>
-        <th>Action</th>
-        <th>Formation</th>
-        <th>Before</th>
-        <th>After</th>
-      </tr>
+      <thead>
+        <tr>
+          <th>Action</th>
+          <th>Formation</th>
+          <th>Before</th>
+          <th>After</th>
+        </tr>
+      </thead>
       {{range .FormationActions}}
         <tr>
           <td>{{.Action.Name}}</td>
           <td>{{.FormationType.Name}}</td>
           <td>
             {{if .StartSample}}
-              <svg:svg svg:id="{{.IdString}}"></svg:svg>
-            {{else}}
+              <svg id="{{.IdString}}"></svg>
+            {{- else}}
               <span>
                 {{printf "%s" .FormationType.Name}}
               </span>
-            {{end}}
+            {{- end}}
           </td>
           <td></td>
         </tr>
-      {{end}}
+      {{- end}}
     </table>
   </body>
 </html>
