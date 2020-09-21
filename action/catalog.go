@@ -6,6 +6,8 @@ import "fmt"
 import "os"
 import "sort"
 import "html/template"
+import "squaredance/dancer"
+import "squaredance/geometry"
 
 
 type catalogSort []FormationAction
@@ -64,7 +66,19 @@ type html_page_arg struct {
 }
 
 // Parameters are level and sortes slice of FormationAction.31
-var html_page = template.Must(template.New("html_page").Parse(`<html>
+var html_page = template.Must(template.New("html_page").Funcs(
+	template.FuncMap{
+		"JSDirection": func(d geometry.Direction) float32 {
+			return float32(d) * 4
+		},
+		"JSGender": func (gender dancer.Gender) string {
+			switch gender {
+				case dancer.Guy: return "guy"
+				case dancer.Gal: return "gal"
+				default: return "unspecified"
+			}
+		},
+	}).Parse(`<html>
   <head>
     <title>
       Catalog of {{.Level}} level Formation Actions
@@ -83,7 +97,7 @@ function contentLoaded() {
         {{if .StartSample -}}
           new Floor([
             {{range .StartSample.Dancers -}}
-              new Dancer({{.Position.Left}}, {{.Position.Down}}, {{.Direction}}, "{{.Ordinal}}", Dancer.gender.NEU),
+              new Dancer({{.Position.Left}}, {{.Position.Down}}, {{JSDirection .Direction}}, "{{.Ordinal}}", {{JSGender .Gender}}),
             {{end -}}
           ]).draw("{{.IdString}}");
         {{end -}}
