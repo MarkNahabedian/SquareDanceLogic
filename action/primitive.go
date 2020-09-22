@@ -95,6 +95,21 @@ func init() {
 			update(dancers[1])
 		})
 
+	defineAction("PassToBacks", "PassToBacks moves dancers from a MiniWave to being BackToBack.")
+	defineFormationAction("PassToBacks", Primitive, LookupFormationType("MiniWave"),
+		func(f reasoning.Formation) {
+			dancers := f.Dancers()
+			center := geometry.Center(dancer.Positions(dancers...)...)
+			update := func(d dancer.Dancer) {
+				d.Move(
+					center.Add(geometry.NewPosition(d.Direction(),
+						geometry.CoupleDistance / 2)),
+					d.Direction())
+			}
+			update(dancers[0])
+			update(dancers[1])
+		})
+
 	defineAction("BackwardLeft", "BackwardLeft moves BackToBack dancers to a RightHanded MiniWave.")
 	defineFormationAction("BackwardLeft", Primitive, LookupFormationType("BackToBack"),
 		func(f reasoning.Formation) {
