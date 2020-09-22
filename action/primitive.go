@@ -1,6 +1,7 @@
 // This file defines simple, primitive actions.
 package action
 
+import "fmt"
 import "squaredance/geometry"
 import "squaredance/dancer"
 import "squaredance/reasoning"
@@ -49,6 +50,24 @@ func init() {
 
 	// Fragments of Dosado, Pass Thru and other calls where Dancers
 	// approach and pass by each other:
+
+	defineAction("TurnToFace", "Two dancers turn to face each other.")
+	turnToFace := func(f reasoning.Formation) {
+		dancers := f.Dancers()
+		if len(dancers) != 2 {
+			panic(fmt.Sprintf("The TurnTwoFace action requires two dancers, not %v", f))
+		}
+		update := func(this, other dancer.Dancer) {
+			this.Move(this.Position(),
+				this.Position().Direction(other.Position()))
+		}
+		update(dancers[0], dancers[1])
+		update(dancers[1], dancers[0])
+	}
+	defineFormationAction("TurnToFace", Primitive, LookupFormationType("Couple"),
+		turnToFace)
+	defineFormationAction("TurnToFace", Primitive, LookupFormationType("MiniWave"),
+		turnToFace)
 
 	defineAction("Meet", "Meet moves FaceToFace Dancers up to meet each other.")
 	defineFormationAction("Meet", Primitive, LookupFormationType("FaceToFace"),
