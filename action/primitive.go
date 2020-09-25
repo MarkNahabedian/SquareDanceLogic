@@ -84,7 +84,7 @@ func init() {
 			update(dancers[1])
 		})
 
-	defineAction("ForwardLeft", "ForwardLeft moves FaceToFace dancers to a RightHanded MiniWave.")
+	defineAction("ForwardLeft", "ForwardLeft moves FaceToFace dancers to a RightHanded MiniWave. This is commonly known as 'Touch'.")
 	defineFormationAction("ForwardLeft", Primitive, LookupFormationType("FaceToFace"),
 		func(f reasoning.Formation) {
 			dancers := f.Dancers()
@@ -99,7 +99,7 @@ func init() {
 			update(dancers[1])
 		})
 
-	defineAction("ForwardRight", "ForwardRight moves FaceToFace dancers to a LeftHanded MiniWave.")
+	defineAction("ForwardRight", "ForwardRight moves FaceToFace dancers to a LeftHanded MiniWave.  This is commonly known as 'Left Touch'.")
 	defineFormationAction("ForwardRight", Primitive, LookupFormationType("FaceToFace"),
 		func(f reasoning.Formation) {
 			dancers := f.Dancers()
