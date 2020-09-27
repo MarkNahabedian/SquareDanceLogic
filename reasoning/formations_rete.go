@@ -53,11 +53,18 @@ func (ff *FormationFinder) Clear() {
 }
 
 
+// DoFormations calls the provided function on each formation that the
+// FormationFinder found of the specified FormationType.
 func (ff *FormationFinder) DoFormations(formationType reflect.Type, f func(Formation)) {
 	if formationType.Kind() != reflect.Interface {
+		from := formationType
 		formationType = defimpl_runtime.ImplToInterface(formationType)
+		if formationType == nil {
+			panic(fmt.Sprintf("No interface type corresponding to %v",
+				from))
+		}
 		if formationType.Kind() != reflect.Interface {
-			panic(fmt.Sprintf("Not an interface trpe: %s", formationType))
+			panic(fmt.Sprintf("Not an interface type: %s", formationType))
 		}
 	}
 	bn := ff.typeToBuffer[formationType]
