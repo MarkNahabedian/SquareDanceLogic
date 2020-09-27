@@ -2,6 +2,8 @@ package reasoning
 
 import "reflect"
 import "defimpl/runtime"
+import "squaredance/dancer"
+import "squaredance/geometry"
 
 
 // formation_sample_constructors is keyed by implementation type since
@@ -36,3 +38,12 @@ func RegisterFormationSample(constructor func()Formation) {
 	formation_sample_constructors[reflect.TypeOf(sample)] = constructor
 }
 
+
+func init() {
+	RegisterFormationSample(func() Formation {
+		dancers := dancer.MakeSomeDancers(1)
+		dancers[0].Move(geometry.Position{ Left: geometry.Left0, Down: geometry.Down0 },
+			geometry.Direction0)
+		return dancers[0]
+	})
+}
