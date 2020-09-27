@@ -116,9 +116,6 @@ type FormationAction interface {
 	ApplicableToFormationType(FormationType) bool
 	// IdString returns a string suitable for use as an HTML ID
 	IdString() string
-	// StartSample returnsa a sample Formation that this
-	// FormationAction could start from.
-	StartSample() reasoning.Formation
 }
 
 
@@ -143,12 +140,6 @@ func (fa *FormationActionImpl) DoIt(f reasoning.Formation) {
 		panic(fmt.Sprintf("%s doesn't apply to %#v", fa, f))
 	}
 	fa.doItFunc(f)
-}
-
-func (fa *FormationActionImpl) StartSample() reasoning.Formation {
-	// MakeSampleFormation could return nil if no sample
-	// constructor has been defined for the FormationType.
-	return reasoning.MakeSampleFormation(fa.FormationType())
 }
 
 
