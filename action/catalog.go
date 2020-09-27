@@ -6,11 +6,10 @@ import "fmt"
 import "os"
 import "sort"
 import "html/template"
-import "squaredance/dancer"
-import "squaredance/geometry"
+import "squaredance/reasoning"
 
 
-type catalogSort []FormationAction
+type catalogSort []*dancersTemplateArg
 
 func (cs catalogSort) Len() int {
 	return len(cs)
@@ -22,23 +21,28 @@ func (cs catalogSort) Swap(i, j int) {
 
 func (cs catalogSort) Less (i, j int) bool {
 	// Sort first by Action Name
-	if cs[i].Action().Name() < cs[j].Action().Name() {
+	fa1 := cs[i].FormationAction
+	fa2 := cs[j].FormationAction
+	if fa1.Action().Name() < fa2.Action().Name() {
 		return true
 	}
-	if cs[i].Action().Name() > cs[j].Action().Name() {
+	if fa1.Action().Name() > fa2.Action().Name() {
 		return false
 	}
 	// then by Formation name
-	return cs[i].FormationType().Name() < cs[j].FormationType().Name()
+	return fa1.FormationType().Name() < fa2.FormationType().Name()
 }
 
 
+// WriteCatalog writes an HTML file listing all FormationActions for
+// the specified level.
 func WriteCatalog(level Level) {
-	fas := []FormationAction{}
+	fas := []*dancersTemplateArg{}
+	// Filter by level:
 	for _, action := range AllActions {
 		action.DoFormationActions(func(fa FormationAction) bool {
 			if fa.Level() == level {
-				fas = append(fas, fa)
+				fas = append(fas, newDancersTemplateArg(fa))
 			}
 			return true
 		})
@@ -52,7 +56,7 @@ func WriteCatalog(level Level) {
 	defer f.Close()
 	err = html_page.Execute(f, html_page_arg {
 		Level: level,
-		FormationActions: fas,
+		DancersTemplateArgs: fas,
 	})
 	if err != nil {
 		fmt.Println(err)
@@ -62,21 +66,67 @@ func WriteCatalog(level Level) {
 
 type html_page_arg struct {
 	Level Level
-	FormationActions []FormationAction
+	DancersTemplateArgs []*dancersTemplateArg
 }
 
-// Parameters are level and sortes slice of FormationAction.31
+
+func init() {
+	child := reasoning.DancersSVGTemplate()
+	_, err := html_page.AddParseTree(child.Name(), child.Tree)
+	if err != nil {
+		panic(err)
+	}
+	html_page.Funcs(reasoning.DancerTemplateFunctions)
+}
+
+
+type dancersTemplateArg struct {
+	FormationAction FormationAction
+	svg_id string
+	sample reasoning.Formation
+}
+
+func newDancersTemplateArg(fa FormationAction) *dancersTemplateArg {
+	return &dancersTemplateArg {
+		FormationAction: fa,
+		svg_id: fmt.Sprintf("%s-%d-%s-start",
+			fa.Action().Name(),
+			fa.Level(),
+			fa.FormationType().Name()),
+		sample: reasoning.MakeSampleFormation(fa.FormationType()),
+	}
+}
+
+func (dta *dancersTemplateArg) SVGId() string {
+	return dta.svg_id
+}
+
+func (dta *dancersTemplateArg) Sample() reasoning.Formation {
+	return dta.sample
+}
+
+func (dta *dancersTemplateArg) HasSample() bool {
+	return dta.sample != nil
+}
+
+func (dta *dancersTemplateArg) DancerCount() int {
+	if dta.sample == nil {
+		return -1
+	}
+	return len(dta.sample.Dancers())
+}
+
+func (dta *dancersTemplateArg) Name() string {
+	return dta.FormationAction.FormationType().Name()
+}
+
+
+// Parameters are level and sorted slice of dancersTemplateArg.
 var html_page = template.Must(template.New("html_page").Funcs(
 	template.FuncMap{
-		"JSDirection": func(d geometry.Direction) float32 {
-			return float32(d) * 4
-		},
-		"JSGender": func (gender dancer.Gender) string {
-			switch gender {
-				case dancer.Guy: return "guy"
-				case dancer.Gal: return "gal"
-				default: return "unspecified"
-			}
+		"NewDancersSVGTemplateArg":
+		func (fa FormationAction) reasoning.DancersSVGTemplateArg {
+			return newDancersTemplateArg(fa)
 		},
 	}).Parse(`<html>
   <head>
@@ -86,6 +136,7 @@ var html_page = template.Must(template.New("html_page").Funcs(
     <style>
 td {
   text-align: center;
+  vertical-align: middle;
 }
     </style>
     <script type="text/javascript"
@@ -93,13 +144,9 @@ td {
     </script>
     <script type="text/javascript">
 function contentLoaded() {
-      {{range .FormationActions -}}
-        {{if .StartSample -}}
-          new Floor([
-            {{range .StartSample.Dancers -}}
-              new Dancer({{.Position.Left}}, {{.Position.Down}}, {{JSDirection .Direction}}, "{{.Ordinal}}", {{JSGender .Gender}}),
-            {{end -}}
-          ]).draw("{{.IdString}}");
+      {{range .DancersTemplateArgs -}}
+        {{if .HasSample -}}
+          {{- template "DancersSVGTemplate" . -}}
         {{end -}}
       {{- end -}}
 }
@@ -120,16 +167,16 @@ document.addEventListener("DOMContentLoaded", contentLoaded, false);
           <th>After</th>
         </tr>
       </thead>
-      {{range .FormationActions -}}
+      {{range .DancersTemplateArgs -}}
         <tr>
-          <td>{{.Action.Name}}</td>
-          <td>{{.FormationType.Name}}</td>
+          <td>{{.FormationAction.Action.Name}}</td>
+          <td>{{.FormationAction.FormationType.Name}}</td>
           <td>
-            {{if .StartSample -}}
-              <svg id="{{.IdString}}"></svg>
+            {{if .Sample -}}
+              <svg id="{{.SVGId}}"></svg>
             {{- else -}}
               <span>
-                {{printf "%s" .FormationType.Name}}
+                {{printf "%s" .FormationAction.FormationType.Name}}
               </span>
             {{- end}}
           </td>

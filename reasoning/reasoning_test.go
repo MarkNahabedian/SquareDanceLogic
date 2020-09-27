@@ -32,6 +32,10 @@ func init() {
 	rete.EnsureTypeTestRegistered("MiniWave", func(i interface{}) bool { _, ok := i.(MiniWave); return ok })
 }
 
+func TestWriteDiagrams(t *testing.T) {
+	WriteFormationDiagrams()
+}
+
 func TestShowFullRete(t *testing.T) {
 	formation_finder := MakeFormationFinder()
 	// Show the rete
