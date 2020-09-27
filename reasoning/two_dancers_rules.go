@@ -377,3 +377,17 @@ func rule_Tandem(node rete.Node, p Pair) {
 	}
 }
 
+func init() {
+	RegisterFormationSample(func() Formation {
+		dancers := dancer.MakeSomeDancers(2)
+		dancers[0].Move(geometry.Position{ Left: geometry.Left0, Down: geometry.Down0 },
+			geometry.Direction0)
+		dancers[1].Move(geometry.Position{ Left: geometry.Left0, Down: geometry.Down1 },
+			geometry.Direction0)
+		return &TandemImpl {
+			leader: dancers[1],
+			trailer: dancers[0],
+		}
+	})
+}
+
