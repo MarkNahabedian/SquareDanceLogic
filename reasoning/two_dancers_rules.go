@@ -68,6 +68,8 @@ type Couple interface {
 	// Roles:
 	Beaus() dancer.Dancers
 	Belles() dancer.Dancers
+	IsNormal() bool
+	IsHalfSasheyed()bool
 }
 
 func (f *CoupleImpl) Ordinal() int {
@@ -80,6 +82,16 @@ func (f *CoupleImpl) String() string {
 
 func (f *CoupleImpl) Beaus() dancer.Dancers { return dancer.Dancers{ f.Beau() } }
 func (f *CoupleImpl) Belles() dancer.Dancers { return dancer.Dancers{ f.Belle() } }
+
+func (f *CoupleImpl) IsNormal() bool {
+	return f.Beau().Gender() == dancer.Guy &&
+		f.Belle().Gender() == dancer.Gal
+}
+
+func (f *CoupleImpl) IsHalfSasheyed()bool {
+	return f.Beau().Gender() == dancer.Gal &&
+		f.Belle().Gender() == dancer.Guy
+}
 
 func rule_GeneralizedCouple(node rete.Node, p Pair) {
 	d1 := p.Dancer1()
