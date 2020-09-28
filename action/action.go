@@ -24,18 +24,6 @@ const (
 )
 
 
-// FormationType is a reflect.Type identifying the interface type of a reasoning.Formation.
-type FormationType reflect.Type
-
-func LookupFormationType(name string) FormationType {
-	ft, ok := reasoning.AllFormationTypes[name]
-	if !ok {
-		panic(fmt.Sprintf("No formation named %q", name))
-	}
-	return FormationType(ft)
-}
-
-
 // Action represents some snipet of square dance choreography -- the
 // simplest action a Dancer or Formation of Dancers can perform.  We
 // use them as primitive choreography when defining how a square dance
@@ -48,12 +36,12 @@ type Action interface {
 	Description() string      // defimpl:"read description"
 	AddFormationAction(...FormationAction)     // defimpl:"append formationActions"
 	DoFormationActions(func(FormationAction) bool)         // defimpl:"iterate formationActions"
-	GetFormationAction(FormationType) FormationAction
+	GetFormationAction(reasoning.FormationType) FormationAction
 	GetFormationActionFor(f reasoning.Formation) FormationAction
 }
 
 
-func (a *ActionImpl) GetFormationAction(ft FormationType) FormationAction {
+func (a *ActionImpl) GetFormationAction(ft reasoning.FormationType) FormationAction {
 	var found FormationAction
 	a.DoFormationActions(func(fa FormationAction) bool {
 		if fa.ApplicableToFormationType(ft) {
@@ -105,15 +93,15 @@ func defineAction(name string, description string) {
 // FormationAction represents how an Action should be performed from a
 // specific Formation.
 type FormationAction interface {
-	Action() Action                        // defimpl:"read action"
-	Level() Level                          // defimpl:"read level"
-	FormationType() FormationType         // defimpl:"read formationType"
+	Action() Action                            // defimpl:"read action"
+	Level() Level                              // defimpl:"read level"
+	FormationType() reasoning.FormationType   // defimpl:"read formationType"
 	// DoItFunc is a function that will perform the action.
-	DoItFunc() func(reasoning.Formation)   // defimpl:"read doItFunc"
+	DoItFunc() func(reasoning.Formation)       // defimpl:"read doItFunc"
 	DoIt(reasoning.Formation)
 	String() string
 	ApplicableTo(reasoning.Formation) bool
-	ApplicableToFormationType(FormationType) bool
+	ApplicableToFormationType(reasoning.FormationType) bool
 	// IdString returns a string suitable for use as an HTML ID
 	IdString() string
 }
@@ -127,12 +115,12 @@ func (fa *FormationActionImpl) IdString() string {
 	return fmt.Sprintf("%s-%s", fa.Action().Name(), fa.FormationType().Name())
 }
 
-func (fa *FormationActionImpl) ApplicableToFormationType(ft FormationType) bool {
+func (fa *FormationActionImpl) ApplicableToFormationType(ft reasoning.FormationType) bool {
 	return ft.AssignableTo(fa.formationType)
 }
 
 func (fa *FormationActionImpl) ApplicableTo(f reasoning.Formation) bool {
-	return fa.ApplicableToFormationType(FormationType(reflect.TypeOf(f)))
+	return fa.ApplicableToFormationType(reasoning.FormationType(reflect.TypeOf(f)))
 }
 
 func (fa *FormationActionImpl) DoIt(f reasoning.Formation) {
@@ -143,7 +131,9 @@ func (fa *FormationActionImpl) DoIt(f reasoning.Formation) {
 }
 
 
-func defineFormationAction(actionName string, level Level, formationType FormationType, doit func(reasoning.Formation)) {
+func defineFormationAction(actionName string, level Level,
+	formationType reasoning.FormationType,
+	doit func(reasoning.Formation)) {
 	a := FindAction(actionName)
 	if a == nil {
 		a = &ActionImpl{

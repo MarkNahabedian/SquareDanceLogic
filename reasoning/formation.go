@@ -1,5 +1,6 @@
 package reasoning
 
+import "fmt"
 import "reflect"
 import "squaredance/dancer"
 
@@ -15,7 +16,18 @@ type Formation interface {
 	HasDancer(dancer.Dancer) bool
 }
 
-var AllFormationTypes map[string] reflect.Type = make(map[string] reflect.Type)
+// FormationType is a reflect.Type identifying the interface type of a Formation.
+type FormationType reflect.Type
+
+var AllFormationTypes map[string] FormationType = make(map[string] FormationType)
+
+func LookupFormationType(name string) FormationType {
+	ft, ok := AllFormationTypes[name]
+	if !ok {
+		panic(fmt.Sprintf("No formation named %q", name))
+	}
+	return FormationType(ft)
+}
 
 func init() {
 	// Fudge the AllFormationTypes entries for Formations that aren't
