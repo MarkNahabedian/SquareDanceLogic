@@ -9,11 +9,11 @@ import "squaredance/geometry"
 // formation_sample_constructors is keyed by implementation type since
 // that's what we can get by reflecting on the return value of the
 // constructor function.
-var formation_sample_constructors = map[reflect.Type] func()Formation{}
+var formation_sample_constructors = map[FormationType] func()Formation{}
 
 // MakeSampleFormation returns nil or a sample square fance formation
 // of the specified type.
-func MakeSampleFormation(formation_type reflect.Type) Formation {
+func MakeSampleFormation(formation_type FormationType) Formation {
 	if formation_type.Kind() == reflect.Slice {
 		return nil
 	}
