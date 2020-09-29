@@ -87,3 +87,12 @@ func (ff *FormationFinder) DoFormations(formationType reflect.Type, f func(Forma
 }
 
 
+// DoAllBuffers applies the specified function to each AbstractBufferNode.
+func (ff *FormationFinder) DoAllBuffers(f func(rete.AbstractBufferNode)) {
+	rete.Walk(ff.rete, func(node rete.Node) {
+		if n, ok := node.(rete.AbstractBufferNode); ok {
+			f(n)
+		}
+	})
+}
+
