@@ -20,7 +20,8 @@ func MakeFormationFinder() *FormationFinder {
 		typeToBuffer: make(map[reflect.Type]rete.AbstractBufferNode),
 	}
 	loadAllRules(ff.rete)
-	// Add bufferes where needed.  Index the buffers
+	ensure_TypeTestNodes(ff.rete)
+	// Add buffers where needed.  Index the buffers
 	rete.Walk(ff.rete, func(n rete.Node) {
 		if ttn, ok := n.(*rete.TypeTestNode); ok {
 			if ttn.Type.Implements(reflect.TypeOf(func(TwoDancerSymetric){}).In(0)) {
@@ -37,6 +38,15 @@ func MakeFormationFinder() *FormationFinder {
 func loadAllRules(root rete.Node) {
 	for _, rule := range runtime.AllRules {
 		rule.Installer()(root)
+	}
+}
+
+
+func ensure_TypeTestNodes(root rete.Node) {
+	for _, rule := range runtime.AllRules {
+		for _, t := range rule.EmitTypes() {
+			rete.GetTypeTestNode(root, t)
+		}
 	}
 }
 
