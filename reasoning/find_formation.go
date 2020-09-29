@@ -6,7 +6,7 @@ import "squaredance/dancer"
 
 var formationFinder *FormationFinder = nil
 
-func FindFormations(dancers dancer.Dancers, formation_type reflect.Type) []Formation {
+func FindFormations(dancers dancer.Dancers, formation_type reflect.Type) ([]Formation, *FormationFinder) {
 	if formationFinder == nil {
 		formationFinder = MakeFormationFinder()
 	}
@@ -19,6 +19,6 @@ func FindFormations(dancers dancer.Dancers, formation_type reflect.Type) []Forma
 		}
 		result = append(result, f)
 	})
-	return result
+	return result, formationFinder
 }
 
