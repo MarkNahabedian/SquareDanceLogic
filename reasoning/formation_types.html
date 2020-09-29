@@ -1,0 +1,154 @@
+<html>
+  <head>
+    <title>
+      Supported Formation Types
+    </title>
+    <style>
+td {
+  text-align: center;
+  vertical-align: middle;
+}
+    </style>
+    <script type="text/javascript"
+            src="https://marknahabedian.github.io/SquareDanceFormationDiagrams/dancers.js">
+    </script>
+    <script type="text/javascript">
+function contentLoaded() {
+      
+  new Floor([new Dancer( 0 ,  0 ,  0 , "0", "unspecified"),
+    ]).draw("Dancer");
+
+  new Floor([new Dancer( 0 ,  0 ,  2 , "0", "unspecified"),
+    new Dancer( 0 ,  1 ,  0 , "1", "unspecified"),
+    ]).draw("BackToBack");
+
+  new Floor([new Dancer( 1 ,  0 ,  0 , "1", "unspecified"),
+    new Dancer( 0 ,  0 ,  0 , "0", "unspecified"),
+    ]).draw("Couple");
+
+  new Floor([new Dancer( 0 ,  0 ,  0 , "0", "unspecified"),
+    new Dancer( 0 ,  1 ,  2 , "1", "unspecified"),
+    ]).draw("FaceToFace");
+
+  new Floor([new Dancer( 1 ,  0 ,  0 , "1", "unspecified"),
+    new Dancer( 0 ,  0 ,  2 , "0", "unspecified"),
+    ]).draw("MiniWave");
+
+  new Floor([new Dancer( 0 ,  1 ,  0 , "1", "unspecified"),
+    new Dancer( 0 ,  0 ,  0 , "0", "unspecified"),
+    ]).draw("Tandem");
+
+  new Floor([new Dancer( 1 ,  0 ,  2 , "1", "unspecified"),
+    new Dancer( 0 ,  0 ,  2 , "0", "unspecified"),
+    new Dancer( 0 ,  1 ,  0 , "1", "unspecified"),
+    new Dancer( 1 ,  1 ,  0 , "0", "unspecified"),
+    ]).draw("BackToBackCouples");
+
+  new Floor([new Dancer( 1 ,  0 ,  0 , "1", "unspecified"),
+    new Dancer( 0 ,  0 ,  0 , "0", "unspecified"),
+    new Dancer( 0 ,  1 ,  2 , "1", "unspecified"),
+    new Dancer( 1 ,  1 ,  2 , "0", "unspecified"),
+    ]).draw("FacingCouples");
+
+  new Floor([new Dancer( 1 ,  0 ,  0 , "1", "unspecified"),
+    new Dancer( 0 ,  0 ,  0 , "0", "unspecified"),
+    new Dancer( 0 ,  1 ,  0 , "1", "unspecified"),
+    new Dancer( 1 ,  1 ,  0 , "0", "unspecified"),
+    ]).draw("TandemCouples");
+}
+
+document.addEventListener("DOMContentLoaded", contentLoaded, false);
+    </script>
+  </head>
+  <body>
+    <h1>
+      Supported Square Dance Formation Types
+    </h1>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Diagram</th>
+        </tr>
+      </thead>
+      <tbody>
+        
+          <tr>
+            <td>BoxOfFour</td>
+            <td></td>
+          </tr>
+        
+          <tr>
+            <td>Dancers</td>
+            <td></td>
+          </tr>
+        
+          <tr>
+            <td>LineOfFour</td>
+            <td></td>
+          </tr>
+        
+          <tr>
+            <td>Star</td>
+            <td></td>
+          </tr>
+        
+          <tr>
+            <td>TwoFacedLine</td>
+            <td></td>
+          </tr>
+        
+          <tr>
+            <td>WaveOfFour</td>
+            <td></td>
+          </tr>
+        
+          <tr>
+            <td>Dancer</td>
+            <td><svg id="Dancer"></svg></td>
+          </tr>
+        
+          <tr>
+            <td>BackToBack</td>
+            <td><svg id="BackToBack"></svg></td>
+          </tr>
+        
+          <tr>
+            <td>Couple</td>
+            <td><svg id="Couple"></svg></td>
+          </tr>
+        
+          <tr>
+            <td>FaceToFace</td>
+            <td><svg id="FaceToFace"></svg></td>
+          </tr>
+        
+          <tr>
+            <td>MiniWave</td>
+            <td><svg id="MiniWave"></svg></td>
+          </tr>
+        
+          <tr>
+            <td>Tandem</td>
+            <td><svg id="Tandem"></svg></td>
+          </tr>
+        
+          <tr>
+            <td>BackToBackCouples</td>
+            <td><svg id="BackToBackCouples"></svg></td>
+          </tr>
+        
+          <tr>
+            <td>FacingCouples</td>
+            <td><svg id="FacingCouples"></svg></td>
+          </tr>
+        
+          <tr>
+            <td>TandemCouples</td>
+            <td><svg id="TandemCouples"></svg></td>
+          </tr>
+        
+      </tbody>
+    </table>
+  </body>
+</html>
