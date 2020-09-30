@@ -157,10 +157,10 @@ func (p Position) String() string {
 
 // NewPositionDownLeft returns a new Position with the given Down and Left
 // values.
-func NewPositionDownLeft(down float32, left float32) Position {
+func NewPositionDownLeft(down Down, left Left) Position {
 	return Position{
-		Down: Down(down),
-		Left: Left(left),
+		Down: down,
+		Left: left,
 	}
 }
 

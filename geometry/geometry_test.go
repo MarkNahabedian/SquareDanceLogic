@@ -29,7 +29,7 @@ func TestDownLeft(t *testing.T) {
 
 func TestPosition(t *testing.T) {
 	d1 := FullCircle.DivideBy(4)
-	origin := NewPositionDownLeft(0.0, 0.0)
+	origin := NewPositionDownLeft(Down0, Left0)
 	p := NewPosition(d1, 2.0)
 	if p.Distance(origin) != 2.0 {
 		t.Errorf("NewPosition or Distaqnce failed.")
