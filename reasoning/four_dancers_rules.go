@@ -6,6 +6,7 @@ import "goshua/rete"
 import "squaredance/dancer"
 import "squaredance/geometry"
 
+
 type FacingCouples interface {
 	Formation
 	FacingCouples()
@@ -40,6 +41,42 @@ func (f *FacingCouplesImpl) Trailers() dancer.Dancers {
 	return dancer.Union(f.Facing1().Trailers(), f.Facing2().Trailers())
 }
 
+func make_FacingCouples_sample() Formation {
+	couple1 := make_Couple_sample().(*CoupleImpl)
+	couple2 := make_Couple_sample().(*CoupleImpl)
+	down := couple1.Beau().Position().Down.Add(geometry.Down(geometry.CoupleDistance))
+	dir := couple1.Beau().Direction().Opposite()
+	couple2.Beau().Move(
+		geometry.Position{
+			Left: couple1.Belle().Position().Left,
+			Down: down,
+		},
+		dir)
+	couple2.Belle().Move(
+		geometry.Position{
+			Left: couple1.Beau().Position().Left,
+			Down: down,
+		},
+		dir)
+	dancer.Reorder(couple1.Beau(), couple1.Belle(), couple2.Beau(), couple2.Belle())
+	return FacingCouples(&FacingCouplesImpl {
+		couple1: couple1,
+		couple2: couple2,
+		facing1: &FaceToFaceImpl {
+			dancer1: couple1.Beau(),
+			dancer2: couple2.Belle(),
+		},
+		facing2: &FaceToFaceImpl {
+			dancer1: couple1.Belle(),
+			dancer2: couple2.Beau(),
+		},
+	})
+}
+
+func init() {
+	RegisterFormationSample(make_FacingCouples_sample)
+}
+
 func rule_FacingCouples(node rete.Node, couple1, couple2 Couple, facing1, facing2 FaceToFace) {
 	if !OrderedDancers(couple1.Beau(), couple2.Beau()) {
 		return
@@ -65,6 +102,7 @@ func rule_FacingCouples(node rete.Node, couple1, couple2 Couple, facing1, facing
 type TandemCouples interface {
 	Formation
 	TandemCouples()
+	// Should we call these LeadingCouple and TrailingCouple?
 	Couple1() Couple        // defimpl:"read couple1" fe:"dancers"
 	Couple2() Couple        // defimpl:"read couple2" fe:"dancers"
 	BeausTandem() Tandem   // defimpl:"read beaustandem"
@@ -94,6 +132,44 @@ func (f *TandemCouplesImpl) Leaders() dancer.Dancers {
 
 func (f *TandemCouplesImpl) Trailers() dancer.Dancers {
 	return dancer.Union(f.BeausTandem().Trailers(), f.BellesTandem().Trailers())
+}
+
+func make_TandemCouples_sample() Formation {
+	couple1 := make_Couple_sample().(*CoupleImpl)
+	couple2 := make_Couple_sample().(*CoupleImpl)
+	down := couple1.Beau().Position().Down.Add(geometry.Down(geometry.CoupleDistance))
+	dir := couple1.Beau().Direction()
+	couple2.Beau().Move(
+		geometry.Position{
+			Left: couple1.Belle().Position().Left,
+			Down: down,
+		},
+		dir)
+	couple2.Belle().Move(
+		geometry.Position{
+			Left: couple1.Beau().Position().Left,
+			Down: down,
+		},
+		dir)
+	tandem1 := &TandemImpl {
+			leader: couple2.Beau(),
+			trailer: couple1.Beau(),
+	}
+	tandem2 := &TandemImpl {
+			leader: couple2.Belle(),
+			trailer: couple1.Belle(),
+		}
+	dancer.Reorder(tandem1.Leader(), tandem1.Trailer(), tandem2.Leader(), tandem2.Trailer())
+	return TandemCouples(&TandemCouplesImpl {
+		couple1: couple1,
+		couple2: couple2,
+		beaustandem: tandem1,
+		bellestandem: tandem2,
+	})
+}
+
+func init() {
+	RegisterFormationSample(make_TandemCouples_sample)
 }
 
 func rule_TandemCouples(node rete.Node, couple1, couple2 Couple, tandem1, tandem2 Tandem) {
@@ -152,6 +228,35 @@ func (f *BackToBackCouplesImpl) Trailers() dancer.Dancers {
 	return dancer.Dancers{}
 }
 
+func make_BackToBackCouples_sample() Formation {
+	couple1 := make_Couple_sample().(*CoupleImpl)
+	couple2 := make_Couple_sample().(*CoupleImpl)
+	couple2.Beau().MoveBy(
+		geometry.NewPositionDownLeft(geometry.Down1, geometry.Left0))
+	couple2.Belle().MoveBy(
+		geometry.NewPositionDownLeft(geometry.Down1, geometry.Left0))
+	dir := couple1.Beau().Direction().Opposite()
+	pos := couple1.Beau().Position()
+	couple1.Beau().Move(couple1.Belle().Position(), dir)
+	couple1.Belle().Move(pos, dir)
+	dancer.Reorder(couple1.Beau(), couple1.Belle(), couple2.Beau(), couple2.Belle())
+	return BackToBackCouples(&BackToBackCouplesImpl {
+		couple1: couple1,
+		couple2: couple2,
+		backtoback1: &BackToBackImpl {
+			dancer1: couple1.Beau(),
+			dancer2: couple2.Belle(),
+		},
+		backtoback2: &BackToBackImpl {
+			dancer1: couple1.Belle(),
+			dancer2: couple2.Beau(),
+		},
+	})
+}
+
+func init() {
+	RegisterFormationSample(make_BackToBackCouples_sample)
+}
 
 func rule_BackToBackCouples(node rete.Node, couple1, couple2 Couple, bb1, bb2 BackToBack) {
 	if !OrderedDancers(couple1.Beau(), couple2.Beau()) {
