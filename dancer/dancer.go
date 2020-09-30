@@ -81,6 +81,12 @@ type Dancer interface{
 
 type Dancers []Dancer
 
+func Reorder(dancers ...Dancer) {
+	for i, d := range dancers {
+		d.(*DancerImpl).ordinal = i + 1
+	}
+}
+
 func (ds Dancers) String() string {
 	buf := bytes.NewBufferString("")
 	first := true
