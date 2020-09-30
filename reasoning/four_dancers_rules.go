@@ -7,6 +7,12 @@ import "squaredance/dancer"
 import "squaredance/geometry"
 
 
+func swap_positions(dancer1, dancer2 dancer.Dancer) {
+	d1pos := dancer1.Position()
+	dancer1.Move(dancer2.Position(), dancer1.Direction())
+	dancer2.Move(d1pos, dancer2.Direction())
+}
+
 type FacingCouples interface {
 	Formation
 	FacingCouples()
@@ -44,20 +50,10 @@ func (f *FacingCouplesImpl) Trailers() dancer.Dancers {
 func make_FacingCouples_sample() Formation {
 	couple1 := make_Couple_sample().(*CoupleImpl)
 	couple2 := make_Couple_sample().(*CoupleImpl)
-	down := couple1.Beau().Position().Down.Add(geometry.Down(geometry.CoupleDistance))
-	dir := couple1.Beau().Direction().Opposite()
-	couple2.Beau().Move(
-		geometry.Position{
-			Left: couple1.Belle().Position().Left,
-			Down: down,
-		},
-		dir)
-	couple2.Belle().Move(
-		geometry.Position{
-			Left: couple1.Beau().Position().Left,
-			Down: down,
-		},
-		dir)
+	down := geometry.NewPositionDownLeft(geometry.Down1, geometry.Left0)
+	couple2.Beau().MoveBy(down).Rotate(geometry.Direction2)
+	couple2.Belle().MoveBy(down).Rotate(geometry.Direction2)
+	swap_positions(couple2.Beau(),couple2.Belle())
 	dancer.Reorder(couple1.Beau(), couple1.Belle(), couple2.Beau(), couple2.Belle())
 	return FacingCouples(&FacingCouplesImpl {
 		couple1: couple1,
@@ -137,28 +133,17 @@ func (f *TandemCouplesImpl) Trailers() dancer.Dancers {
 func make_TandemCouples_sample() Formation {
 	couple1 := make_Couple_sample().(*CoupleImpl)
 	couple2 := make_Couple_sample().(*CoupleImpl)
-	down := couple1.Beau().Position().Down.Add(geometry.Down(geometry.CoupleDistance))
-	dir := couple1.Beau().Direction()
-	couple2.Beau().Move(
-		geometry.Position{
-			Left: couple1.Belle().Position().Left,
-			Down: down,
-		},
-		dir)
-	couple2.Belle().Move(
-		geometry.Position{
-			Left: couple1.Beau().Position().Left,
-			Down: down,
-		},
-		dir)
+	down := geometry.NewPositionDownLeft(geometry.Down1, geometry.Left0)
+	couple2.Beau().MoveBy(down)
+	couple2.Belle().MoveBy(down)
 	tandem1 := &TandemImpl {
-			leader: couple2.Beau(),
-			trailer: couple1.Beau(),
+		leader: couple2.Beau(),
+		trailer: couple1.Beau(),
 	}
 	tandem2 := &TandemImpl {
-			leader: couple2.Belle(),
-			trailer: couple1.Belle(),
-		}
+		leader: couple2.Belle(),
+		trailer: couple1.Belle(),
+	}
 	dancer.Reorder(tandem1.Leader(), tandem1.Trailer(), tandem2.Leader(), tandem2.Trailer())
 	return TandemCouples(&TandemCouplesImpl {
 		couple1: couple1,
@@ -231,14 +216,14 @@ func (f *BackToBackCouplesImpl) Trailers() dancer.Dancers {
 func make_BackToBackCouples_sample() Formation {
 	couple1 := make_Couple_sample().(*CoupleImpl)
 	couple2 := make_Couple_sample().(*CoupleImpl)
-	couple2.Beau().MoveBy(
-		geometry.NewPositionDownLeft(geometry.Down1, geometry.Left0))
-	couple2.Belle().MoveBy(
-		geometry.NewPositionDownLeft(geometry.Down1, geometry.Left0))
-	dir := couple1.Beau().Direction().Opposite()
-	pos := couple1.Beau().Position()
-	couple1.Beau().Move(couple1.Belle().Position(), dir)
-	couple1.Belle().Move(pos, dir)
+	// Move couple1 down by one position:
+	down := geometry.NewPositionDownLeft(geometry.Down1, geometry.Left0)
+	couple2.Beau().MoveBy(down)
+	couple2.Belle().MoveBy(down)
+	// couple2 trade:
+	swap_positions(
+		couple1.Beau().Rotate(geometry.Direction2),
+		couple1.Belle().Rotate(geometry.Direction2))
 	dancer.Reorder(couple1.Beau(), couple1.Belle(), couple2.Beau(), couple2.Belle())
 	return BackToBackCouples(&BackToBackCouplesImpl {
 		couple1: couple1,
@@ -248,8 +233,8 @@ func make_BackToBackCouples_sample() Formation {
 			dancer2: couple2.Belle(),
 		},
 		backtoback2: &BackToBackImpl {
-			dancer1: couple1.Belle(),
-			dancer2: couple2.Beau(),
+			dancer1: couple2.Beau(),
+			dancer2: couple1.Belle(),
 		},
 	})
 }

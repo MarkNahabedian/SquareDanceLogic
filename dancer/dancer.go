@@ -68,11 +68,15 @@ type Dancer interface{
 	Direction() geometry.Direction     // defimpl:"read direction"
 	OriginalPartner() Dancer          // defimpl:"read originalPartner"
 	SetOriginalPartner(Dancer)
+	// Rotate changes the Dancer's direction by the specified
+	// amount (expressed as a relative Direction).  The Dancer is
+	// returnewd.
+	Rotate(geometry.Direction) Dancer
 	// Move changes the Dancer's position and direction to the specified values.
 	Move(geometry.Position, geometry.Direction) Dancer
 	// MoveBy changes the Dancer's position by the specified
-	// vector expressed as a Position.
-	MoveBy(geometry.Position)
+	// vector expressed as a Position.  The Dancer is returned.
+	MoveBy(geometry.Position) Dancer
 	// A single dancer is still a formation so it implements the Formation interface
 	NumberOfDancers() int
 	Dancers() Dancers
@@ -168,6 +172,11 @@ func (d *DancerImpl) SetOriginalPartner(d2 Dancer) {
 	d.originalPartner = d2
 }
 
+func (d *DancerImpl) Rotate(relative_direction geometry.Direction) Dancer {
+	d.direction = d.direction.Add(relative_direction)
+	return d
+}
+
 // Modify the Dancer's position and direction.
 func (d *DancerImpl) Move(newPosition geometry.Position, newDirection geometry.Direction) Dancer {
 	d.position = newPosition
@@ -175,8 +184,9 @@ func (d *DancerImpl) Move(newPosition geometry.Position, newDirection geometry.D
 	return d
 }
 
-func (d *DancerImpl) MoveBy(delta geometry.Position) {
+func (d *DancerImpl) MoveBy(delta geometry.Position) Dancer {
 	d.position = d.position.Add(delta)
+	return d
 }
 
 func (d1 *DancerImpl) GoshuaEqual(d2 interface{}) (bool, error) {
