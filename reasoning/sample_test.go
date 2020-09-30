@@ -24,6 +24,13 @@ func TestMakeSampleFormation(t *testing.T) {
 		f, ff := FindFormations(sample.Dancers(), ft)
 		if count := len(f); count != 1 {
 			t.Errorf("Expected one formation of type %s, got %d", ft, count)
+			for _, dancer := range sample.Dancers() {
+				t.Logf("  %d: %v %v %v\n",
+					dancer.Ordinal(),
+					dancer.Position().Down,
+					dancer.Position().Left,
+					dancer.Direction())
+			}
 			ff.DoAllBuffers(func (bn rete.AbstractBufferNode) {
 				t.Logf("rete Node %s:\n", bn.(rete.Node).Label())
 				bn.DoItems(func(item interface{}) {
