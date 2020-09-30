@@ -103,13 +103,16 @@ func rule_GeneralizedCouple(node rete.Node, p Pair) {
 
 func make_Couple_sample() Formation {
 	dancers := dancer.MakeSomeDancers(2)
-	dancers[0].Move(geometry.Position{ Left: geometry.Left0, Down: geometry.Down0 },
+	beau := dancers[0]
+	belle := dancers[1]
+	beau.Move(geometry.Position{ Left: geometry.Left1, Down: geometry.Down0 },
 		geometry.Direction0)
-	dancers[1].Move(geometry.Position{ Left: geometry.Left1, Down: geometry.Down0 },
+	belle.Move(geometry.Position{ Left: geometry.Left0, Down: geometry.Down0 },
 		geometry.Direction0)
+	dancer.Reorder(beau, belle)
 	return Couple(&CoupleImpl {
-		beau: dancers[1],
-		belle: dancers[0],
+		beau: beau,
+		belle: belle,
 	})
 }
 
@@ -231,9 +234,10 @@ func make_MiniWave_sample() Formation {
 		geometry.FullCircle / 2)
 	dancers[1].Move(geometry.Position{ Left: geometry.Left1, Down: geometry.Down0 },
 		geometry.Direction0)
+	dancer.Reorder(dancers...)
 	return MiniWave(&MiniWaveImpl {
-		dancer1: dancers[1],
-		dancer2: dancers[0],
+		dancer1: dancers[0],
+		dancer2: dancers[1],
 	})
 }
 
@@ -291,6 +295,7 @@ func make_FaceToFace_sample() Formation  {
 		geometry.Direction0)
 	dancers[1].Move(geometry.Position{ Left: geometry.Left0, Down: geometry.Down1 },
 		geometry.FullCircle / 2)
+	dancer.Reorder(dancers...)
 	return FaceToFace(&FaceToFaceImpl{
 		dancer1: dancers[0],
 		dancer2: dancers[1],
@@ -345,6 +350,7 @@ func make_BackToBack_sample() Formation {
 		geometry.FullCircle / 2)
 	dancers[1].Move(geometry.Position{ Left: geometry.Left0, Down: geometry.Down1 },
 		geometry.Direction0)
+	dancer.Reorder(dancers...)
 	return BackToBack(&BackToBackImpl{
 		dancer1: dancers[0],
 		dancer2: dancers[1],
@@ -398,13 +404,15 @@ func rule_Tandem(node rete.Node, p Pair) {
 
 func make_Tandem_sample() Formation {
 	dancers := dancer.MakeSomeDancers(2)
-	dancers[0].Move(geometry.Position{ Left: geometry.Left0, Down: geometry.Down0 },
+	leader, trailer := dancers[0], dancers[1]
+	leader.Move(geometry.Position{ Left: geometry.Left0, Down: geometry.Down1 },
 		geometry.Direction0)
-	dancers[1].Move(geometry.Position{ Left: geometry.Left0, Down: geometry.Down1 },
+	trailer.Move(geometry.Position{ Left: geometry.Left0, Down: geometry.Down0 },
 		geometry.Direction0)
+	dancer.Reorder(leader, trailer)
 	return &TandemImpl {
-		leader: dancers[1],
-		trailer: dancers[0],
+		leader: leader,
+		trailer: trailer,
 	}
 }
 
