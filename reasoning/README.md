@@ -62,3 +62,7 @@ run
 <pre>
 dot -O -Tsvg formations_rete.dot
 </pre>
+or
+<pre>
+dot -Grankdir=LR -O -Tsvg formations_rete.dot
+</pre>
