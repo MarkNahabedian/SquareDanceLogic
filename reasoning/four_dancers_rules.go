@@ -658,13 +658,12 @@ func init() {
 }
 
 func rule_TwoFacedLine(node rete.Node, c1, c2 Couple, mw MiniWave) {
+	// Must have two different Couples:
 	if c1.Beau() == c2.Beau() && c1.Belle() == c2.Belle() {
 		return
 	}
-	if !(mw.HasDancer(c1.Beau()) && mw.HasDancer(c2.Beau())) {
-		return
-	}
-	if !(mw.HasDancer(c1.Belle()) && mw.HasDancer(c2.Belle())) {
+	if !((mw.HasDancer(c1.Beau()) && mw.HasDancer(c2.Beau())) ||
+		(mw.HasDancer(c1.Belle()) && mw.HasDancer(c2.Belle()))) {
 		return
 	}
 	node.Emit(TwoFacedLine(&TwoFacedLineImpl{

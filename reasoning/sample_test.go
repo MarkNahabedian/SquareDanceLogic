@@ -10,13 +10,9 @@ import "goshua/rete"
 func TestMakeSampleFormation(t *testing.T) {
 	runtime.Dump()
 	/*
-	ff := MakeFormationFinder()
-	for bft, bn := range ff.typeToBuffer {
-		t.Logf("Buffer for %s: \t%T", bft, bn)
-	}
-	for ft, _ := range formation_sample_constructors {
-		t.Logf("Constructor for %s", ft)
-	}
+	This test is failing for TwoFacedLine because of MiniWave symetry:
+	  TwoFacedLine(RightHanded, Dancer_1, Dancer_2, Dancer_3, Dancer_4)
+	  TwoFacedLine(RightHanded, Dancer_3, Dancer_4, Dancer_1, Dancer_2)
 	*/
 	for ft, c := range formation_sample_constructors {
 		sample := c()
