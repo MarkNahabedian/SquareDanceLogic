@@ -155,6 +155,8 @@ func (p Position) String() string {
 	return fmt.Sprintf("{%f, %f}", p.Down, p.Left)
 }
 
+var Origin = NewPositionDownLeft(Down(0), Left(0))
+
 // NewPositionDownLeft returns a new Position with the given Down and Left
 // values.
 func NewPositionDownLeft(down Down, left Left) Position {
@@ -200,6 +202,11 @@ func (p1 Position) Add(p2 Position) Position {
 		Down: p1.Down.Add(p2.Down),
 		Left: p1.Left.Add(p2.Left),
 	}
+}
+
+// Minus returns the additive inverse of the Position.
+func (p Position) Minus() Position {
+	return NewPositionDownLeft(- p.Down, - p.Left)
 }
 
 // Subtract returns a new Position that's the result of subtracting p2 from p1.
