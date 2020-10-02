@@ -11,7 +11,7 @@ func LeftOf(dancer1, dancer2 dancer.Dancer) bool {
     	dancer1.Position().Direction(dancer2.Position()))
 }
 
-// RightOf returns true if dancer2 is to the left of Dancer1.
+// RightOf returns true if dancer2 is to the right of Dancer1.
 // Dancer1's direction is relevant to this determination but
 // Dancer2's direction is not.
 func RightOf(dancer1, dancer2 dancer.Dancer) bool {
