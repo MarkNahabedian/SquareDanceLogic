@@ -8,6 +8,13 @@ import "squaredance/dancer"
 import "squaredance/geometry"
 
 
+// Near returns true if the two dancers are near each other.
+func Near(dancer1, dancer2 dancer.Dancer) bool {
+	// *** Should we add a bit of fudge?
+	return dancer1.Position().Distance(dancer2.Position()) <= 1.2 * geometry.CoupleDistance
+}
+
+
 // Pair represents two distinct Dancers.
 // Note that rule_PairOfDancers does not filter by Dancer canonical ordering
 // and the rete node that Joins one Dancer with another considers the those
@@ -110,10 +117,12 @@ func make_Couple_sample() Formation {
 	belle.Move(geometry.Position{ Left: geometry.Left0, Down: geometry.Down0 },
 		geometry.Direction0)
 	dancer.Reorder(beau, belle)
-	return Couple(&CoupleImpl {
+	sample := Couple(&CoupleImpl {
 		beau: beau,
 		belle: belle,
 	})
+	sample.Dancers().Recenter0()
+	return sample
 }
 
 func init() {
@@ -215,6 +224,12 @@ func (mw *MiniWaveImpl) Belles() dancer.Dancers {
 func rule_MiniWave(node rete.Node, p Pair) {
 	d1 := p.Dancer1()
 	d2 := p.Dancer2()
+	if d1 == d2 {
+		return
+	}
+	if !Near(d1, d2) {
+		return
+	}
 	if d1.Ordinal() >= d2.Ordinal() {   // Huh?  de-dup?
 		return
 	}
@@ -235,10 +250,12 @@ func make_MiniWave_sample() Formation {
 	dancers[1].Move(geometry.Position{ Left: geometry.Left1, Down: geometry.Down0 },
 		geometry.Direction0)
 	dancer.Reorder(dancers...)
-	return MiniWave(&MiniWaveImpl {
+	sample := MiniWave(&MiniWaveImpl {
 		dancer1: dancers[0],
 		dancer2: dancers[1],
 	})
+	sample.Dancers().Recenter0()
+	return sample
 }
 
 func init() {
@@ -296,10 +313,12 @@ func make_FaceToFace_sample() Formation  {
 	dancers[1].Move(geometry.Position{ Left: geometry.Left0, Down: geometry.Down1 },
 		geometry.FullCircle / 2)
 	dancer.Reorder(dancers...)
-	return FaceToFace(&FaceToFaceImpl{
+	sample := FaceToFace(&FaceToFaceImpl{
 		dancer1: dancers[0],
 		dancer2: dancers[1],
 	})
+	sample.Dancers().Recenter0()
+	return sample
 }
 
 func init() {
@@ -351,10 +370,12 @@ func make_BackToBack_sample() Formation {
 	dancers[1].Move(geometry.Position{ Left: geometry.Left0, Down: geometry.Down1 },
 		geometry.Direction0)
 	dancer.Reorder(dancers...)
-	return BackToBack(&BackToBackImpl{
+	sample := BackToBack(&BackToBackImpl{
 		dancer1: dancers[0],
 		dancer2: dancers[1],
 	})
+	sample.Dancers().Recenter0()
+	return sample
 }
 
 func init() {
@@ -410,10 +431,12 @@ func make_Tandem_sample() Formation {
 	trailer.Move(geometry.Position{ Left: geometry.Left0, Down: geometry.Down0 },
 		geometry.Direction0)
 	dancer.Reorder(leader, trailer)
-	return &TandemImpl {
+	sample := &TandemImpl {
 		leader: leader,
 		trailer: trailer,
 	}
+	sample.Dancers().Recenter0()
+	return sample
 }
 
 func init() {

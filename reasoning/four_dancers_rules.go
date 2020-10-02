@@ -55,7 +55,7 @@ func make_FacingCouples_sample() Formation {
 	couple2.Belle().MoveBy(down).Rotate(geometry.Direction2)
 	swap_positions(couple2.Beau(),couple2.Belle())
 	dancer.Reorder(couple1.Beau(), couple1.Belle(), couple2.Beau(), couple2.Belle())
-	return FacingCouples(&FacingCouplesImpl {
+	sample := FacingCouples(&FacingCouplesImpl {
 		couple1: couple1,
 		couple2: couple2,
 		facing1: &FaceToFaceImpl {
@@ -67,6 +67,8 @@ func make_FacingCouples_sample() Formation {
 			dancer2: couple2.Beau(),
 		},
 	})
+	sample.Dancers().Recenter0()
+	return sample
 }
 
 func init() {
@@ -145,12 +147,14 @@ func make_TandemCouples_sample() Formation {
 		trailer: couple1.Belle(),
 	}
 	dancer.Reorder(tandem1.Leader(), tandem1.Trailer(), tandem2.Leader(), tandem2.Trailer())
-	return TandemCouples(&TandemCouplesImpl {
+	sample := TandemCouples(&TandemCouplesImpl {
 		couple1: couple1,
 		couple2: couple2,
 		beaustandem: tandem1,
 		bellestandem: tandem2,
 	})
+	sample.Dancers().Recenter0()
+	return sample
 }
 
 func init() {
@@ -225,7 +229,7 @@ func make_BackToBackCouples_sample() Formation {
 		couple1.Beau().Rotate(geometry.Direction2),
 		couple1.Belle().Rotate(geometry.Direction2))
 	dancer.Reorder(couple1.Beau(), couple1.Belle(), couple2.Beau(), couple2.Belle())
-	return BackToBackCouples(&BackToBackCouplesImpl {
+	sample := BackToBackCouples(&BackToBackCouplesImpl {
 		couple1: couple1,
 		couple2: couple2,
 		backtoback1: &BackToBackImpl {
@@ -237,6 +241,8 @@ func make_BackToBackCouples_sample() Formation {
 			dancer2: couple1.Belle(),
 		},
 	})
+	sample.Dancers().Recenter0()
+	return sample
 }
 
 func init() {
@@ -308,7 +314,44 @@ func (f *BoxOfFourImpl) Trailers() dancer.Dancers {
 	return dancer.Union(f.Tandem1().Trailers(), f.Tandem2().Trailers())
 }
 
+func make_BoxOfFour_sample() Formation {
+	tandem1 := make_Tandem_sample().(Tandem)
+	tandem2 := make_Tandem_sample().(Tandem)
+	right := geometry.NewPositionDownLeft(geometry.Down0, -geometry.Left1)
+	tandem2.Leader().MoveBy(right)
+	tandem2.Trailer().MoveBy(right)
+	swap_positions(
+		tandem2.Leader().Rotate(geometry.Direction2),
+		tandem2.Trailer().Rotate(geometry.Direction2))
+	dancer.Reorder(tandem1.Leader(), tandem1.Trailer(),
+		tandem2.Leader(), tandem2.Trailer())
+	sample := BoxOfFour(&BoxOfFourImpl {
+		tandem1: tandem1,
+		tandem2: tandem2,
+		miniwave1: &MiniWaveImpl{
+			dancer1: tandem1.Leader(),
+			dancer2: tandem2.Trailer(),
+		},
+		miniwave2: &MiniWaveImpl{
+			dancer1: tandem2.Leader(),
+			dancer2: tandem1.Trailer(),
+		},
+	})
+	sample.Dancers().Recenter0()
+	return sample
+}
+
+func init() {
+	// *** NOT PASSING TESTS YET
+	RegisterFormationSample(make_BoxOfFour_sample)
+}
+
 func rule_BoxOfFour(node rete.Node, mw1, mw2 MiniWave, tandem1, tandem2 Tandem) {
+	// *** We are getting a BoxOfFour for each MiniWave symetry
+	// but we are also getting each of those twice.
+	if mw1 == mw2 {
+		return
+	}
 	if !tandem1.Direction().Opposite().Equal(tandem2.Direction()) {
 		return
 	}
@@ -431,6 +474,30 @@ func (f *LineOfFourImpl) Ends() dancer.Dancers {
 	return dancer.SetDifference(f.Dancers(), f.Centers())
 }
 
+func make_LineOfFour_sample() Formation {
+	left := make_Couple_sample().(*CoupleImpl)
+	right := make_Couple_sample().(*CoupleImpl)
+	right2 := geometry.NewPositionDownLeft(geometry.Down0, -2 * geometry.Left1)
+	right.Beau().MoveBy(right2)
+	right.Belle().MoveBy(right2)
+	center := &CoupleImpl {
+		beau: left.Belle(),
+		belle: right.Beau(),
+	}
+	dancer.Reorder(left.Beau(), left.Belle(), right.Beau(), right.Belle())
+	sample :=  LineOfFour(&LineOfFourImpl {
+		leftcouple: left,
+		rightcouple: right,
+		centercouple: center,
+	})
+	sample.Dancers().Recenter0()
+	return sample
+}
+
+func init() {
+	RegisterFormationSample(make_LineOfFour_sample)
+}
+
 func rule_LineOfFour(node rete.Node, c1, c2, c3 Couple) {
 	if !(c1.Belle() == c2.Beau()) {
 		return
@@ -491,6 +558,16 @@ func (f *WaveOfFourImpl) Ends() dancer.Dancers {
 }
 
 func rule_WaveOfFour(node rete.Node, mw1, mw2, mw3 MiniWave) {
+	if mw1.Handedness() != mw2.Handedness().Opposite() {
+		return
+	}
+	if mw3.Handedness() != mw2.Handedness().Opposite() {
+		return
+	}
+	// *** We shoulld make sure all of the dancers are in line
+	//
+	// *** Are we assuming that we will see both symetric
+	// MiniWaves of the same two dancers?
 	if mw1.HasDancer(mw2.Dancer1()) {
 		if !mw2.HasDancer(mw2.Dancer2()) {
 			return
@@ -552,11 +629,42 @@ func (f *TwoFacedLineImpl) Ends() dancer.Dancers {
 	return dancer.SetDifference(f.Dancers(), f.Centers())
 }
 
+func make_TwoFacedLine_sample() Formation {
+	couple1 := make_Couple_sample().(*CoupleImpl)
+	couple2 := make_Couple_sample().(*CoupleImpl)
+	// Move couple2 to the right and turn them around:
+	right2 := geometry.NewPositionDownLeft(geometry.Down0, -2 * geometry.Left1)
+	couple2.Beau().MoveBy(right2)
+	couple2.Belle().MoveBy(right2)
+	swap_positions(
+		couple2.Beau().Rotate(geometry.Direction2),
+		couple2.Belle().Rotate(geometry.Direction2))
+	dancer.Reorder(couple1.Beau(), couple1.Belle(), couple2.Beau(), couple2.Belle())
+	sample := TwoFacedLine(&TwoFacedLineImpl {
+		couple1: couple1,
+		couple2: couple2,
+		centerminiwave: &MiniWaveImpl {
+			dancer1: couple1.Belle(),
+			dancer2: couple2.Belle(),
+		},
+	})
+	sample.Dancers().Recenter0()
+	return sample
+}
+
+func init() {
+	// *** NOT PASSING TESTS YET
+	RegisterFormationSample(make_TwoFacedLine_sample)
+}
+
 func rule_TwoFacedLine(node rete.Node, c1, c2 Couple, mw MiniWave) {
-	if !mw.HasDancer(c1.Beau()) {
+	if c1.Beau() == c2.Beau() && c1.Belle() == c2.Belle() {
 		return
 	}
-	if !mw.HasDancer(c2.Belle()) {
+	if !(mw.HasDancer(c1.Beau()) && mw.HasDancer(c2.Beau())) {
+		return
+	}
+	if !(mw.HasDancer(c1.Belle()) && mw.HasDancer(c2.Belle())) {
 		return
 	}
 	node.Emit(TwoFacedLine(&TwoFacedLineImpl{

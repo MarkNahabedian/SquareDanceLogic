@@ -18,43 +18,61 @@ function contentLoaded() {
   new Floor([new Dancer( 0 ,  0 ,  0 , "0", "unspecified"),
     ]).draw("Dancer");
 
-  new Floor([new Dancer( 0 ,  0 ,  2 , "1", "unspecified"),
-    new Dancer( 0 ,  1 ,  0 , "2", "unspecified"),
+  new Floor([new Dancer( 0 ,  -0.5 ,  2 , "1", "unspecified"),
+    new Dancer( 0 ,  0.5 ,  0 , "2", "unspecified"),
     ]).draw("BackToBack");
 
-  new Floor([new Dancer( 1 ,  0 ,  0 , "1", "unspecified"),
-    new Dancer( 0 ,  0 ,  0 , "2", "unspecified"),
+  new Floor([new Dancer( 0.5 ,  0 ,  0 , "1", "unspecified"),
+    new Dancer( -0.5 ,  0 ,  0 , "2", "unspecified"),
     ]).draw("Couple");
 
-  new Floor([new Dancer( 0 ,  0 ,  0 , "1", "unspecified"),
-    new Dancer( 0 ,  1 ,  2 , "2", "unspecified"),
+  new Floor([new Dancer( 0 ,  -0.5 ,  0 , "1", "unspecified"),
+    new Dancer( 0 ,  0.5 ,  2 , "2", "unspecified"),
     ]).draw("FaceToFace");
 
-  new Floor([new Dancer( 0 ,  0 ,  2 , "1", "unspecified"),
-    new Dancer( 1 ,  0 ,  0 , "2", "unspecified"),
+  new Floor([new Dancer( -0.5 ,  0 ,  2 , "1", "unspecified"),
+    new Dancer( 0.5 ,  0 ,  0 , "2", "unspecified"),
     ]).draw("MiniWave");
 
-  new Floor([new Dancer( 0 ,  1 ,  0 , "1", "unspecified"),
-    new Dancer( 0 ,  0 ,  0 , "2", "unspecified"),
+  new Floor([new Dancer( 0 ,  0.5 ,  0 , "1", "unspecified"),
+    new Dancer( 0 ,  -0.5 ,  0 , "2", "unspecified"),
     ]).draw("Tandem");
 
-  new Floor([new Dancer( 0 ,  0 ,  2 , "1", "unspecified"),
-    new Dancer( 1 ,  0 ,  2 , "2", "unspecified"),
-    new Dancer( 1 ,  1 ,  0 , "3", "unspecified"),
-    new Dancer( 0 ,  1 ,  0 , "4", "unspecified"),
+  new Floor([new Dancer( -0.5 ,  -0.5 ,  2 , "1", "unspecified"),
+    new Dancer( 0.5 ,  -0.5 ,  2 , "2", "unspecified"),
+    new Dancer( 0.5 ,  0.5 ,  0 , "3", "unspecified"),
+    new Dancer( -0.5 ,  0.5 ,  0 , "4", "unspecified"),
     ]).draw("BackToBackCouples");
 
-  new Floor([new Dancer( 1 ,  0 ,  0 , "1", "unspecified"),
-    new Dancer( 0 ,  0 ,  0 , "2", "unspecified"),
-    new Dancer( 0 ,  1 ,  2 , "3", "unspecified"),
-    new Dancer( 1 ,  1 ,  2 , "4", "unspecified"),
+  new Floor([new Dancer( 0.5 ,  0.5 ,  0 , "1", "unspecified"),
+    new Dancer( -0.5 ,  0.5 ,  2 , "4", "unspecified"),
+    new Dancer( -0.5 ,  -0.5 ,  2 , "3", "unspecified"),
+    new Dancer( 0.5 ,  -0.5 ,  0 , "2", "unspecified"),
+    ]).draw("BoxOfFour");
+
+  new Floor([new Dancer( 0.5 ,  -0.5 ,  0 , "1", "unspecified"),
+    new Dancer( -0.5 ,  -0.5 ,  0 , "2", "unspecified"),
+    new Dancer( -0.5 ,  0.5 ,  2 , "3", "unspecified"),
+    new Dancer( 0.5 ,  0.5 ,  2 , "4", "unspecified"),
     ]).draw("FacingCouples");
 
-  new Floor([new Dancer( 1 ,  0 ,  0 , "2", "unspecified"),
-    new Dancer( 0 ,  0 ,  0 , "4", "unspecified"),
-    new Dancer( 0 ,  1 ,  0 , "1", "unspecified"),
-    new Dancer( 1 ,  1 ,  0 , "3", "unspecified"),
+  new Floor([new Dancer( 1.5 ,  0 ,  0 , "1", "unspecified"),
+    new Dancer( 0.5 ,  0 ,  0 , "2", "unspecified"),
+    new Dancer( -0.5 ,  0 ,  0 , "3", "unspecified"),
+    new Dancer( -1.5 ,  0 ,  0 , "4", "unspecified"),
+    ]).draw("LineOfFour");
+
+  new Floor([new Dancer( 0.5 ,  -0.5 ,  0 , "2", "unspecified"),
+    new Dancer( -0.5 ,  -0.5 ,  0 , "4", "unspecified"),
+    new Dancer( 0.5 ,  0.5 ,  0 , "1", "unspecified"),
+    new Dancer( -0.5 ,  0.5 ,  0 , "3", "unspecified"),
     ]).draw("TandemCouples");
+
+  new Floor([new Dancer( 1.5 ,  0 ,  0 , "1", "unspecified"),
+    new Dancer( 0.5 ,  0 ,  0 , "2", "unspecified"),
+    new Dancer( -1.5 ,  0 ,  2 , "3", "unspecified"),
+    new Dancer( -0.5 ,  0 ,  2 , "4", "unspecified"),
+    ]).draw("TwoFacedLine");
 }
 
 document.addEventListener("DOMContentLoaded", contentLoaded, false);
@@ -74,27 +92,12 @@ document.addEventListener("DOMContentLoaded", contentLoaded, false);
       <tbody>
         
           <tr>
-            <td>BoxOfFour</td>
-            <td></td>
-          </tr>
-        
-          <tr>
             <td>Dancers</td>
             <td></td>
           </tr>
         
           <tr>
-            <td>LineOfFour</td>
-            <td></td>
-          </tr>
-        
-          <tr>
             <td>Star</td>
-            <td></td>
-          </tr>
-        
-          <tr>
-            <td>TwoFacedLine</td>
             <td></td>
           </tr>
         
@@ -139,13 +142,28 @@ document.addEventListener("DOMContentLoaded", contentLoaded, false);
           </tr>
         
           <tr>
+            <td>BoxOfFour</td>
+            <td><svg id="BoxOfFour"></svg></td>
+          </tr>
+        
+          <tr>
             <td>FacingCouples</td>
             <td><svg id="FacingCouples"></svg></td>
           </tr>
         
           <tr>
+            <td>LineOfFour</td>
+            <td><svg id="LineOfFour"></svg></td>
+          </tr>
+        
+          <tr>
             <td>TandemCouples</td>
             <td><svg id="TandemCouples"></svg></td>
+          </tr>
+        
+          <tr>
+            <td>TwoFacedLine</td>
+            <td><svg id="TwoFacedLine"></svg></td>
           </tr>
         
       </tbody>

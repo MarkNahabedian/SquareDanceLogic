@@ -391,3 +391,18 @@ func (f Dancers) HasDancer(d2 Dancer) bool {
 	}
 	return false
 }
+
+
+func (dancers Dancers) Recenter0() Dancers {
+	return dancers.Recenter(geometry.Origin)
+}
+
+// Recenter shifts the positions of the dancers in Dancers so that the
+// group's new center is at the specified Position.
+func (dancers Dancers) Recenter(position geometry.Position) Dancers {
+	moveby := dancers.Center().Minus().Add(position)
+	for _, dancer := range dancers {
+		dancer.MoveBy(moveby)
+	}
+	return dancers
+}
