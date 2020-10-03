@@ -352,32 +352,18 @@ func rule_BoxOfFour(node rete.Node, mw1, mw2 MiniWave, tandem1, tandem2 Tandem) 
 	if mw1 == mw2 {
 		return
 	}
+	// The direction test will also exclude duplicate tandems.
 	if !tandem1.Direction().Opposite().Equal(tandem2.Direction()) {
 		return
 	}
-	if mw1.HasDancer(tandem1.Leader()) {
-		if !mw1.HasDancer(tandem2.Trailer()) {
-			return
-		}
-		if !mw2.HasDancer(tandem1.Trailer()) {
-			return
-		}
-		if !mw2.HasDancer(tandem2.Leader()) {
-			return
-		}
-	} else if mw1.HasDancer(tandem1.Trailer()) {
-		if !mw1.HasDancer(tandem2.Leader()) {
-			return
-		}
-		if !mw2.HasDancer(tandem1.Leader()) {
-			return
-		}
-		if !mw2.HasDancer(tandem2.Trailer()) {
-			return
-		}
-	} else {
-  		return
-	}
+	// Because each Tandem and each MiniWave come in as both of
+	// the relevant inputs, the rule doesn't need to consider any
+	// combinatorics, it can just test for a single arrangement of
+	// the dancers:
+	if !mw1.HasDancer(tandem1.Leader()) { return }
+	if !mw1.HasDancer(tandem2.Trailer()) { return }
+	if !mw2.HasDancer(tandem2.Leader()) { return }
+	if !mw2.HasDancer(tandem1.Trailer()) { return }
 	node.Emit(BoxOfFour(&BoxOfFourImpl{
 		miniwave1: mw1,
 		miniwave2: mw2,
