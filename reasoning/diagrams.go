@@ -36,13 +36,19 @@ type DancersSVGTemplateArg interface {
 	DancerCount() int
 }
 
+// dancersSVGTemplate is a template for generating the javascript code
+// for drawing a set of dancers.  It shoud be called with a
+// DancersSVGTemplateArg as argument.
 var dancersSVGTemplate = template.Must(template.New("DancersSVGTemplate").
 	Funcs(DancerTemplateFunctions).Parse(`
+  {{- with $dsta := .}}
   new Floor([
-    {{- range .Sample.Dancers -}}
-      new Dancer({{.Position.Left}}, {{.Position.Down}}, {{JSDirection .Direction}}, "{{.Ordinal}}", {{JSGender .Gender}}),
-    {{end -}}
-  ]).draw("{{.SVGId}}");
+      {{- range $dsta.Sample.Dancers -}}
+	new Dancer({{.Position.Left}}, {{.Position.Down}}, {{JSDirection .Direction}}, "{{.Ordinal}}",
+		   {{JSGender .Gender}}, "white", "{{.Ordinal}}"),
+      {{end -}}
+    ]).draw("{{$dsta.SVGId}}");
+  {{- end -}}
 `))
 
 // DancersSVGTemplate returns an HTML Template that includes a
