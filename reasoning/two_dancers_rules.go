@@ -230,7 +230,8 @@ func rule_MiniWave(node rete.Node, p Pair) {
 	if !Near(d1, d2) {
 		return
 	}
-	if d1.Ordinal() >= d2.Ordinal() {   // Huh?  de-dup?
+	// MiniWave is symetric.  Avoid symetric duplicates:
+	if d1.Ordinal() >= d2.Ordinal() {
 		return
 	}
 	if RightOf(d1, d2) && RightOf(d2, d1) {
@@ -297,7 +298,7 @@ func (f *FaceToFaceImpl) Trailers() dancer.Dancers {
 func rule_FaceToFace(node rete.Node, p Pair) {
 	d1 := p.Dancer1()
 	d2 := p.Dancer2()
-	// Remove the duplication that's inherent in Pair:
+	// FaceToFace is symetric.  Avoid symetric duplicates:
 	if d1.Ordinal() >= d2.Ordinal() {
 		return
 	}
@@ -355,6 +356,7 @@ func (f *BackToBackImpl) Leaders() dancer.Dancers {
 func rule_BackToBack(node rete.Node, p Pair) {
 	d1 := p.Dancer1()
 	d2 := p.Dancer2()
+	// BackToBack is symetric.  Avoid symetric duplicates:
 	if d1.Ordinal() >= d2.Ordinal() {
 		return
 	}
