@@ -15,65 +15,88 @@ td {
     <script type="text/javascript">
 function contentLoaded() {
       
-  new Floor([new Dancer( 0 ,  0 ,  0 , "0", "unspecified"),
-    ]).draw("Dancer");
-
-  new Floor([new Dancer( 0 ,  -0.5 ,  2 , "1", "unspecified"),
-    new Dancer( 0 ,  0.5 ,  0 , "2", "unspecified"),
-    ]).draw("BackToBack");
-
-  new Floor([new Dancer( 0.5 ,  0 ,  0 , "1", "unspecified"),
-    new Dancer( -0.5 ,  0 ,  0 , "2", "unspecified"),
-    ]).draw("Couple");
-
-  new Floor([new Dancer( 0 ,  -0.5 ,  0 , "1", "unspecified"),
-    new Dancer( 0 ,  0.5 ,  2 , "2", "unspecified"),
-    ]).draw("FaceToFace");
-
-  new Floor([new Dancer( -0.5 ,  0 ,  2 , "1", "unspecified"),
-    new Dancer( 0.5 ,  0 ,  0 , "2", "unspecified"),
-    ]).draw("MiniWave");
-
-  new Floor([new Dancer( 0 ,  0.5 ,  0 , "1", "unspecified"),
-    new Dancer( 0 ,  -0.5 ,  0 , "2", "unspecified"),
-    ]).draw("Tandem");
-
-  new Floor([new Dancer( -0.5 ,  -0.5 ,  2 , "1", "unspecified"),
-    new Dancer( 0.5 ,  -0.5 ,  2 , "2", "unspecified"),
-    new Dancer( 0.5 ,  0.5 ,  0 , "3", "unspecified"),
-    new Dancer( -0.5 ,  0.5 ,  0 , "4", "unspecified"),
-    ]).draw("BackToBackCouples");
-
-  new Floor([new Dancer( 0.5 ,  0.5 ,  0 , "1", "unspecified"),
-    new Dancer( -0.5 ,  0.5 ,  2 , "4", "unspecified"),
-    new Dancer( -0.5 ,  -0.5 ,  2 , "3", "unspecified"),
-    new Dancer( 0.5 ,  -0.5 ,  0 , "2", "unspecified"),
-    ]).draw("BoxOfFour");
-
-  new Floor([new Dancer( 0.5 ,  -0.5 ,  0 , "1", "unspecified"),
-    new Dancer( -0.5 ,  -0.5 ,  0 , "2", "unspecified"),
-    new Dancer( -0.5 ,  0.5 ,  2 , "3", "unspecified"),
-    new Dancer( 0.5 ,  0.5 ,  2 , "4", "unspecified"),
-    ]).draw("FacingCouples");
-
-  new Floor([new Dancer( 1.5 ,  0 ,  0 , "1", "unspecified"),
-    new Dancer( 0.5 ,  0 ,  0 , "2", "unspecified"),
-    new Dancer( -0.5 ,  0 ,  0 , "3", "unspecified"),
-    new Dancer( -1.5 ,  0 ,  0 , "4", "unspecified"),
-    ]).draw("LineOfFour");
-
-  new Floor([new Dancer( 0.5 ,  -0.5 ,  0 , "2", "unspecified"),
-    new Dancer( -0.5 ,  -0.5 ,  0 , "4", "unspecified"),
-    new Dancer( 0.5 ,  0.5 ,  0 , "1", "unspecified"),
-    new Dancer( -0.5 ,  0.5 ,  0 , "3", "unspecified"),
-    ]).draw("TandemCouples");
-
-  new Floor([new Dancer( 1.5 ,  0 ,  0 , "1", "unspecified"),
-    new Dancer( 0.5 ,  0 ,  0 , "2", "unspecified"),
-    new Dancer( -1.5 ,  0 ,  2 , "3", "unspecified"),
-    new Dancer( -0.5 ,  0 ,  2 , "4", "unspecified"),
-    ]).draw("TwoFacedLine");
-}
+  new Floor([new Dancer( 0 ,  0 ,  0 , "0",
+		   "unspecified", "white", "0"),
+      ]).draw("Dancer");
+  new Floor([new Dancer( 0 ,  -0.5 ,  2 , "1",
+		   "unspecified", "white", "1"),
+      new Dancer( 0 ,  0.5 ,  0 , "2",
+		   "unspecified", "white", "2"),
+      ]).draw("BackToBack");
+  new Floor([new Dancer( 0.5 ,  0 ,  0 , "1",
+		   "unspecified", "white", "1"),
+      new Dancer( -0.5 ,  0 ,  0 , "2",
+		   "unspecified", "white", "2"),
+      ]).draw("Couple");
+  new Floor([new Dancer( 0 ,  -0.5 ,  0 , "1",
+		   "unspecified", "white", "1"),
+      new Dancer( 0 ,  0.5 ,  2 , "2",
+		   "unspecified", "white", "2"),
+      ]).draw("FaceToFace");
+  new Floor([new Dancer( -0.5 ,  0 ,  2 , "1",
+		   "unspecified", "white", "1"),
+      new Dancer( 0.5 ,  0 ,  0 , "2",
+		   "unspecified", "white", "2"),
+      ]).draw("MiniWave");
+  new Floor([new Dancer( 0 ,  0.5 ,  0 , "1",
+		   "unspecified", "white", "1"),
+      new Dancer( 0 ,  -0.5 ,  0 , "2",
+		   "unspecified", "white", "2"),
+      ]).draw("Tandem");
+  new Floor([new Dancer( -0.5 ,  -0.5 ,  2 , "1",
+		   "unspecified", "white", "1"),
+      new Dancer( 0.5 ,  -0.5 ,  2 , "2",
+		   "unspecified", "white", "2"),
+      new Dancer( 0.5 ,  0.5 ,  0 , "3",
+		   "unspecified", "white", "3"),
+      new Dancer( -0.5 ,  0.5 ,  0 , "4",
+		   "unspecified", "white", "4"),
+      ]).draw("BackToBackCouples");
+  new Floor([new Dancer( 0.5 ,  0.5 ,  0 , "1",
+		   "unspecified", "white", "1"),
+      new Dancer( -0.5 ,  0.5 ,  2 , "4",
+		   "unspecified", "white", "4"),
+      new Dancer( -0.5 ,  -0.5 ,  2 , "3",
+		   "unspecified", "white", "3"),
+      new Dancer( 0.5 ,  -0.5 ,  0 , "2",
+		   "unspecified", "white", "2"),
+      ]).draw("BoxOfFour");
+  new Floor([new Dancer( 0.5 ,  -0.5 ,  0 , "1",
+		   "unspecified", "white", "1"),
+      new Dancer( -0.5 ,  -0.5 ,  0 , "2",
+		   "unspecified", "white", "2"),
+      new Dancer( -0.5 ,  0.5 ,  2 , "3",
+		   "unspecified", "white", "3"),
+      new Dancer( 0.5 ,  0.5 ,  2 , "4",
+		   "unspecified", "white", "4"),
+      ]).draw("FacingCouples");
+  new Floor([new Dancer( 1.5 ,  0 ,  0 , "1",
+		   "unspecified", "white", "1"),
+      new Dancer( 0.5 ,  0 ,  0 , "2",
+		   "unspecified", "white", "2"),
+      new Dancer( -0.5 ,  0 ,  0 , "3",
+		   "unspecified", "white", "3"),
+      new Dancer( -1.5 ,  0 ,  0 , "4",
+		   "unspecified", "white", "4"),
+      ]).draw("LineOfFour");
+  new Floor([new Dancer( 0.5 ,  -0.5 ,  0 , "2",
+		   "unspecified", "white", "2"),
+      new Dancer( -0.5 ,  -0.5 ,  0 , "4",
+		   "unspecified", "white", "4"),
+      new Dancer( 0.5 ,  0.5 ,  0 , "1",
+		   "unspecified", "white", "1"),
+      new Dancer( -0.5 ,  0.5 ,  0 , "3",
+		   "unspecified", "white", "3"),
+      ]).draw("TandemCouples");
+  new Floor([new Dancer( 1.5 ,  0 ,  0 , "1",
+		   "unspecified", "white", "1"),
+      new Dancer( 0.5 ,  0 ,  0 , "2",
+		   "unspecified", "white", "2"),
+      new Dancer( -1.5 ,  0 ,  2 , "3",
+		   "unspecified", "white", "3"),
+      new Dancer( -0.5 ,  0 ,  2 , "4",
+		   "unspecified", "white", "4"),
+      ]).draw("TwoFacedLine");}
 
 document.addEventListener("DOMContentLoaded", contentLoaded, false);
     </script>
