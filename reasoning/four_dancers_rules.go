@@ -544,28 +544,52 @@ func (f *WaveOfFourImpl) Ends() dancer.Dancers {
 	return dancer.SetDifference(f.Dancers(), f.Centers())
 }
 
-func rule_WaveOfFour(node rete.Node, mw1, mw2, mw3 MiniWave) {
-	if mw1.Handedness() != mw2.Handedness().Opposite() {
+func make_WaveOfFour_sample() Formation {
+	mw1 := make_MiniWave_sample().(*MiniWaveImpl)
+	mw3 := make_MiniWave_sample().(*MiniWaveImpl)
+	right2 := geometry.NewPositionDownLeft(geometry.Down0, -2 * geometry.Left1)
+	mw3.Dancer1().MoveBy(right2)
+	mw3.Dancer2().MoveBy(right2)
+	center := &MiniWaveImpl {
+		dancer1: mw1.Dancer2(),
+		dancer2: mw3.Dancer1(),
+	}
+	dancer.Reorder(mw1.Dancer1(), mw1.Dancer2(), mw3.Dancer1(), mw3.Dancer2())
+	sample :=  WaveOfFour(&WaveOfFourImpl {
+		centerminiwave: center,
+		miniwave1: mw1,
+		miniwave2: mw3,
+	})
+	sample.Dancers().Recenter0()
+	return sample
+}
+
+func init() {
+	RegisterFormationSample(make_WaveOfFour_sample)
+}
+
+
+func rule_WaveOfFour(node rete.Node, mw1, center, mw3 MiniWave) {
+	if mw1.Handedness() != center.Handedness().Opposite() {
 		return
 	}
-	if mw3.Handedness() != mw2.Handedness().Opposite() {
+	if mw3.Handedness() != center.Handedness().Opposite() {
 		return
 	}
-	// *** We shoulld make sure all of the dancers are in line
+	// *** We should make sure all of the dancers are in line
+	// The MiniWave rule uses RightOf and LeftOf, which should
+	// achieve this.
 	//
-	// *** Are we assuming that we will see both symetric
-	// MiniWaves of the same two dancers?
-	if mw1.HasDancer(mw2.Dancer1()) {
-		if !mw2.HasDancer(mw2.Dancer2()) {
-			return
-		}
-	} else if mw1.HasDancer(mw2.Dancer2()) {
-		if !mw2.HasDancer(mw2.Dancer1()) {
-			return
-		}
+	// We can avoid mw1/mw3 symetric duplicates by testing them
+	// against specific dancers of center.
+	if !mw1.HasDancer(center.Dancer1()) {
+		return
+	}
+	if !mw3.HasDancer(center.Dancer2()) {
+		return
 	}
 	node.Emit(WaveOfFour(&WaveOfFourImpl{
-		centerminiwave: mw2,
+		centerminiwave: center,
 		miniwave1:mw1,
 		miniwave2: mw3,
 	}))

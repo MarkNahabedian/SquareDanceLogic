@@ -96,7 +96,16 @@ function contentLoaded() {
 		   "unspecified", "white", "3"),
       new Dancer( -0.5 ,  0 ,  2 , "4",
 		   "unspecified", "white", "4"),
-      ]).draw("TwoFacedLine");}
+      ]).draw("TwoFacedLine");
+  new Floor([new Dancer( 0.5 ,  0 ,  2 , "1",
+		   "unspecified", "white", "1"),
+      new Dancer( 1.5 ,  0 ,  0 , "2",
+		   "unspecified", "white", "2"),
+      new Dancer( -1.5 ,  0 ,  2 , "3",
+		   "unspecified", "white", "3"),
+      new Dancer( -0.5 ,  0 ,  0 , "4",
+		   "unspecified", "white", "4"),
+      ]).draw("WaveOfFour");}
 
 document.addEventListener("DOMContentLoaded", contentLoaded, false);
     </script>
@@ -121,11 +130,6 @@ document.addEventListener("DOMContentLoaded", contentLoaded, false);
         
           <tr>
             <td>Star</td>
-            <td></td>
-          </tr>
-        
-          <tr>
-            <td>WaveOfFour</td>
             <td></td>
           </tr>
         
@@ -187,6 +191,11 @@ document.addEventListener("DOMContentLoaded", contentLoaded, false);
           <tr>
             <td>TwoFacedLine</td>
             <td><svg id="TwoFacedLine"></svg></td>
+          </tr>
+        
+          <tr>
+            <td>WaveOfFour</td>
+            <td><svg id="WaveOfFour"></svg></td>
           </tr>
         
       </tbody>
