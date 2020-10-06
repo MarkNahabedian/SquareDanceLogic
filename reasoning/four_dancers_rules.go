@@ -347,9 +347,10 @@ func init() {
 }
 
 func rule_BoxOfFour(node rete.Node, mw1, mw2 MiniWave, tandem1, tandem2 Tandem) {
-	// *** We are getting a BoxOfFour for each MiniWave symetry
-	// but we are also getting each of those twice.
 	if mw1 == mw2 {
+		return
+	}
+	if mw1.Dancer1().Ordinal() >= mw2.Dancer1().Ordinal() {
 		return
 	}
 	// The direction test will also exclude duplicate tandems.
@@ -646,6 +647,11 @@ func init() {
 func rule_TwoFacedLine(node rete.Node, c1, c2 Couple, mw MiniWave) {
 	// Must have two different Couples:
 	if c1.Beau() == c2.Beau() && c1.Belle() == c2.Belle() {
+		return
+	}
+	// TwoFacedLine is symetric with respect to Couples.  Don't
+	// generate duplicates:
+	if c1.Beau().Ordinal() >= c2.Beau().Ordinal() {
 		return
 	}
 	if !((mw.HasDancer(c1.Beau()) && mw.HasDancer(c2.Beau())) ||
