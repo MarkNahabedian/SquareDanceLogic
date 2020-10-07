@@ -342,7 +342,6 @@ func make_BoxOfFour_sample() Formation {
 }
 
 func init() {
-	// *** NOT PASSING TESTS YET
 	RegisterFormationSample(make_BoxOfFour_sample)
 }
 
@@ -664,7 +663,6 @@ func make_TwoFacedLine_sample() Formation {
 }
 
 func init() {
-	// *** NOT PASSING TESTS YET
 	RegisterFormationSample(make_TwoFacedLine_sample)
 }
 
