@@ -13,9 +13,9 @@ Dance in software.
 These are auto-generated files that provide more detailed status
 information.
 
-* <a href="https://marknahabedian.github.io/SquareDanceLogic/formation_types.html">Supported formation types</a>
+* <a href="https://marknahabedian.github.io/SquareDanceLogic/reasoning/formation_types.html">Supported formation types</a>
 
-* <a href="https://marknahabedian.github.io/SquareDanceLogic/formations_rete.dot.svg">Rete graph</a>
+* <a href="https://marknahabedian.github.io/SquareDanceLogic/reasoning/formations_rete.dot.svg">Rete graph</a>
 
 * <a href="https://marknahabedian.github.io/SquareDanceLogic/action/catalog-0.html">Primitive actions</a>
 
