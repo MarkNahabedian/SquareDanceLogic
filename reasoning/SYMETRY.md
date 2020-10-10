@@ -67,7 +67,7 @@ func CommonDancers(d1, d2 Dancers) []Dancers {
 }
 </pre>
 
-Or maybe just name it Intersection.
+Or maybe just name it Intersection.  We already have dancer.Intersection.
 
 The center MiniWave has ordered dancers.  Do we want to impose that
 the first side MiniWave contains the first dancer of the center
