@@ -29,6 +29,9 @@ func MakeFormationFinder() *FormationFinder {
 			} else {
 				ff.typeToBuffer[ttn.Type] = rete.GetBuffered(n)
 			}
+			if ff.typeToBuffer[ttn.Type] == nil {
+				panic(fmt.Sprintf("Can't find buffered node for %v", ttn.Type))
+			}
 		}
 	})
 	return ff
