@@ -24,8 +24,6 @@ type TwoFacedLineImpl struct {
 	couple2 Couple
 }
 
-func (f *TwoFacedLineImpl) TwoFacedLine() {}
-
 and the field accessor methods
 
 func (f *TwoFacedLineImpl) Couple1() Couple { return f.couple1 }
@@ -152,8 +150,6 @@ type formationDef struct {
 
 var formation_methods_template = template.Must(template.New("formation_methods_template").Parse(`
 package foo
-
-func (f *{{.STRUCT_TYPE}}) {{.FORMATION_NAME}}() {}
 
 func (f *{{.STRUCT_TYPE}}) NumberOfDancers() int {
 	count := 0
