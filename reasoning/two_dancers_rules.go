@@ -25,7 +25,7 @@ func Near(dancer1, dancer2 dancer.Dancer) bool {
 // because there will be another Pair with its Dancers in the other ordering.
 type Pair interface {
 	// Should Pair be a Formation?
-	Pair()
+	Pair()                    // defimpl:"discriminate"
 	Dancer1() dancer.Dancer   // defimpl:"read dancer1"
 	Dancer2() dancer.Dancer   // defimpl:"read dancer2"
 }
@@ -38,8 +38,6 @@ func MakePair(dancer1, dancer2 dancer.Dancer) Pair {
 */
 	return Pair(&PairImpl{ dancer1: dancer2, dancer2: dancer1 })
 }
-
-func (p *PairImpl) Pair() {}
 
 /*
 func (p *PairImpl) Ordinal() int {
@@ -69,7 +67,7 @@ func rule_PairOfDancers(node rete.Node, dancer1, dancer2 dancer.Dancer) {
 // the same two Dancers can only be in a Couple one way.
 type Couple interface {
 	Formation
-	Couple()
+	Couple()                  // defimpl:"discriminate"
 	Beau() dancer.Dancer      // defimpl:"read beau" fe:"dancers"
 	Belle() dancer.Dancer     // defimpl:"read belle" fe:"dancers"
 	// Roles:
@@ -160,7 +158,7 @@ func IsTwoDancerSymetric(formation1, formation2 interface{}) bool {
 type MiniWave interface{
 	Formation
 	TwoDancerSymetric
-	MiniWave()
+	MiniWave()                // defimpl:"discriminate"
 	Dancer1() dancer.Dancer   // defimpl:"read dancer1" fe:"dancers"
 	Dancer2() dancer.Dancer   // defimpl:"read dancer2" fe:"dancers"
     // Handedness
@@ -268,7 +266,7 @@ func init() {
 type FaceToFace interface {
 	Formation
 	TwoDancerSymetric
-	FaceToFace()
+	FaceToFace()               // defimpl:"discriminate"
 	Dancer1() dancer.Dancer     // defimpl:"read dancer1" fe:"dancers" 
 	Dancer2() dancer.Dancer     // defimpl:"read dancer2" fe:"dancers"
 	// Roles
@@ -331,7 +329,7 @@ func init() {
 type BackToBack interface {
 	Formation
 	TwoDancerSymetric
-	BackToBack()
+	BackToBack()               // defimpl:"discriminate"
 	Dancer1() dancer.Dancer    // defimpl:"read dancer1" fe:"dancers"
 	Dancer2() dancer.Dancer    // defimpl:"read dancer2" fe:"dancers"
 	// Roles:
@@ -389,7 +387,7 @@ func init() {
 // in front of the Trailer.
 type Tandem interface {
 	Formation
-	Tandem()
+	Tandem()                        // defimpl:"discriminate"
 	Leader() dancer.Dancer          // defimpl:"read leader" fe:"dancers"
 	Trailer() dancer.Dancer         // defimpl:"read trailer" fe:"dancers"
 	Direction() geometry.Direction

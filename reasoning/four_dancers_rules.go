@@ -15,7 +15,7 @@ func swap_positions(dancer1, dancer2 dancer.Dancer) {
 
 type FacingCouples interface {
 	Formation
-	FacingCouples()
+	FacingCouples()      // defimpl:"discriminate"
 	Couple1() Couple      // defimpl:"read couple1"  fe:"dancers"
 	Couple2() Couple      // defimpl:"read couple2"  fe:"dancers"
 	Facing1() FaceToFace  // defimpl:"read facing1"
@@ -99,7 +99,7 @@ func rule_FacingCouples(node rete.Node, couple1, couple2 Couple, facing1, facing
 
 type TandemCouples interface {
 	Formation
-	TandemCouples()
+	TandemCouples()        // defimpl:"discriminate"
 	// Should we call these LeadingCouple and TrailingCouple?
 	Couple1() Couple        // defimpl:"read couple1" fe:"dancers"
 	Couple2() Couple        // defimpl:"read couple2" fe:"dancers"
@@ -185,7 +185,7 @@ func rule_TandemCouples(node rete.Node, couple1, couple2 Couple, tandem1, tandem
 
 type BackToBackCouples interface {
 	Formation
-	BackToBackCouples()
+	BackToBackCouples()       // defimpl:"discriminate"
 	Couple1() Couple           // defimpl:"read couple1" fe:"dancers"
 	Couple2() Couple           // defimpl:"read couple2" fe:"dancers"
 	BackToBack1() BackToBack  // defimpl:"read backtoback1"
@@ -273,7 +273,7 @@ func rule_BackToBackCouples(node rete.Node, couple1, couple2 Couple, bb1, bb2 Ba
 
 type BoxOfFour interface {
 	Formation
-	BoxOfFour()
+	BoxOfFour()            // defimpl:"discriminate"
 	MiniWave1() MiniWave   // defimpl:"read miniwave1" fe:"dancers"
 	MiniWave2() MiniWave   // defimpl:"read miniwave2" fe:"dancers"
 	Tandem1() Tandem       // defimpl:"read tandem1"
@@ -375,7 +375,7 @@ func rule_BoxOfFour(node rete.Node, mw1, mw2 MiniWave, tandem1, tandem2 Tandem) 
 
 type Star interface {
 	Formation
-	Star()
+	Star()                      // defimpl:"discriminate"
 	MiniWave1() MiniWave       // defimpl:"read miniwave1" fe:"dancers"
 	MiniWave2() MiniWave       // defimpl:"read miniwave2" fe:"dancers"
 	// Handedness:
@@ -425,7 +425,7 @@ func rule_Star(node rete.Node, mw1, mw2 MiniWave) {
 
 type LineOfFour interface {
 	Formation
-	LineOfFour()
+	LineOfFour()             // defimpl:"discriminate"
 	LeftCouple() Couple      // defimpl:"read leftcouple" fe:"dancers"
 	CenterCouple() Couple    // defimpl:"read centercouple"
 	RightCouple() Couple     // defimpl:"read rightcouple" fe:"dancers"
@@ -501,7 +501,7 @@ func rule_LineOfFour(node rete.Node, c1, c2, c3 Couple) {
 
 type WaveOfFour interface {
 	Formation
-	WaveOfFour()
+	WaveOfFour()                  // defimpl:"discriminate"
 	CenterMiniWave() MiniWave    // defimpl:"read centerminiwave"
 	MiniWave1() MiniWave          // defimpl:"read miniwave1" fe:"dancers"
 	MiniWave2() MiniWave          // defimpl:"read miniwave2" fe:"dancers"
@@ -597,7 +597,7 @@ func rule_WaveOfFour(node rete.Node, mw1, center, mw3 MiniWave) {
 
 type TwoFacedLine interface {
 	Formation
-	TwoFacedLine()
+	TwoFacedLine()             // defimpl:"discriminate"
 	Couple1() Couple            // defimpl:"read couple1" fe:"dancers"
 	Couple2() Couple            // defimpl:"read couple2" fe:"dancers"
 	CenterMiniWave() MiniWave  // defimpl:"read centerminiwave"
