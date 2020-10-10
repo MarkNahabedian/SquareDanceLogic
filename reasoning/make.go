@@ -13,7 +13,7 @@ package reasoning
 //go:generate defimpl
 // OUTPUTS impl_*.go
 //go:generate go build squaredance/reasoning/formation_expander
-//go:generate formation_expander two_dancers_rules.go four_dancers_rules.go
+//go:generate formation_expander two_dancers_rules.go four_dancers_rules.go eight_dancers_rules.go
 // OUTPUTS: feout_*.go
 
 // Compiling rules
