@@ -93,7 +93,7 @@ func TestMeet(t *testing.T) {
 	tl := timeline.NewTimeline(set.Dancers())
 	tl.MakeSnapshot(0)
 	// Get FaceToFace formations:
-	formations := reasoning.FindFormations(set.Dancers(), reflect.TypeOf(func(t reasoning.FaceToFace){}).In(0))
+	formations, _ := reasoning.FindFormations(set.Dancers(), reflect.TypeOf(func(t reasoning.FaceToFace){}).In(0))
 	// Restrict to heads:
 	headsff := []reasoning.FaceToFace{}
 	for _, ff := range formations {
@@ -145,7 +145,7 @@ func mini_wave(handedness reasoning.Handedness) reasoning.Formation {
 		dir.Opposite())
 	dancers[1].Move(geometry.Position{ Left: geometry.Left1, Down: geometry.Down0 },
 		dir)
-	r := reasoning.FindFormations(dancers, reflect.TypeOf(func(t reasoning.MiniWave){}).In(0))
+	r, _ := reasoning.FindFormations(dancers, reflect.TypeOf(func(t reasoning.MiniWave){}).In(0))
 	return r[0]
 }
 
@@ -160,7 +160,7 @@ func TestForwardLeft(t *testing.T) {
 	}
 	fa.DoIt(dancers)
 	tl.MakeSnapshot(1)
-	dancers2 := reasoning.FindFormations(dancers.Dancers(), reflect.TypeOf(func(t reasoning.MiniWave){}).In(0))
+	dancers2, _ := reasoning.FindFormations(dancers.Dancers(), reflect.TypeOf(func(t reasoning.MiniWave){}).In(0))
 	if want, got := 1, len(dancers2); got != want {
 		t.Errorf("Wrong number of MiniWaves: got %d, want %d.", got, want)
 		return
@@ -183,7 +183,7 @@ func TestForwardRight(t *testing.T) {
 	}
 	fa.DoIt(dancers)
 	tl.MakeSnapshot(1)
-	dancers2 := reasoning.FindFormations(dancers.Dancers(),
+	dancers2, _ := reasoning.FindFormations(dancers.Dancers(),
 		reflect.TypeOf(func(t reasoning.MiniWave){}).In(0))
 	if want, got := 1, len(dancers2); got != want {
 		t.Errorf("Wrong number of MiniWaves: got %d, want %d.", got, want)
@@ -208,7 +208,7 @@ func TestBackwardLeft(t *testing.T) {
 	}
 	fa.DoIt(dancers)
 	tl.MakeSnapshot(1)
-	dancers2 := reasoning.FindFormations(dancers.Dancers(),
+	dancers2, _ := reasoning.FindFormations(dancers.Dancers(),
 		reflect.TypeOf(func(t reasoning.MiniWave){}).In(0))
 	if want, got := 1, len(dancers2); got != want {
 		t.Errorf("Wrong number of MiniWaves: got %d, want %d.", got, want)
@@ -233,7 +233,7 @@ func TestBackwardRight(t *testing.T) {
 	}
 	fa.DoIt(dancers)
 	tl.MakeSnapshot(1)
-	dancers2 := reasoning.FindFormations(dancers.Dancers(),
+	dancers2, _ := reasoning.FindFormations(dancers.Dancers(),
 		reflect.TypeOf(func(t reasoning.MiniWave){}).In(0))
 	if want, got := 1, len(dancers2); got != want {
 		t.Errorf("Wrong number of MiniWaves: got %d, want %d.", got, want)
@@ -258,7 +258,7 @@ func TestBackToFaceRight(t *testing.T) {
 	}
 	fa.DoIt(dancers)
 	tl.MakeSnapshot(1)
-	dancers2 := reasoning.FindFormations(dancers.Dancers(),
+	dancers2, _ := reasoning.FindFormations(dancers.Dancers(),
 		reflect.TypeOf(func(t reasoning.FaceToFace){}).In(0))
 	if want, got := 1, len(dancers2); got != want {
 		t.Errorf("Wrong number of FaceToFace formations: got %d, want %d.", got, want)
@@ -279,7 +279,7 @@ func TestBackToFaceLeft(t *testing.T) {
 	}
 	fa.DoIt(dancers)
 	tl.MakeSnapshot(1)
-	dancers2 := reasoning.FindFormations(dancers.Dancers(),
+	dancers2, _ := reasoning.FindFormations(dancers.Dancers(),
 		reflect.TypeOf(func(t reasoning.FaceToFace){}).In(0))
 	if want, got := 1, len(dancers2); got != want {
 		t.Errorf("Wrong number of FaceToFace formations: got %d, want %d.", got, want)
