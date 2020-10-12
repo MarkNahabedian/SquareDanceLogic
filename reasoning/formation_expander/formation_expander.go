@@ -186,7 +186,7 @@ func init() {
 
 
 func (fdef *formationDef) generate(output_fileset *token.FileSet) (decls []ast.Decl) {
-	implName := util.ImplName("", fdef.ts.Name.Name)   // WHERE DO WE GET PACKAGE FROM?
+	implName := util.ImplName("", fdef.ts.Name.Name)   // WHERE SHOULD WE GET PACKAGE FROM?
 	// field reader methods for unique dancers
 	unique_dancers := []string{}
 	for _, field := range fdef.fields {
