@@ -13,15 +13,10 @@ import "goshua/rete/rule_compiler/runtime"
 func showAllAssertions(t *testing.T, root rete.Node) {
 	rete.Walk(root, func(n rete.Node) {
 		if n, ok := n.(*rete.BufferNode); ok {
-			// Skip this Node it its input is a Join
-			if _, ok := n.Inputs()[0].(*rete.JoinNode); ok {
-				return
-			} 
 			t.Logf("Dump: %s", n.Label())
-			c := n.GetCursor()
-			for item, present := c.Next(); present; item, present = c.Next() {
+			n.DoItems(func (item interface{}) {
 				t.Logf("    %s", item)
-			}
+			})
 		}
 	})
 }
