@@ -26,12 +26,6 @@ func showAllAssertions(t *testing.T, root rete.Node) {
 	})
 }
 
-
-func init() {
-	rete.EnsureTypeTestRegistered("Couple", func(i interface{}) bool { _, ok := i.(Couple); return ok })
-	rete.EnsureTypeTestRegistered("MiniWave", func(i interface{}) bool { _, ok := i.(MiniWave); return ok })
-}
-
 func TestWriteDiagrams(t *testing.T) {
 	WriteFormationDiagrams()
 }
