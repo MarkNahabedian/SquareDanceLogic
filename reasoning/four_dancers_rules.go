@@ -253,13 +253,21 @@ func rule_BackToBackCouples(node rete.Node, couple1, couple2 Couple, bb1, bb2 Ba
 	if !OrderedDancers(couple1.Beau(), couple2.Beau()) {
 		return
 	}
-	// The same BackToBack formation will come in as both bb1 and bb2.
-	// These will be de-duped based on their relationship to
-	// couple1 and couple2.
-	if !HasDancers(bb1, couple1.Beau(), couple2.Belle()) {
+	// Though the BackToBack formation is symetric, it uses
+	// (Dancer).Ordinal to avoid symetric duplicates.
+	test_bbc := func(c1 Couple, bb1 BackToBack, c2 Couple, bb2 BackToBack) bool {
+		if !HasDancers(bb1, c1.Belle(), c2.Beau()) {
+			return false
+		}
+		if !HasDancers(bb2, c1.Belle(), c2.Beau()) {
+			return false
+		}
+		return true
+	}
+	if !test_bbc(couple1, bb1, couple2, bb2) {
 		return
 	}
-	if !HasDancers(bb2, couple2.Beau(), couple1.Belle()) {
+	if !test_bbc(couple1, bb2, couple2, bb1) {
 		return
 	}
 	node.Emit(BackToBackCouples(&BackToBackCouplesImpl{
