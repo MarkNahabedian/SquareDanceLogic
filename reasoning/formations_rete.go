@@ -3,9 +3,8 @@ package reasoning
 import "fmt"
 import "reflect"
 import "goshua/rete"
-import defimpl_runtime "defimpl/runtime"
+import "defimpl/runtime"
 import "squaredance/dancer"
-import "goshua/rete/rule_compiler/runtime"
 
 
 type FormationFinder struct {
@@ -20,7 +19,6 @@ func MakeFormationFinder() *FormationFinder {
 		typeToBuffer: make(map[reflect.Type]rete.AbstractBufferNode),
 	}
 	loadAllRules(ff.rete)
-	ensure_TypeTestNodes(ff.rete)
 	// Add buffers where needed.  Index the buffers
 	rete.Walk(ff.rete, func(n rete.Node) {
 		if ttn, ok := n.(*rete.TypeTestNode); ok {
@@ -39,17 +37,8 @@ func MakeFormationFinder() *FormationFinder {
 
 
 func loadAllRules(root rete.Node) {
-	for _, rule := range runtime.AllRules {
+	for _, rule := range rete.AllRules {
 		rule.Installer()(root)
-	}
-}
-
-
-func ensure_TypeTestNodes(root rete.Node) {
-	for _, rule := range runtime.AllRules {
-		for _, t := range rule.EmitTypes() {
-			rete.GetTypeTestNode(root, t)
-		}
 	}
 }
 
@@ -69,20 +58,13 @@ func (ff *FormationFinder) Clear() {
 // DoFormations calls the provided function on each formation that the
 // FormationFinder found of the specified FormationType.
 func (ff *FormationFinder) DoFormations(formationType reflect.Type, f func(Formation)) {
-	if formationType.Kind() != reflect.Interface {
-		from := formationType
-		formationType = defimpl_runtime.ImplToInterface(formationType)
-		if formationType == nil {
-			panic(fmt.Sprintf("No interface type corresponding to %v",
-				from))
-		}
-		if formationType.Kind() != reflect.Interface {
-			panic(fmt.Sprintf("Not an interface type: %s", formationType))
-		}
+	formationType1, err := runtime.InterfaceFor(formationType)
+	if formationType1 == nil {
+		panic(fmt.Sprintf("Can't find interface type for %s: %s", formationType.String(), err))
 	}
-	bn := ff.typeToBuffer[formationType]
+	bn := ff.typeToBuffer[formationType1]
 	if bn == nil {
-		panic(fmt.Sprintf("no buffer for %s", formationType))
+		panic(fmt.Sprintf("no buffer for %s, %s", formationType.String(), formationType1.String()))
 	}
 	bn.DoItems(func (item interface{}) {
 		f(item.(Formation))
