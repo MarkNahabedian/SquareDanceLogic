@@ -7,7 +7,6 @@ import "strings"
 import "testing"
 // import "squaredance/dancer"
 import "goshua/rete"
-import "goshua/rete/rule_compiler/runtime"
 
 
 func showAllAssertions(t *testing.T, root rete.Node) {
@@ -53,7 +52,7 @@ func TestAllRules(t *testing.T) {
 		t.Fatalf("Can't open %s: %s", filename, err)
 	}
 	defer out.Close()
-	for _, r := range runtime.AllRules {
+	for _, r := range rete.AllRules {
 		out.WriteString(fmt.Sprintf("%s \n\t%s\n\t%s\n\n",
 			r.Name(),
 			typesPretty(r.ParamTypes()),
