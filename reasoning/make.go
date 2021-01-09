@@ -21,7 +21,7 @@ package reasoning
 // INPUTS: *_rules.go
 // OUTPUTS: *_rules_out.go
 
-// Running unit tests and generating some documentation fioles:
+// Running unit tests and generating some documentation files:
 //go:generate go test squaredance/reasoning
 // OUTPUTS: all_rules.txt, formation_types.txt, formations_rete.dot
 
