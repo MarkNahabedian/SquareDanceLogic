@@ -1,5 +1,6 @@
 package reasoning
 
+import "fmt"
 import "reflect"
 import "defimpl/runtime"
 import "squaredance/dancer"
@@ -11,7 +12,7 @@ import "squaredance/geometry"
 // constructor function.
 var formation_sample_constructors = map[FormationType] func()Formation{}
 
-// MakeSampleFormation returns nil or a sample square fance formation
+// MakeSampleFormation returns nil or a sample square dance formation
 // of the specified type.
 func MakeSampleFormation(formation_type FormationType) Formation {
 	if formation_type.Kind() == reflect.Slice {
@@ -35,11 +36,16 @@ func RegisterFormationSample(constructor func()Formation) {
 	sample := constructor()
 	// Panic if constructor doesn't return a Formation:
 	_ = sample.(Formation)
-	formation_sample_constructors[reflect.TypeOf(sample)] = constructor
+	i, err := runtime.InterfaceFor(reflect.TypeOf(sample))
+	if i == nil {
+		panic(fmt.Sprintf("InterfaceFor returned nil for %T: %s", sample, err))
+	}
+	formation_sample_constructors[i] = constructor
 }
 
 
 func init() {
+	// Register a constructor for Dancer:
 	RegisterFormationSample(func() Formation {
 		dancers := dancer.MakeSomeDancers(1)
 		dancers[0].Move(geometry.Position{ Left: geometry.Left0, Down: geometry.Down0 },
