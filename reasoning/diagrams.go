@@ -179,6 +179,14 @@ document.addEventListener("DOMContentLoaded", contentLoaded, false);
     <h1>
       Supported Square Dance Formation Types
     </h1>
+    <p>
+      This file is written by the function
+      reasoning.WriteFormationDiagrams in
+      <tt>squaredance/reasoning/diagrams.go</tt>.
+      WriteFormationDiagrams is called by reasoning.TestWriteDiagrams
+      defined in 
+      <tt>squaredance/reasoning/reasoning_test.go</tt>.
+    </p>
     <table>
       <thead>
         <tr>
