@@ -2,6 +2,9 @@ package reasoning
 
 import "squaredance/dancer"
 
+// ??? Should these be methods on CoupleImpl and part of the Couple
+// interface instead?
+
 // IsNormal returns true of a normal Couple.
 // A couple is normal if the Beau (dancer on the left) is a Guy and
 // the Belle (dancer on the right) is a Guy.
