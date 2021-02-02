@@ -17,7 +17,7 @@ type Formation interface {
 }
 
 // FormationType is a reflect.Type identifying the interface type of a Formation.
-type FormationType reflect.Type
+type FormationType = reflect.Type
 
 var AllFormationTypes map[string] FormationType = make(map[string] FormationType)
 
