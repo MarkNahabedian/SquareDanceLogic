@@ -99,12 +99,12 @@ func rule_FacingCouples(node rete.Node, couple1, couple2 Couple, facing1, facing
 
 type TandemCouples interface {
 	Formation
-	TandemCouples()        // defimpl:"discriminate"
+	TandemCouples()              // defimpl:"discriminate"
 	// Should we call these LeadingCouple and TrailingCouple?
-	Couple1() Couple        // defimpl:"read couple1" fe:"dancers"
-	Couple2() Couple        // defimpl:"read couple2" fe:"dancers"
-	BeausTandem() Tandem   // defimpl:"read beaustandem"
-	BellesTandem() Tandem  // defimpl:"read bellestandem"
+	LeadingCouple() Couple       // defimpl:"read leading_couple" fe:"dancers"
+	TrailingCouple() Couple      // defimpl:"read trailing_couple" fe:"dancers"
+	BeausTandem() Tandem         // defimpl:"read beaus_tandem"
+	BellesTandem() Tandem        // defimpl:"read belles_tandem"
 	// Roles
 	Beaus() dancer.Dancers
 	Belles() dancer.Dancers
@@ -113,7 +113,7 @@ type TandemCouples interface {
 }
 
 func (f *TandemCouplesImpl) String() string {
-	return fmt.Sprintf("TandemCouples(%s, %s)", f.Couple1(), f.Couple2())
+	return fmt.Sprintf("TandemCouples(%s, %s)", f.LeadingCouple(), f.TrailingCouple())
 }
 
 func (f *TandemCouplesImpl) Beaus() dancer.Dancers {
@@ -125,33 +125,33 @@ func (f *TandemCouplesImpl) Belles() dancer.Dancers {
 }
 
 func (f *TandemCouplesImpl) Leaders() dancer.Dancers {
-	return dancer.Union(f.BeausTandem().Leaders(), f.BellesTandem().Leaders())
+	return f.LeadingCouple().Dancers()
 }
 
 func (f *TandemCouplesImpl) Trailers() dancer.Dancers {
-	return dancer.Union(f.BeausTandem().Trailers(), f.BellesTandem().Trailers())
+	return f.TrailingCouple().Dancers()
 }
 
 func make_TandemCouples_sample() Formation {
-	couple1 := make_Couple_sample().(*CoupleImpl)
-	couple2 := make_Couple_sample().(*CoupleImpl)
+	leaders := make_Couple_sample().(*CoupleImpl)
+	trailers := make_Couple_sample().(*CoupleImpl)
 	down := geometry.NewPositionDownLeft(geometry.Down1, geometry.Left0)
-	couple2.Beau().MoveBy(down)
-	couple2.Belle().MoveBy(down)
+	leaders.Beau().MoveBy(down)
+	leaders.Belle().MoveBy(down)
 	tandem1 := &TandemImpl {
-		leader: couple2.Beau(),
-		trailer: couple1.Beau(),
+		leader: leaders.Beau(),
+		trailer: trailers.Beau(),
 	}
 	tandem2 := &TandemImpl {
-		leader: couple2.Belle(),
-		trailer: couple1.Belle(),
+		leader: leaders.Belle(),
+		trailer: trailers.Belle(),
 	}
 	dancer.Reorder(tandem1.Leader(), tandem1.Trailer(), tandem2.Leader(), tandem2.Trailer())
 	sample := TandemCouples(&TandemCouplesImpl {
-		couple1: couple1,
-		couple2: couple2,
-		beaustandem: tandem1,
-		bellestandem: tandem2,
+		leading_couple: leaders,
+		trailing_couple: trailers,
+		beaus_tandem: tandem1,
+		belles_tandem: tandem2,
 	})
 	sample.Dancers().Recenter0()
 	return sample
@@ -161,24 +161,28 @@ func init() {
 	RegisterFormationSample(make_TandemCouples_sample)
 }
 
-func rule_TandemCouples(node rete.Node, couple1, couple2 Couple, tandem1, tandem2 Tandem) {
-	if !OrderedDancers(couple1.Beau(), couple2.Beau()) {
+func rule_TandemCouples(node rete.Node, leaders, trailers Couple, beaus, belles Tandem) {
+	if leaders.Beau() != beaus.Leader() {
+		fmt.Printf("\t returning, leaders.Beau() != beaus.Leader()\n")
 		return
 	}
-	// The same Tandem formation will come in as both tandem1 and tandem2.
-	// These will be de-duped based on their relationship to
-	// couple1 and couple2.
-	if !HasDancers(tandem1, couple1.Beau(), couple2.Beau()) {
+	if leaders.Belle() != belles.Leader() {
+		fmt.Printf("\t returning, leaders.Belle() != belles.Leader()\n")
 		return
 	}
-	if !HasDancers(tandem2, couple1.Belle(), couple2.Belle()) {
+	if trailers.Beau() != beaus.Trailer() {
+		fmt.Printf("\t returning, trailers.Beau() != beaus.Trailer()\n")
+		return
+	}
+	if trailers.Belle() != belles.Trailer() {
+		fmt.Printf("\t returning, trailers.Belle() != belles.Trailer()\n")
 		return
 	}
 	node.Emit(TandemCouples(&TandemCouplesImpl{
-		couple1: couple1,
-		couple2: couple2,
-		beaustandem: tandem1,
-		bellestandem: tandem2,
+		leading_couple: leaders,
+		trailing_couple: trailers,
+		beaus_tandem: beaus,
+		belles_tandem: belles,
 	}))
 }
 
