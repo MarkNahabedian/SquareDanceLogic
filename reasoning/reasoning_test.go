@@ -21,7 +21,9 @@ func showAllAssertions(t *testing.T, root rete.Node) {
 }
 
 func TestWriteDiagrams(t *testing.T) {
-	WriteFormationDiagrams()
+	if err := WriteFormationDiagrams(); err != nil {
+		t.Errorf("WriteFormationDiagrams: %s", err)
+	}
 }
 
 func TestShowFullRete(t *testing.T) {
@@ -71,23 +73,4 @@ func TestAllFormations(t *testing.T) {
 		out.WriteString(fmt.Sprintf("%s\t  %v\n", name, typ))
 	}
 }
-
-/*
-func TestCouple(t *testing.T) {
-	root_node := MakeFormationsRete()
-
-	set := dancer.NewSquaredSet(4)
-	root_node.Receive(set)
-
-	showAllAssertions(t, root_node)
-	t.Errorf("foo")
-}
-*/
-
-/*
-func TestTwoFacedLines(t *testing.T) {
-	root_node := MakeFormationsRete()
-
-}
-*/
 
