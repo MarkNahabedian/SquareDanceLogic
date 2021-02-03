@@ -117,7 +117,7 @@ func (fts FormationTypeSort) Less (i, j int) bool {
 }
 
 
-func WriteFormationDiagrams() {
+func WriteFormationDiagrams() error {
 	filename := "formation_types.html"
 	// Sort
 	fts := FormationTypeSort{}
@@ -128,15 +128,15 @@ func WriteFormationDiagrams() {
 	// Create file
 	out, err := os.Create(filename)
 	if err != nil {
-		panic(fmt.Sprintf("Can't open %s: %s", filename, err))
+		return fmt.Errorf("Can't open %s: %s", filename, err)
 	}
 	defer out.Close()
 	// Generate HTML
 	err = html_page.Execute(out, fts)
 	if err != nil {
-		fmt.Println(err)
-		return
+		return err
 	}
+	return nil
 }
 
 
@@ -168,6 +168,8 @@ function contentLoaded() {
       {{range . -}}
         {{if .HasSample -}}
           {{- template "DancersSVGTemplate" . -}}
+        {{else}}
+// No sample for {{.Name}}
         {{end -}}
       {{- end -}}
 }
