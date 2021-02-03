@@ -163,19 +163,15 @@ func init() {
 
 func rule_TandemCouples(node rete.Node, leaders, trailers Couple, beaus, belles Tandem) {
 	if leaders.Beau() != beaus.Leader() {
-		fmt.Printf("\t returning, leaders.Beau() != beaus.Leader()\n")
 		return
 	}
 	if leaders.Belle() != belles.Leader() {
-		fmt.Printf("\t returning, leaders.Belle() != belles.Leader()\n")
 		return
 	}
 	if trailers.Beau() != beaus.Trailer() {
-		fmt.Printf("\t returning, trailers.Beau() != beaus.Trailer()\n")
 		return
 	}
 	if trailers.Belle() != belles.Trailer() {
-		fmt.Printf("\t returning, trailers.Belle() != belles.Trailer()\n")
 		return
 	}
 	node.Emit(TandemCouples(&TandemCouplesImpl{
