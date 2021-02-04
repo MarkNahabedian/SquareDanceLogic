@@ -4,7 +4,6 @@ import "fmt"
 import "os"
 import "reflect"
 import "testing"
-import "defimpl/runtime"
 import "goshua/rete"
 
 /*
@@ -17,7 +16,6 @@ import "defimpl/util"
 // TestMakeSample makes sure that each sample formation returned by
 // MakeSampleFormation matches the rule for that formation.
 func TestMakeSampleFormation(t *testing.T) {
-	runtime.Dump()
 	/*
 	This test is failing for TwoFacedLine because of MiniWave symetry:
 	  TwoFacedLine(RightHanded, Dancer_1, Dancer_2, Dancer_3, Dancer_4)
