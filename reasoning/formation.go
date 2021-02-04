@@ -19,6 +19,9 @@ type Formation interface {
 // FormationType is a reflect.Type identifying the interface type of a Formation.
 type FormationType = reflect.Type
 
+// AllFormationTypes maps from a formation name to the corresponding
+// FormationType.  That FormationType is an interface type, not an
+// implementation type.
 var AllFormationTypes map[string] FormationType = make(map[string] FormationType)
 
 func LookupFormationType(name string) FormationType {
@@ -31,7 +34,7 @@ func LookupFormationType(name string) FormationType {
 
 func init() {
 	// Fudge the AllFormationTypes entries for Formations that aren't
-	// automatically expanced.
+	// automatically expanded.
 	f1 := func(f dancer.Dancer) {}
 	t1 := reflect.TypeOf(f1).In(0)
 	AllFormationTypes[t1.Name()] = t1
