@@ -26,41 +26,18 @@ var DancerTemplateFunctions = template.FuncMap{
 }
 
 
-// DancersSVGTemplateArg is the type of parameter for the
-// DancersSVGTemplate HTML template.
+// DancersSVGTemplateArg is the type of the parameter that is passed
+// to the DancersSVGTemplate HTML template.
 type DancersSVGTemplateArg interface {
 	SVGId() string          //defimpl:"read svg_id"
 	Sample() Formation     //defimpl:"read sample"
 	Name() string           // The name of the formation
 	HasSample() bool
+	// DancerCount will return -1 if there is no sample.  This is
+	// so that the formations with no sample will sort before
+	// those with a sample.  Otherwise DancerCount returns the
+	// number of dancers in the sample.
 	DancerCount() int
-}
-
-// dancersSVGTemplate is a template for generating the javascript code
-// for drawing a set of dancers.  It shoud be called with a
-// DancersSVGTemplateArg as argument.
-var dancersSVGTemplate = template.Must(template.New("DancersSVGTemplate").
-	Funcs(DancerTemplateFunctions).Parse(`
-  {{- with $dsta := .}}
-  new Floor([
-      {{- range $dsta.Sample.Dancers -}}
-	new Dancer({{.Position.Left}}, {{.Position.Down}}, {{JSDirection .Direction}}, "{{.Ordinal}}",
-		   {{JSGender .Gender}}, "white", "{{.Ordinal}}"),
-      {{end -}}
-    ]).draw("{{$dsta.SVGId}}");
-  {{- end -}}
-`))
-
-// DancersSVGTemplate returns an HTML Template that includes a
-// Template named DancersSVGTemplate which will generate javascript
-// code to draw the specified dancers in an SVG element when given a
-// DancersSVGTemplateArg as argument.
-func DancersSVGTemplate() *template.Template {
-	t, err := dancersSVGTemplate.Clone()
-	if err != nil {
-		panic(err)
-	}
-	return t
 }
 
 // NewDancersSVGTemplateArg returns a minimal implementation of the
@@ -125,6 +102,12 @@ func WriteFormationDiagrams() error {
 		fts = append(fts, NewDancersSVGTemplateArg(ft))
 	}
 	sort.Sort(fts)
+	for _, f := range fts {
+		fmt.Printf("%s \t%v\n", f.Name(), f.HasSample())
+	}
+	if fts.Len() == 0 {
+		return fmt.Errorf("No sorted formation types.  %d types in AllFormationTypes", len(AllFormationTypes))
+	}
 	// Create file
 	out, err := os.Create(filename)
 	if err != nil {
@@ -139,15 +122,8 @@ func WriteFormationDiagrams() error {
 	return nil
 }
 
-
-func init() {
-	child := DancersSVGTemplate()
-	_, err := html_page.AddParseTree(child.Name(), child.Tree)
-	if err != nil {
-		panic(err)
-	}
-}
-
+// html_page is the template for generating the formation_types.html file.
+// The parameter of the template is a FormationTypeSort.
 var html_page = template.Must(template.New("html_page").Funcs(
 	DancerTemplateFunctions).Parse(`<html>
   <head>
@@ -165,13 +141,12 @@ td {
     </script>
     <script type="text/javascript">
 function contentLoaded() {
-      {{range . -}}
-        {{if .HasSample -}}
-          {{- template "DancersSVGTemplate" . -}}
-        {{else}}
-// No sample for {{.Name}}
-        {{end -}}
-      {{- end -}}
+  {{- range .}}
+  // {{.Name}}
+    {{if .HasSample -}}
+      {{- template "DancersSVGTemplate" . -}}
+    {{end -}}
+  {{- end -}}
 }
 
 document.addEventListener("DOMContentLoaded", contentLoaded, false);
@@ -197,7 +172,7 @@ document.addEventListener("DOMContentLoaded", contentLoaded, false);
         </tr>
       </thead>
       <tbody>
-        {{range .}}
+        {{- range .}}
           <tr>
             <td>{{.Name}}</td>
             <td>
@@ -206,11 +181,19 @@ document.addEventListener("DOMContentLoaded", contentLoaded, false);
               {{- end -}}
             </td>
           </tr>
-        {{end}}
+        {{- end}}
       </tbody>
     </table>
   </body>
 </html>
-`))
 
+{{define "DancersSVGTemplate"}}
+new Floor([
+  {{- range .Sample.Dancers -}}
+    new Dancer({{.Position.Left}}, {{.Position.Down}}, {{JSDirection .Direction}}, "{{.Ordinal}}",
+               {{JSGender .Gender}}, "white", "{{.Ordinal}}"),
+      {{end -}}
+    ]).draw("{{.SVGId}}");
+{{end}}
+`))
 
