@@ -1,7 +1,7 @@
 <html>
   <head>
     <title>
-      Catalog of 0 level Formation Actions
+      Catalog of Primitive level Formation Actions
     </title>
     <style>
 td {
@@ -15,50 +15,71 @@ td {
     <script type="text/javascript">
 function contentLoaded() {
       
-  new Floor([new Dancer( 0 ,  0 ,  0 , "0", "unspecified"),
-    ]).draw("AboutFace-0-Dancer-start");
+new Floor([new Dancer( 0 ,  0 ,  0 , "0",
+               "unspecified", "white", "0"),
+      ]).draw("AboutFace-0-Dancer-start");
 
-  new Floor([new Dancer( 1 ,  0 ,  0 , "1", "unspecified"),
-    new Dancer( 0 ,  0 ,  2 , "0", "unspecified"),
-    ]).draw("BackToFace-0-MiniWave-start");
+new Floor([new Dancer( -0.5 ,  0 ,  2 , "1",
+               "unspecified", "white", "1"),
+      new Dancer( 0.5 ,  0 ,  0 , "2",
+               "unspecified", "white", "2"),
+      ]).draw("BackToFace-0-MiniWave-start");
 
-  new Floor([new Dancer( 0 ,  0 ,  2 , "0", "unspecified"),
-    new Dancer( 0 ,  1 ,  0 , "1", "unspecified"),
-    ]).draw("BackwardLeft-0-BackToBack-start");
+new Floor([new Dancer( 0 ,  -0.5 ,  2 , "1",
+               "unspecified", "white", "1"),
+      new Dancer( 0 ,  0.5 ,  0 , "2",
+               "unspecified", "white", "2"),
+      ]).draw("BackwardLeft-0-BackToBack-start");
 
-  new Floor([new Dancer( 0 ,  0 ,  2 , "0", "unspecified"),
-    new Dancer( 0 ,  1 ,  0 , "1", "unspecified"),
-    ]).draw("BackwardRight-0-BackToBack-start");
+new Floor([new Dancer( 0 ,  -0.5 ,  2 , "1",
+               "unspecified", "white", "1"),
+      new Dancer( 0 ,  0.5 ,  0 , "2",
+               "unspecified", "white", "2"),
+      ]).draw("BackwardRight-0-BackToBack-start");
 
-  new Floor([new Dancer( 0 ,  0 ,  0 , "0", "unspecified"),
-    new Dancer( 0 ,  1 ,  2 , "1", "unspecified"),
-    ]).draw("ForwardLeft-0-FaceToFace-start");
+new Floor([new Dancer( 0 ,  -0.5 ,  0 , "1",
+               "unspecified", "white", "1"),
+      new Dancer( 0 ,  0.5 ,  2 , "2",
+               "unspecified", "white", "2"),
+      ]).draw("ForwardLeft-0-FaceToFace-start");
 
-  new Floor([new Dancer( 0 ,  0 ,  0 , "0", "unspecified"),
-    new Dancer( 0 ,  1 ,  2 , "1", "unspecified"),
-    ]).draw("ForwardRight-0-FaceToFace-start");
+new Floor([new Dancer( 0 ,  -0.5 ,  0 , "1",
+               "unspecified", "white", "1"),
+      new Dancer( 0 ,  0.5 ,  2 , "2",
+               "unspecified", "white", "2"),
+      ]).draw("ForwardRight-0-FaceToFace-start");
 
-  new Floor([new Dancer( 0 ,  0 ,  0 , "0", "unspecified"),
-    new Dancer( 0 ,  1 ,  2 , "1", "unspecified"),
-    ]).draw("Meet-0-FaceToFace-start");
+new Floor([new Dancer( 0 ,  -0.5 ,  0 , "1",
+               "unspecified", "white", "1"),
+      new Dancer( 0 ,  0.5 ,  2 , "2",
+               "unspecified", "white", "2"),
+      ]).draw("Meet-0-FaceToFace-start");
 
-  new Floor([new Dancer( 1 ,  0 ,  0 , "1", "unspecified"),
-    new Dancer( 0 ,  0 ,  2 , "0", "unspecified"),
-    ]).draw("PassToBacks-0-MiniWave-start");
+new Floor([new Dancer( -0.5 ,  0 ,  2 , "1",
+               "unspecified", "white", "1"),
+      new Dancer( 0.5 ,  0 ,  0 , "2",
+               "unspecified", "white", "2"),
+      ]).draw("PassToBacks-0-MiniWave-start");
 
-  new Floor([new Dancer( 0 ,  0 ,  0 , "0", "unspecified"),
-    ]).draw("QuarterLeft-0-Dancer-start");
+new Floor([new Dancer( 0 ,  0 ,  0 , "0",
+               "unspecified", "white", "0"),
+      ]).draw("QuarterLeft-0-Dancer-start");
 
-  new Floor([new Dancer( 0 ,  0 ,  0 , "0", "unspecified"),
-    ]).draw("QuarterRight-0-Dancer-start");
+new Floor([new Dancer( 0 ,  0 ,  0 , "0",
+               "unspecified", "white", "0"),
+      ]).draw("QuarterRight-0-Dancer-start");
 
-  new Floor([new Dancer( 1 ,  0 ,  0 , "1", "unspecified"),
-    new Dancer( 0 ,  0 ,  0 , "0", "unspecified"),
-    ]).draw("TurnToFace-0-Couple-start");
+new Floor([new Dancer( 0.5 ,  0 ,  0 , "1",
+               "unspecified", "white", "1"),
+      new Dancer( -0.5 ,  0 ,  0 , "2",
+               "unspecified", "white", "2"),
+      ]).draw("TurnToFace-0-Couple-start");
 
-  new Floor([new Dancer( 1 ,  0 ,  0 , "1", "unspecified"),
-    new Dancer( 0 ,  0 ,  2 , "0", "unspecified"),
-    ]).draw("TurnToFace-0-MiniWave-start");
+new Floor([new Dancer( -0.5 ,  0 ,  2 , "1",
+               "unspecified", "white", "1"),
+      new Dancer( 0.5 ,  0 ,  0 , "2",
+               "unspecified", "white", "2"),
+      ]).draw("TurnToFace-0-MiniWave-start");
 }
 
 document.addEventListener("DOMContentLoaded", contentLoaded, false);
@@ -66,7 +87,7 @@ document.addEventListener("DOMContentLoaded", contentLoaded, false);
   </head>
   <body>
     <h1>
-      Catalog of 0 level Formation Actions
+      Catalog of Primitive level Formation Actions
     </h1>
     <table>
       <thead>
@@ -192,3 +213,5 @@ document.addEventListener("DOMContentLoaded", contentLoaded, false);
     </table>
   </body>
 </html>
+
+
