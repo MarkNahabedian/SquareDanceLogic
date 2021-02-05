@@ -19,6 +19,7 @@ func (cs catalogSort) Swap(i, j int) {
 	cs[i], cs[j] = cs[j], cs[i]
 }
 
+// Less sorts first by Action name then by starting FormationType name.
 func (cs catalogSort) Less (i, j int) bool {
 	// Sort first by Action Name
 	fa1 := cs[i].FormationAction
@@ -48,7 +49,7 @@ func WriteCatalog(level Level) {
 		})
 	}
 	sort.Sort(catalogSort(fas))
-	f, err := os.Create(fmt.Sprintf("catalog-%v.html", level))
+	f, err := os.Create(fmt.Sprintf("catalog-%s.html", level))
 	if err != nil {
 		fmt.Println(err)
 		return

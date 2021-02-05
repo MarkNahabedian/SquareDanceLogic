@@ -1,0 +1,4 @@
+This package requires stringer:
+
+  go get -u -a golang.org/x/tools/cmd/stringer
+

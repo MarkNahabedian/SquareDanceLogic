@@ -7,6 +7,8 @@ import "squaredance/reasoning"
 
 type Level int
 
+//go:generate stringer -type=Level
+
 const (
 	Primitive Level = iota
 	Basic1
