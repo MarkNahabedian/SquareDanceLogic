@@ -12,6 +12,14 @@ import "squaredance/dancer"
 import "squaredance/geometry"
 
 
+// MergeTemplateFuncs adds the elements from tfm2 into tfm1 and returns tfm1.
+func MergeTemplateFuncs (tfm1, tfm2 template.FuncMap)  template.FuncMap {
+	for k, v := range tfm2 {
+		tfm1[k] = v
+	}
+	return tfm1
+}
+
 var DancerTemplateFunctions = template.FuncMap{
 	"JSDirection": func(d geometry.Direction) float32 {
 		return float32(d) * 4
@@ -186,7 +194,9 @@ document.addEventListener("DOMContentLoaded", contentLoaded, false);
     </table>
   </body>
 </html>
+` + DancersSVGTemplate))
 
+const DancersSVGTemplate = `
 {{define "DancersSVGTemplate"}}
 new Floor([
   {{- range .Sample.Dancers -}}
@@ -195,5 +205,4 @@ new Floor([
       {{end -}}
     ]).draw("{{.SVGId}}");
 {{end}}
-`))
-
+`

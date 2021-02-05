@@ -69,17 +69,6 @@ type html_page_arg struct {
 	DancersTemplateArgs []*dancersTemplateArg
 }
 
-
-func init() {
-	child := reasoning.DancersSVGTemplate()
-	_, err := html_page.AddParseTree(child.Name(), child.Tree)
-	if err != nil {
-		panic(err)
-	}
-	html_page.Funcs(reasoning.DancerTemplateFunctions)
-}
-
-
 type dancersTemplateArg struct {
 	FormationAction FormationAction
 	svg_id string
@@ -123,12 +112,14 @@ func (dta *dancersTemplateArg) Name() string {
 
 // Parameters are level and sorted slice of dancersTemplateArg.
 var html_page = template.Must(template.New("html_page").Funcs(
-	template.FuncMap{
-		"NewDancersSVGTemplateArg":
-		func (fa FormationAction) reasoning.DancersSVGTemplateArg {
-			return newDancersTemplateArg(fa)
+	reasoning.MergeTemplateFuncs(
+		template.FuncMap{
+			"NewDancersSVGTemplateArg":
+			func (fa FormationAction) reasoning.DancersSVGTemplateArg {
+				return newDancersTemplateArg(fa)
+			},
 		},
-	}).Parse(`<html>
+		reasoning.DancerTemplateFunctions)).Parse(`<html>
   <head>
     <title>
       Catalog of {{.Level}} level Formation Actions
@@ -186,5 +177,5 @@ document.addEventListener("DOMContentLoaded", contentLoaded, false);
     </table>
   </body>
 </html>
-`))
+` + reasoning.DancersSVGTemplate))
 
