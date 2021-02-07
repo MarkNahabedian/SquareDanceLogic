@@ -25,18 +25,9 @@ func showHistory(tl timeline.Timeline, t *testing.T) {
 }
 
 
-func loneTestDancer() dancer.Dancers {
-	dancers := dancer.MakeSomeDancers(1)
-	dancer := dancers[0]
-	here := geometry.NewPositionDownLeft(0, 0)
-	facing := geometry.Direction0.QuarterRight()
-	dancer.Move(here, facing)
-	return dancers
-}
-
 func TestQuarterRight(t *testing.T) {
-	dancers := loneTestDancer()
-	dancer := dancers[0]
+	dancers := reasoning.MakeSampleFormation(reasoning.LookupFormationType("Dancer"))
+	dancer := dancers.Dancers()[0]
 	p := dancer.Position()
 	d := dancer.Direction()
 	fa := FindAction("QuarterRight").GetFormationActionFor(dancer)
@@ -53,8 +44,8 @@ func TestQuarterRight(t *testing.T) {
 }
 
 func TestQuarterLeft(t *testing.T) {
-	dancers := loneTestDancer()
-	dancer := dancers[0]
+	dancers := reasoning.MakeSampleFormation(reasoning.LookupFormationType("Dancer"))
+	dancer := dancers.Dancers()[0]
 	p := dancer.Position()
 	d := dancer.Direction()
 	fa := FindAction("QuarterLeft").GetFormationActionFor(dancer)
@@ -71,8 +62,8 @@ func TestQuarterLeft(t *testing.T) {
 }
 
 func TestAboutFace(t *testing.T) {
-	dancers := loneTestDancer()
-	dancer := dancers[0]
+	dancers := reasoning.MakeSampleFormation(reasoning.LookupFormationType("Dancer"))
+	dancer := dancers.Dancers()[0]
 	p := dancer.Position()
 	d := dancer.Direction()
 	fa := FindAction("AboutFace").GetFormationActionFor(dancer)
@@ -151,7 +142,7 @@ func mini_wave(handedness reasoning.Handedness) reasoning.Formation {
 
 func TestForwardLeft(t *testing.T) {
 	// Start with FaceToFace dancers.  End in RightHand MiniWave
-	dancers := reasoning.MakeSampleFormation(reasoning.AllFormationTypes["FaceToFace"])
+	dancers := reasoning.MakeSampleFormation(reasoning.LookupFormationType("FaceToFace"))
 	tl := timeline.NewTimeline(dancers.Dancers())
 	tl.MakeSnapshot(0)
 	fa := FindAction("ForwardLeft").GetFormationActionFor(dancers)
@@ -174,7 +165,7 @@ func TestForwardLeft(t *testing.T) {
 
 func TestForwardRight(t *testing.T) {
 	// Start with FaceToFace dancers.  End in RightHand MiniWave
-	dancers := reasoning.MakeSampleFormation(reasoning.AllFormationTypes["FaceToFace"])
+	dancers := reasoning.MakeSampleFormation(reasoning.LookupFormationType("FaceToFace"))
 	tl := timeline.NewTimeline(dancers.Dancers())
 	tl.MakeSnapshot(0)
 	fa := FindAction("ForwardRight").GetFormationActionFor(dancers)
@@ -199,7 +190,7 @@ func TestForwardRight(t *testing.T) {
 func TestBackwardLeft(t *testing.T) {
 	t.Logf("TestBackwardLeft\n")
 	// Start with BackToBack dancers.  End in RightHand MiniWave
-	dancers := reasoning.MakeSampleFormation(reasoning.AllFormationTypes["BackToBack"])
+	dancers := reasoning.MakeSampleFormation(reasoning.LookupFormationType("BackToBack"))
 	tl := timeline.NewTimeline(dancers.Dancers())
 	tl.MakeSnapshot(0)
 	fa := FindAction("BackwardLeft").GetFormationActionFor(dancers)
@@ -224,7 +215,7 @@ func TestBackwardLeft(t *testing.T) {
 func TestBackwardRight(t *testing.T) {
 	t.Logf("TestBackwardRight\n")
 	// Start with BackToBack dancers.  End in RightHand MiniWave
-	dancers := reasoning.MakeSampleFormation(reasoning.AllFormationTypes["BackToBack"])
+	dancers := reasoning.MakeSampleFormation(reasoning.LookupFormationType("BackToBack"))
 	tl := timeline.NewTimeline(dancers.Dancers())
 	tl.MakeSnapshot(0)
 	fa := FindAction("BackwardRight").GetFormationActionFor(dancers)
@@ -249,7 +240,7 @@ func TestBackwardRight(t *testing.T) {
 func TestBackToFaceRight(t *testing.T) {
 	t.Logf("TestBackToFaceRight\n")
 	// Start with a RightHanded MiniWave.  End in FaceToFace dancers.
-	dancers := mini_wave(reasoning.RightHanded).(reasoning.MiniWave)
+	dancers := reasoning.MakeSampleFormation(reasoning.LookupFormationType("MiniWave"))
 	tl := timeline.NewTimeline(dancers.Dancers())
 	tl.MakeSnapshot(0)
 	fa := FindAction("BackToFace").GetFormationActionFor(dancers)
